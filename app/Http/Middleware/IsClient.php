@@ -5,7 +5,7 @@ use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
-class IsClient
+class IsClient 
 {
     public function handle(Request $request, Closure $next)
     {
