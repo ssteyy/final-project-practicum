@@ -1,74 +1,109 @@
 <?php
+
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Models\Service;
+use App\Models\User;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Storage;
+use App\Http\Requests\StoreServiceRequest;
+use App\Http\Requests\UpdateServiceRequest;
 
-class ServiceController extends Controller {
-    public function index(){
-        $services = Service::where('status','published')->latest()->paginate(12);
-        return view('services', compact('services'));
-    }
+class ServiceController extends Controller
+{
+    /**
+     * Display a listing of the resource.
+     */
+    public function index()
+    {
+        $user = Auth::user();
 
-    public function show(Service $service){
-        return view('service-detail', compact('service'));
-    }
-
-    public function create(){
-        return view('freelancer.add-service');
-    }
-
-    public function store(Request $req){
-        $data = $req->validate([
-            'title'=>'required|string|max:255',
-            'description'=>'required|string',
-            'price'=>'required|numeric|min:0',
-            'category'=>'nullable|string|max:100',
-            'thumbnail'=>'nullable|image|max:4096'
-        ]);
-        $data['user_id'] = Auth::id();
-        $data['status'] = 'published';
-
-        if($req->hasFile('thumbnail')){
-            $data['thumbnail'] = $req->file('thumbnail')->store('services','public');
+        if ($user && $user->role === User::ROLE_FREELANCER) {
+            $services = $user->services()->latest()->get();
+            return view('services.freelancer-index', compact('services'));
         }
 
-        Service::create($data);
-        return redirect('/freelancer/my-services')->with('success','Service created');
+        // Client/Guest view: show all published services
+        $services = Service::where('status', 'published')->latest()->get();
+        return view('services.index', compact('services'));
     }
 
-    public function edit(Service $service){
-        $this->authorize('update', $service);
-        return view('freelancer.edit-service', compact('service'));
-    }
-
-    public function update(Request $req, Service $service){
-        $this->authorize('update', $service);
-        $data = $req->validate([
-            'title'=>'required|string|max:255',
-            'description'=>'required|string',
-            'price'=>'required|numeric|min:0',
-            'category'=>'nullable|string|max:100',
-            'thumbnail'=>'nullable|image|max:4096'
-        ]);
-        if($req->hasFile('thumbnail')){
-            $path = $req->file('thumbnail')->store('services','public');
-            $service->thumbnail = $path;
+    /**
+     * Show the form for creating a new resource.
+     */
+    public function create()
+    {
+        if (Auth::check() && Auth::user()->role === 'admin') {
+            abort(403);
         }
-        $service->update($data);
-        return redirect('/freelancer/my-services')->with('success','Service updated');
+        return view('services.create');
     }
 
-    public function destroy(Service $service){
-        $this->authorize('delete',$service);
+    /**
+     * Store a newly created resource in storage.
+     */
+    public function store(StoreServiceRequest $request)
+    {
+        $validated = $request->validated();
+        $validated['freelancer_id'] = Auth::id();
+
+        Service::create($validated);
+
+        return redirect()->route('services.index')->with('status', 'Service created successfully.');
+    }
+
+    /**
+     * Display the specified resource.
+     */
+    public function show(Service $service)
+    {
+        // Only published services are viewable by clients/guests
+        if (Auth::guest() || Auth::user()->role === User::ROLE_CLIENT) {
+            if ($service->status !== 'published') {
+                abort(404);
+            }
+        }
+
+        // Freelancer can view their own services regardless of status
+        if (Auth::check() && Auth::user()->role === User::ROLE_FREELANCER && $service->freelancer_id !== Auth::id()) {
+            abort(403);
+        }
+
+        return view('services.show', compact('service'));
+    }
+
+    /**
+     * Show the form for editing the specified resource.
+     */
+    public function edit(Service $service)
+    {
+        if ($service->freelancer_id !== Auth::id() || Auth::user()->role !== User::ROLE_FREELANCER) {
+            abort(403);
+        }
+        return view('services.edit', compact('service'));
+    }
+
+    /**
+     * Update the specified resource in storage.
+     */
+    public function update(UpdateServiceRequest $request, Service $service)
+    {
+        $service->update($request->validated());
+
+        return redirect()->route('services.index')->with('status', 'Service updated successfully.');
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     */
+    public function destroy(Service $service)
+    {
+        if ($service->freelancer_id !== Auth::id() || Auth::user()->role !== User::ROLE_FREELANCER) {
+            abort(403);
+        }
+
         $service->delete();
-        return back()->with('success','Service removed');
-    }
 
-    public function myServices(){
-        $services = Auth::user()->services()->latest()->get();
-        return view('freelancer.my-services', compact('services'));
+        return redirect()->route('services.index')->with('status', 'Service deleted successfully.');
     }
 }

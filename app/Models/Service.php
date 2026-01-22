@@ -1,18 +1,36 @@
 <?php
+
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use App\Models\User;
+use App\Models\Order;
 
-class Service extends Model {
+class Service extends Model
+{
     use HasFactory;
-    protected $fillable = ['user_id','title','description','price','category','status','thumbnail'];
 
-    public function freelancer(){ return $this->belongsTo(User::class,'user_id'); }
-    public function orders(){ return $this->hasMany(Order::class); }
-    public function reviews(){ return $this->hasMany(Review::class); }
+    protected $fillable = [
+        'freelancer_id',
+        'title',
+        'description',
+        'price',
+        'category',
+        'status',
+    ];
 
-    public function averageRating(){
-        return round($this->reviews()->avg('rating'),1);
+    protected $casts = [
+        'price' => 'float',
+    ];
+
+    public function freelancer()
+    {
+        return $this->belongsTo(User::class, 'freelancer_id');
+    }
+
+    public function orders()
+    {
+        return $this->hasMany(Order::class);
     }
 }

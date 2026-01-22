@@ -1,105 +1,52 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Service Details - FreelanceHub</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-</head>
-<body class="bg-gray-50 font-sans">
+<x-app-layout>
+    <x-slot name="header">
+        <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
+            {{ $service->title }}
+        </h2>
+    </x-slot>
 
-    <nav class="bg-white shadow-sm mb-8">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-between h-16 items-center">
-            <a href="{{ url('/') }}" class="text-2xl font-bold text-indigo-600">FreelanceHub</a>
-            <div class="flex space-x-6">
-                <a href="{{ url('/services') }}" class="text-gray-600 hover:text-indigo-600">Back to Browse</a>
-            </div>
-        </div>
-    </nav>
-
-    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div class="flex flex-col lg:flex-row gap-12">
-
-            <div class="lg:w-2/3">
-                <nav class="flex mb-4 text-sm text-gray-500 uppercase font-bold tracking-wider">
-                    <a href="#" class="hover:text-indigo-600">Services</a>
-                    <span class="mx-2">/</span>
-                    <span class="text-indigo-600">Web Development</span>
-                </nav>
-
-                <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 mb-6">
-                    I will build a professional Laravel Web Application for your business
-                </h1>
-
-                <div class="rounded-xl overflow-hidden mb-8 shadow-lg">
-                    <img src="https://images.unsplash.com/photo-1587620962725-abab7fe55159?auto=format&fit=crop&w=1200&q=80" alt="Service Header" class="w-full h-auto">
-                </div>
-
-                <div class="bg-white p-8 rounded-xl shadow-sm border border-gray-100">
-                    <h2 class="text-2xl font-bold text-gray-800 mb-4">About This Service</h2>
-                    <div class="text-gray-600 leading-relaxed space-y-4">
-                        <p>Are you looking for a robust, scalable, and secure web application? I specialize in building custom solutions using the Laravel framework and Tailwind CSS.</p>
-                        <p><strong>What you will get:</strong></p>
-                        <ul class="list-disc ml-5 space-y-2">
-                            <li>Responsive Design (Mobile/Tablet/Desktop)</li>
-                            <li>Clean & Commented Code</li>
-                            <li>Database Integration (MySQL/PostgreSQL)</li>
-                            <li>API Integration & Custom Logic</li>
-                            <li>SEO Optimized Structure</li>
-                        </ul>
-                        <p>Please contact me before placing an order to discuss your specific requirements and timeline.</p>
-                    </div>
-                </div>
-            </div>
-
-            <div class="lg:w-1/3">
-                <div class="sticky top-24 space-y-6">
-                    <div class="bg-white p-6 rounded-xl shadow-md border-2 border-indigo-500">
-                        <div class="flex justify-between items-center mb-4">
-                            <span class="text-gray-500 font-medium">Standard Package</span>
-                            <span class="text-3xl font-bold text-gray-900">$500</span>
+    <div class="py-12">
+        <div class="max-w-4xl mx-auto sm:px-6 lg:px-8">
+            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-xl sm:rounded-lg">
+                <div class="p-6 lg:p-8 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <h1 class="text-4xl font-extrabold text-gray-900 dark:text-white mb-2">{{ $service->title }}</h1>
+                            <p class="text-lg text-gray-600 dark:text-gray-400 mb-4">
+                                By <span class="font-semibold text-indigo-600 dark:text-indigo-400">{{ $service->freelancer->name }}</span>
+                            </p>
                         </div>
-                        <p class="text-gray-600 text-sm mb-6">Includes full application development, 5 pages, and 1 month of support.</p>
-
-                        <a href="{{ url('/order/create/1') }}" class="block w-full text-center bg-indigo-600 text-white font-bold py-4 rounded-lg hover:bg-indigo-700 transition">
-                            Order Now <i class="fas fa-arrow-right ml-2"></i>
-                        </a>
-                        <p class="text-center text-xs text-gray-400 mt-4 italic">Login required to place order</p>
+                        <div class="text-right">
+                            <span class="text-5xl font-black text-green-600 dark:text-green-400">${{ number_format($service->price, 2) }}</span>
+                            <p class="text-sm text-gray-500 dark:text-gray-400">One-time fee</p>
+                        </div>
                     </div>
 
-                    <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
-                        <h3 class="font-bold text-gray-800 mb-4">About the Freelancer</h3>
-                        <div class="flex items-center gap-4">
-                            <img src="https://ui-avatars.com/api/?name=Sarah+Chen&background=6366f1&color=fff" alt="Freelancer" class="w-16 h-16 rounded-full">
-                            <div>
-                                <h4 class="font-bold text-lg">Sarah Chen</h4>
-                                <p class="text-gray-500 text-sm">Full Stack Developer</p>
-                                <div class="flex text-yellow-400 text-xs mt-1">
-                                    <i class="fas fa-star"></i>
-                                    <i class="fas fa-star"></i>
-                                    <i class="fas fa-star"></i>
-                                    <i class="fas fa-star"></i>
-                                    <i class="fas fa-star"></i>
-                                    <span class="ml-2 text-gray-400 font-medium">(142 reviews)</span>
-                                </div>
-                            </div>
+                    <div class="mt-6">
+                        <h3 class="text-2xl font-semibold text-gray-900 dark:text-white mb-2">Description</h3>
+                        <p class="text-gray-700 dark:text-gray-300 whitespace-pre-wrap">{{ $service->description }}</p>
+                    </div>
+
+                    <div class="mt-6 border-t border-gray-200 dark:border-gray-700 pt-6">
+                        <div class="flex justify-between items-center">
+                            <span class="px-3 py-1 text-sm font-semibold rounded-full bg-indigo-100 text-indigo-800 dark:bg-indigo-900 dark:text-indigo-300">
+                                Category: {{ $service->category }}
+                            </span>
+                            @if (Auth::check() && Auth::user()->role === \App\Models\User::ROLE_CLIENT)
+                                <a href="{{ route('orders.create', $service) }}" class="inline-flex items-center px-6 py-3 bg-indigo-600 border border-transparent rounded-lg font-bold text-base text-white uppercase tracking-widest hover:bg-indigo-700 focus:bg-indigo-700 active:bg-indigo-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150">
+                                    {{ __('Place Order') }}
+                                </a>
+                            @elseif (Auth::check() && Auth::user()->role === \App\Models\User::ROLE_FREELANCER && $service->freelancer_id === Auth::id())
+                                <span class="px-3 py-1 text-sm font-semibold rounded-full {{ $service->status === 'published' ? 'bg-green-200 text-green-800' : ($service->status === 'draft' ? 'bg-yellow-200 text-yellow-800' : 'bg-red-200 text-red-800') }}">
+                                    Status: {{ ucfirst($service->status) }}
+                                </span>
+                            @else
+                                <p class="text-sm text-gray-500 dark:text-gray-400">Login as a client to place an order.</p>
+                            @endif
                         </div>
-                        <a href="#" class="block text-center mt-6 text-sm font-semibold text-indigo-600 hover:text-indigo-800">
-                            View Profile
-                        </a>
                     </div>
                 </div>
             </div>
-
         </div>
-    </main>
-
-    <footer class="mt-20 bg-gray-900 py-12">
-        <div class="max-w-7xl mx-auto px-4 text-center text-gray-400 text-sm">
-            &copy; {{ date('Y') }} FreelanceHub. All rights reserved.
-        </div>
-    </footer>
-
-</body>
-</html>
+    </div>
+</x-app-layout>
