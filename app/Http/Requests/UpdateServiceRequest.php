@@ -27,6 +27,8 @@ class UpdateServiceRequest extends FormRequest
             'price' => ['required', 'numeric', 'min:0.01'],
             'category' => ['required', 'string', 'max:255'],
             'status' => ['required', 'in:draft,published,archived'],
+            'image' => ['nullable', 'image', 'mimes:jpeg,png,jpg,gif,webp', 'max:2048'],
+            'image_url' => ['nullable', 'url', 'max:500'],
         ];
     }
 }

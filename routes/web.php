@@ -15,9 +15,11 @@ use Illuminate\Support\Facades\Route;
 */
 
 use App\Http\Controllers\ServiceController;
+use App\Models\Service;
 
 Route::get('/', function () {
-    return view('home');
+    $services = Service::where('status', 'published')->latest()->take(6)->get();
+    return view('home', compact('services'));
 })->name('home');
 
 Route::get('/services', [ServiceController::class, 'index'])->name('services.index');
@@ -34,7 +36,9 @@ Route::middleware('auth')->group(function () {
 
 Route::resource('services', ServiceController::class)->middleware(['auth', 'verified']);
 
-Route::get('orders/create/{service}', [App\Http\Controllers\OrderController::class, 'create'])->name('orders.create');
-Route::resource('orders', App\Http\Controllers\OrderController::class)->middleware(['auth', 'verified']);
+Route::middleware(['auth', 'verified'])->group(function () {
+    Route::get('orders/create/{service}', [App\Http\Controllers\OrderController::class, 'create'])->name('orders.create');
+    Route::resource('orders', App\Http\Controllers\OrderController::class)->except(['create']);
+});
 
 require __DIR__.'/auth.php';
