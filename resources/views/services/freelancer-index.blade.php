@@ -23,33 +23,22 @@
 
                     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                         @forelse ($services as $service)
-                            <div class="bg-white border border-gray-200 rounded-xl shadow-sm hover:shadow-lg transition duration-300 overflow-hidden">
-                                @if($service->image_path || $service->image_url)
-                                    <img src="{{ $service->image_path ? asset('storage/' . $service->image_path) : $service->image_url }}"
-                                         alt="{{ $service->title }}"
-                                         class="w-full h-40 object-cover">
-                                @else
-                                    <div class="w-full h-40 bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center">
-                                        <i class="fas fa-image text-gray-300 text-4xl"></i>
-                                    </div>
-                                @endif
-                                <div class="p-4">
-                                    <h3 class="text-lg font-semibold mb-2 text-gray-900">{{ $service->title }}</h3>
-                                    <p class="text-sm text-gray-600 mb-3">{{ Str::limit($service->description, 100) }}</p>
-                                    <div class="flex justify-between items-center text-sm">
-                                        <span class="font-bold text-indigo-600">${{ number_format($service->price, 2) }}</span>
-                                        <span class="px-2 py-1 text-xs font-semibold rounded-full {{ $service->status === 'published' ? 'bg-green-200 text-green-800' : ($service->status === 'draft' ? 'bg-yellow-200 text-yellow-800' : 'bg-red-200 text-red-800') }}">
-                                            {{ ucfirst($service->status) }}
-                                        </span>
-                                    </div>
-                                    <div class="mt-4 flex space-x-2">
-                                        <a href="{{ route('services.edit', $service) }}" class="text-sm text-indigo-600 hover:text-indigo-900">Edit</a>
-                                        <form action="{{ route('services.destroy', $service) }}" method="POST" onsubmit="return confirm('Are you sure you want to delete this service?');">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button type="submit" class="text-sm text-red-600 hover:text-red-900">Delete</button>
-                                        </form>
-                                    </div>
+                            <div class="bg-gray-100 dark:bg-gray-700 p-4 rounded-lg shadow-md">
+                                <h3 class="text-lg font-semibold mb-2">{{ $service->title }}</h3>
+                                <p class="text-sm text-gray-600 dark:text-gray-400 mb-3">{{ Str::limit($service->description, 100) }}</p>
+                                <div class="flex justify-between items-center text-sm">
+                                    <span class="font-bold text-indigo-600 dark:text-indigo-400">${{ number_format($service->price, 2) }}</span>
+                                    <span class="px-2 py-1 text-xs font-semibold rounded-full {{ $service->status === 'published' ? 'bg-green-200 text-green-800' : ($service->status === 'draft' ? 'bg-yellow-200 text-yellow-800' : 'bg-red-200 text-red-800') }}">
+                                        {{ ucfirst($service->status) }}
+                                    </span>
+                                </div>
+                                <div class="mt-4 flex space-x-2">
+                                    <a href="{{ route('services.edit', $service) }}" class="text-sm text-indigo-600 dark:text-indigo-400 hover:text-indigo-900 dark:hover:text-indigo-300">Edit</a>
+                                    <form action="{{ route('services.destroy', $service) }}" method="POST" onsubmit="return confirm('Are you sure you want to delete this service?');">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="text-sm text-red-600 dark:text-red-400 hover:text-red-900 dark:hover:text-red-300">Delete</button>
+                                    </form>
                                 </div>
                             </div>
                         @empty

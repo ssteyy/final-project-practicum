@@ -13,12 +13,7 @@
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between h-16 items-center">
                 <div class="flex items-center">
-                    <a href="{{ url('/') }}" class="flex items-center gap-2">
-                        <div class="w-10 h-10 bg-indigo-600 rounded-xl flex items-center justify-center shadow-lg">
-                            <i class="fas fa-bolt text-white"></i>
-                        </div>
-                        <span class="text-2xl font-bold tracking-tight text-slate-900">FreelanceHub</span>
-                    </a>
+                    <a href="{{ url('/') }}" class="text-2xl font-bold text-indigo-600">FreelanceHub</a>
                 </div>
                 <div class="hidden md:flex space-x-8 items-center">
                     <a href="{{ url('/services') }}" class="text-gray-600 hover:text-indigo-600">Find Services</a>
@@ -54,67 +49,6 @@
             </div>
         </div>
     </header>
-
-    <section class="py-16 bg-white">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="text-center mb-12">
-                <h2 class="text-3xl font-bold text-gray-900">Featured Services</h2>
-                <p class="mt-4 text-lg text-gray-600">Discover top-rated services from talented freelancers</p>
-            </div>
-
-            @if($services->count() > 0)
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                    @foreach($services as $service)
-                        <div class="bg-white border border-gray-200 rounded-xl shadow-sm hover:shadow-lg transition duration-300 overflow-hidden">
-                            @if($service->image_path || $service->image_url)
-                                <img src="{{ $service->image_path ? asset('storage/' . $service->image_path) : $service->image_url }}"
-                                     alt="{{ $service->title }}"
-                                     class="w-full h-48 object-cover">
-                            @else
-                                <div class="w-full h-48 bg-gradient-to-br from-indigo-100 to-purple-100 flex items-center justify-center">
-                                    <i class="fas fa-image text-indigo-300 text-5xl"></i>
-                                </div>
-                            @endif
-                            <div class="p-6">
-                                <div class="flex items-center justify-between mb-3">
-                                    <span class="px-3 py-1 text-xs font-semibold rounded-full bg-indigo-100 text-indigo-800">
-                                        {{ $service->category }}
-                                    </span>
-                                    <span class="text-2xl font-bold text-green-600">${{ number_format($service->price, 2) }}</span>
-                                </div>
-                                <h3 class="text-xl font-bold text-gray-900 mb-2">{{ $service->title }}</h3>
-                                <p class="text-gray-600 text-sm mb-4 line-clamp-2">{{ Str::limit($service->description, 100) }}</p>
-                                <div class="flex items-center justify-between pt-4 border-t border-gray-100">
-                                    <div class="flex items-center">
-                                        <div class="w-8 h-8 bg-indigo-100 rounded-full flex items-center justify-center mr-2">
-                                            <i class="fas fa-user text-indigo-600 text-xs"></i>
-                                        </div>
-                                        <span class="text-sm text-gray-700 font-medium">{{ $service->freelancer->name }}</span>
-                                    </div>
-                                    <a href="{{ route('services.show', $service) }}" class="text-indigo-600 hover:text-indigo-700 font-semibold text-sm">
-                                        View Details →
-                                    </a>
-                                </div>
-                            </div>
-                        </div>
-                    @endforeach
-                </div>
-                <div class="text-center mt-12">
-                    <a href="{{ route('services.index') }}" class="inline-block px-8 py-3 border border-indigo-600 text-base font-medium rounded-md text-indigo-600 bg-white hover:bg-indigo-50">
-                        View All Services
-                    </a>
-                </div>
-            @else
-                <div class="text-center py-12">
-                    <i class="fas fa-briefcase text-gray-300 text-6xl mb-4"></i>
-                    <p class="text-gray-500 text-lg">No services available yet. Be the first to create one!</p>
-                    <a href="{{ route('register') }}" class="mt-6 inline-block px-8 py-3 bg-indigo-600 text-white rounded-lg font-medium hover:bg-indigo-700">
-                        Join as Freelancer
-                    </a>
-                </div>
-            @endif
-        </div>
-    </section>
 
     <section class="py-16 bg-indigo-50">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">

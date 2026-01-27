@@ -31,8 +31,22 @@ class OrderController extends Controller
     /**
      * Show the form for creating a new resource.
      */
-    public function create(Service $service)
+    // public function create(Service $service)
+    // {
+    //     dd($service->id);
+    //     if (Auth::user()->role !== User::ROLE_CLIENT) {
+    //         abort(403);
+    //     }
+
+    //     if ($service->status !== 'published') {
+    //         abort(404, 'Service is not available for order.');
+    //     }
+    //     return view('orders.create', compact('service'));
+    // }
+    public function create(Request $request)
     {
+        $service = Service::findOrFail($request->query('id'));
+        
         if (Auth::user()->role !== User::ROLE_CLIENT) {
             abort(403);
         }
@@ -41,8 +55,14 @@ class OrderController extends Controller
             abort(404, 'Service is not available for order.');
         }
 
+        // Optional: prevent ordering own service
+        if ($service->freelancer_id === Auth::id()) {
+            abort(403, 'You cannot order your own service.');
+        }
+
         return view('orders.create', compact('service'));
     }
+
 
     /**
      * Store a newly created resource in storage.

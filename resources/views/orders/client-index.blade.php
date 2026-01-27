@@ -7,44 +7,75 @@
 
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
-                <div class="p-6 text-gray-900 dark:text-gray-100">
-                    @if (session('status'))
-                        <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative mb-4" role="alert">
-                            <span class="block sm:inline">{{ session('status') }}</span>
-                        </div>
-                    @endif
+            @if (session('status'))
+                <div x-data="{ show: true }" x-show="show" x-transition.opacity class="flex items-center p-4 mb-6 text-emerald-800 border-l-4 border-emerald-500 bg-emerald-50 dark:bg-emerald-900/20 dark:text-emerald-400 rounded-r-xl shadow-sm">
+                    <svg class="w-5 h-5 mr-3" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>
+                    <span class="text-sm font-medium">{{ session('status') }}</span>
+                    <button @click="show = false" class="ml-auto text-emerald-500 hover:text-emerald-700">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                    </button>
+                </div>
+            @endif
 
-                    <div class="space-y-6">
+            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-2xl border border-gray-100 dark:border-gray-700">
+                <div class="p-6 text-gray-900 dark:text-gray-100">
+                    <div class="space-y-4">
                         @forelse ($orders as $order)
-                            <div class="bg-gray-100 dark:bg-gray-700 p-4 rounded-lg shadow-md flex justify-between items-center">
+                            <div class="group bg-white dark:bg-gray-800 p-5 rounded-2xl border border-gray-200 dark:border-gray-700 hover:border-indigo-500 dark:hover:border-indigo-400 transition-all duration-300 shadow-sm hover:shadow-md flex justify-between items-center">
                                 <div>
-                                    <h3 class="text-lg font-semibold mb-1">Order for: <a href="{{ route('services.show', $order->service) }}" class="text-indigo-600 dark:text-indigo-400 hover:underline">{{ $order->service->title }}</a></h3>
-                                    <p class="text-sm text-gray-600 dark:text-gray-400">Freelancer: {{ $order->freelancer->name }}</p>
-                                    <p class="text-xl font-bold text-green-600 dark:text-green-400">${{ number_format($order->amount, 2) }}</p>
+                                    <h3 class="text-lg font-bold">
+                                        <a href="{{ route('services.show', $order->service) }}" class="text-gray-900 dark:text-white hover:text-indigo-600 transition">
+                                            {{ $order->service->title }}
+                                        </a>
+                                    </h3>
+                                    <p class="text-sm text-gray-500">Freelancer: <span class="text-gray-700 dark:text-gray-300 font-medium">{{ $order->freelancer->name }}</span></p>
+                                    <p class="text-2xl font-black text-emerald-600 dark:text-emerald-400 mt-2">${{ number_format($order->amount, 2) }}</p>
                                 </div>
+
                                 <div class="text-right">
-                                    <span class="px-3 py-1 text-sm font-semibold rounded-full {{ $order->status === 'completed' ? 'bg-green-200 text-green-800' : ($order->status === 'pending' ? 'bg-yellow-200 text-yellow-800' : 'bg-blue-200 text-blue-800') }}">
-                                        {{ ucfirst($order->status) }}
+                                    <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold uppercase tracking-tight 
+                                        {{ $order->status === 'completed' ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300' : 
+                                           ($order->status === 'pending' ? 'bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300' : 
+                                           'bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300') }}">
+                                        <span class="w-1.5 h-1.5 rounded-full mr-2 {{ $order->status === 'completed' ? 'bg-emerald-500' : ($order->status === 'pending' ? 'bg-amber-500' : 'bg-blue-500') }}"></span>
+                                        {{ $order->status }}
                                     </span>
-                                    <div class="mt-2">
-                                        <a href="{{ route('orders.show', $order) }}" class="text-sm text-indigo-600 dark:text-indigo-400 hover:text-indigo-900 dark:hover:text-indigo-300 mr-3">View</a>
+
+                                    <div class="mt-4 flex items-center justify-end space-x-4">
+                                        <a href="{{ route('orders.show', $order) }}" class="px-4 py-2 text-sm font-semibold text-gray-700 dark:text-gray-200 bg-gray-100 dark:bg-gray-700 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition">
+                                            View
+                                        </a>
+                                        
                                         @if ($order->status === 'pending')
-                                            <form action="{{ route('orders.destroy', $order) }}" method="POST" class="inline" onsubmit="return confirm('Are you sure you want to cancel this order?');">
-                                                @csrf
-                                                @method('DELETE')
-                                                <button type="submit" class="text-sm text-red-600 dark:text-red-400 hover:text-red-900 dark:hover:text-red-300">Cancel</button>
-                                            </form>
+                                            <button 
+                                                type="button"
+                                                x-data=""
+                                                x-on:click="$dispatch('open-modal', { name: 'cancel-order', url: '{{ route('orders.destroy', $order) }}' })"
+                                                class="text-sm font-semibold text-red-500 hover:text-red-700 transition"
+                                            >
+                                                Cancel
+                                            </button>
                                         @endif
                                     </div>
                                 </div>
                             </div>
                         @empty
-                            <p class="text-center text-gray-500 dark:text-gray-400">You have not placed any orders yet.</p>
+                            <div class="text-center py-12 border-2 border-dashed border-gray-200 dark:border-gray-700 rounded-2xl text-gray-500">
+                                You have not placed any orders yet.
+                            </div>
                         @endforelse
                     </div>
                 </div>
             </div>
         </div>
     </div>
+
+    <x-confirm-modal 
+        name="cancel-order" 
+        title="Cancel this order?" 
+        message="This action cannot be undone. The freelancer will be notified that the order has been cancelled."
+        confirmText="Yes, Cancel Order"
+        type="danger"
+    />
+
 </x-app-layout>

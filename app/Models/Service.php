@@ -12,14 +12,13 @@ class Service extends Model
     use HasFactory;
 
     protected $fillable = [
+        'id',
         'freelancer_id',
         'title',
         'description',
         'price',
         'category',
         'status',
-        'image_path',
-        'image_url',
     ];
 
     protected $casts = [

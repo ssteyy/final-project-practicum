@@ -6,7 +6,6 @@ use App\Models\Service;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Storage;
 use App\Http\Requests\StoreServiceRequest;
 use App\Http\Requests\UpdateServiceRequest;
 
@@ -21,11 +20,13 @@ class ServiceController extends Controller
 
         if ($user && $user->role === User::ROLE_FREELANCER) {
             $services = $user->services()->latest()->get();
+            
             return view('services.freelancer-index', compact('services'));
         }
 
         // Client/Guest view: show all published services
         $services = Service::where('status', 'published')->latest()->get();
+        // dd($services);
         return view('services.index', compact('services'));
     }
 
@@ -47,16 +48,6 @@ class ServiceController extends Controller
     {
         $validated = $request->validated();
         $validated['freelancer_id'] = Auth::id();
-
-        // Handle image upload
-        if ($request->hasFile('image')) {
-            $path = $request->file('image')->store('services', 'public');
-            $validated['image_path'] = $path;
-            $validated['image_url'] = null; // Clear URL if file is uploaded
-        } elseif ($request->filled('image_url')) {
-            $validated['image_url'] = $request->image_url;
-            $validated['image_path'] = null; // Clear path if URL is provided
-        }
 
         Service::create($validated);
 
@@ -99,27 +90,7 @@ class ServiceController extends Controller
      */
     public function update(UpdateServiceRequest $request, Service $service)
     {
-        $validated = $request->validated();
-
-        // Handle image upload
-        if ($request->hasFile('image')) {
-            // Delete old image if exists
-            if ($service->image_path && Storage::disk('public')->exists($service->image_path)) {
-                Storage::disk('public')->delete($service->image_path);
-            }
-            $path = $request->file('image')->store('services', 'public');
-            $validated['image_path'] = $path;
-            $validated['image_url'] = null;
-        } elseif ($request->filled('image_url')) {
-            // Delete old image if exists when switching to URL
-            if ($service->image_path && Storage::disk('public')->exists($service->image_path)) {
-                Storage::disk('public')->delete($service->image_path);
-            }
-            $validated['image_url'] = $request->image_url;
-            $validated['image_path'] = null;
-        }
-
-        $service->update($validated);
+        $service->update($request->validated());
 
         return redirect()->route('services.index')->with('status', 'Service updated successfully.');
     }
