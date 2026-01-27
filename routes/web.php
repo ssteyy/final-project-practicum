@@ -15,9 +15,11 @@ use Illuminate\Support\Facades\Route;
 */
 
 use App\Http\Controllers\ServiceController;
+use App\Models\Service;
 
 Route::get('/', function () {
-    return view('home');
+    $services = Service::where('status', 'published')->latest()->take(6)->get();
+    return view('home', compact('services'));
 })->name('home');
 
 Route::get('/services', [ServiceController::class, 'index'])->name('services.index');

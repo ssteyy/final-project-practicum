@@ -27,6 +27,8 @@ class StoreServiceRequest extends FormRequest
             'price' => ['required', 'numeric', 'min:0.01'],
             'category' => ['required', 'string', 'max:255'],
             'status' => ['required', 'in:draft,published,archived'],
+            'image_path' => ['nullable', 'image', 'mimes:jpeg,png,jpg,gif,svg', 'max:2048'],
+            'image_url' => ['nullable', 'url', 'max:500'],
         ];
     }
 }

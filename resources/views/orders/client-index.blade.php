@@ -21,8 +21,26 @@
                 <div class="p-6 text-gray-900 dark:text-gray-100">
                     <div class="space-y-4">
                         @forelse ($orders as $order)
-                            <div class="group bg-white dark:bg-gray-800 p-5 rounded-2xl border border-gray-200 dark:border-gray-700 hover:border-indigo-500 dark:hover:border-indigo-400 transition-all duration-300 shadow-sm hover:shadow-md flex justify-between items-center">
-                                <div>
+                            <div class="group bg-white dark:bg-gray-800 p-5 rounded-2xl border border-gray-200 dark:border-gray-700 hover:border-indigo-500 dark:hover:border-indigo-400 transition-all duration-300 shadow-sm hover:shadow-md flex items-center gap-5">
+                                <!-- Service Image -->
+                                <div class="flex-shrink-0">
+                                    @if($order->service->image_path || $order->service->image_url)
+                                        <div class="w-24 h-24 rounded-xl overflow-hidden shadow-md">
+                                            @if($order->service->image_path)
+                                                <img src="{{ asset('storage/' . $order->service->image_path) }}" alt="{{ $order->service->title }}" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300">
+                                            @elseif($order->service->image_url)
+                                                <img src="{{ $order->service->image_url }}" alt="{{ $order->service->title }}" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300">
+                                            @endif
+                                        </div>
+                                    @else
+                                        <div class="w-24 h-24 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center shadow-md">
+                                            <svg class="w-12 h-12 text-white opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
+                                        </div>
+                                    @endif
+                                </div>
+
+                                <!-- Order Details -->
+                                <div class="flex-1">
                                     <h3 class="text-lg font-bold">
                                         <a href="{{ route('services.show', $order->service) }}" class="text-gray-900 dark:text-white hover:text-indigo-600 transition">
                                             {{ $order->service->title }}
@@ -33,9 +51,9 @@
                                 </div>
 
                                 <div class="text-right">
-                                    <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold uppercase tracking-tight 
-                                        {{ $order->status === 'completed' ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300' : 
-                                           ($order->status === 'pending' ? 'bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300' : 
+                                    <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold uppercase tracking-tight
+                                        {{ $order->status === 'completed' ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300' :
+                                           ($order->status === 'pending' ? 'bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300' :
                                            'bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300') }}">
                                         <span class="w-1.5 h-1.5 rounded-full mr-2 {{ $order->status === 'completed' ? 'bg-emerald-500' : ($order->status === 'pending' ? 'bg-amber-500' : 'bg-blue-500') }}"></span>
                                         {{ $order->status }}
@@ -45,9 +63,9 @@
                                         <a href="{{ route('orders.show', $order) }}" class="px-4 py-2 text-sm font-semibold text-gray-700 dark:text-gray-200 bg-gray-100 dark:bg-gray-700 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition">
                                             View
                                         </a>
-                                        
+
                                         @if ($order->status === 'pending')
-                                            <button 
+                                            <button
                                                 type="button"
                                                 x-data=""
                                                 x-on:click="$dispatch('open-modal', { name: 'cancel-order', url: '{{ route('orders.destroy', $order) }}' })"
@@ -70,9 +88,9 @@
         </div>
     </div>
 
-    <x-confirm-modal 
-        name="cancel-order" 
-        title="Cancel this order?" 
+    <x-confirm-modal
+        name="cancel-order"
+        title="Cancel this order?"
         message="This action cannot be undone. The freelancer will be notified that the order has been cancelled."
         confirmText="Yes, Cancel Order"
         type="danger"

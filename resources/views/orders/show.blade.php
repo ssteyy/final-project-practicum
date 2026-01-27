@@ -8,14 +8,25 @@
     <div class="py-12">
         <div class="max-w-4xl mx-auto sm:px-6 lg:px-8">
             <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-xl sm:rounded-lg">
+                <!-- Service Image Banner -->
+                @if($order->service->image_path || $order->service->image_url)
+                <div class="w-full h-64 overflow-hidden bg-gray-100 dark:bg-gray-700">
+                    @if($order->service->image_path)
+                        <img src="{{ asset('storage/' . $order->service->image_path) }}" alt="{{ $order->service->title }}" class="w-full h-full object-cover">
+                    @elseif($order->service->image_url)
+                        <img src="{{ $order->service->image_url }}" alt="{{ $order->service->title }}" class="w-full h-full object-cover">
+                    @endif
+                </div>
+                @endif
+
                 <div class="p-6 lg:p-8 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
                     <div class="flex justify-between items-start mb-6 border-b pb-4">
                         <div>
                             <h1 class="text-3xl font-extrabold text-gray-900 dark:text-white mb-1">Order #{{ $order->id }}</h1>
-                            <p class="text-lg text-gray-600 dark:text-gray-400">Service: <a href="{{ route('services.show', $order->service) }}" class="text-indigo-600 dark:text-indigo-400 hover:underline">{{ $order->service->title }}</a></p>
+                            <p class="text-lg text-gray-600 dark:text-gray-400">Service: <a href="{{ route('services.show', $order->service) }}" class="text-indigo-600 dark:text-indigo-400 hover:underline font-semibold">{{ $order->service->title }}</a></p>
                         </div>
                         <div class="text-right">
-                            <span class="text-4xl font-black text-green-600 dark:text-green-400">${{ number_format($order->amount, 2) }}</span>
+                            <span class="text-4xl font-black text-emerald-600 dark:text-emerald-400">${{ number_format($order->amount, 2) }}</span>
                             <p class="text-sm text-gray-500 dark:text-gray-400">Total Price</p>
                         </div>
                     </div>

@@ -6,6 +6,7 @@ use App\Models\Service;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 use App\Http\Requests\StoreServiceRequest;
 use App\Http\Requests\UpdateServiceRequest;
 
@@ -20,7 +21,7 @@ class ServiceController extends Controller
 
         if ($user && $user->role === User::ROLE_FREELANCER) {
             $services = $user->services()->latest()->get();
-            
+
             return view('services.freelancer-index', compact('services'));
         }
 
@@ -48,6 +49,17 @@ class ServiceController extends Controller
     {
         $validated = $request->validated();
         $validated['freelancer_id'] = Auth::id();
+
+        // Handle image upload from file
+        if ($request->hasFile('image_path')) {
+            $path = $request->file('image_path')->store('services', 'public');
+            $validated['image_path'] = $path;
+        }
+
+        // If image_url is provided, use it
+        if ($request->filled('image_url')) {
+            $validated['image_url'] = $request->input('image_url');
+        }
 
         Service::create($validated);
 
@@ -90,7 +102,24 @@ class ServiceController extends Controller
      */
     public function update(UpdateServiceRequest $request, Service $service)
     {
-        $service->update($request->validated());
+        $validated = $request->validated();
+
+        // Handle image upload from file
+        if ($request->hasFile('image_path')) {
+            // Delete old image if exists
+            if ($service->image_path && Storage::disk('public')->exists($service->image_path)) {
+                Storage::disk('public')->delete($service->image_path);
+            }
+            $path = $request->file('image_path')->store('services', 'public');
+            $validated['image_path'] = $path;
+        }
+
+        // If image_url is provided, use it
+        if ($request->filled('image_url')) {
+            $validated['image_url'] = $request->input('image_url');
+        }
+
+        $service->update($validated);
 
         return redirect()->route('services.index')->with('status', 'Service updated successfully.');
     }

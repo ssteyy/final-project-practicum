@@ -13,9 +13,37 @@
         @csrf
     </form>
 
-    <form method="post" action="{{ route('profile.update') }}" class="mt-6 space-y-6">
+    <form method="post" action="{{ route('profile.update') }}" class="mt-6 space-y-6" enctype="multipart/form-data">
         @csrf
         @method('patch')
+
+        <!-- Profile Picture -->
+        <div>
+            <x-input-label for="profile_picture" :value="__('Profile Picture')" />
+
+            @if($user->profile_picture)
+            <div class="mt-2 mb-3">
+                <img src="{{ asset('storage/' . $user->profile_picture) }}" alt="{{ $user->name }}" class="w-24 h-24 rounded-full object-cover border-4 border-indigo-100 dark:border-indigo-900">
+            </div>
+            @else
+            <div class="mt-2 mb-3">
+                <div class="w-24 h-24 rounded-full bg-indigo-500 flex items-center justify-center text-white text-3xl font-bold border-4 border-indigo-100 dark:border-indigo-900">
+                    {{ substr($user->name, 0, 1) }}
+                </div>
+            </div>
+            @endif
+
+            <input id="profile_picture" name="profile_picture" type="file" accept="image/*" class="mt-1 block w-full text-sm text-gray-500 dark:text-gray-400
+                file:mr-4 file:py-2 file:px-4
+                file:rounded-md file:border-0
+                file:text-sm file:font-semibold
+                file:bg-indigo-50 file:text-indigo-700
+                hover:file:bg-indigo-100
+                dark:file:bg-indigo-900 dark:file:text-indigo-300
+                dark:hover:file:bg-indigo-800" />
+            <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">Accepted formats: JPEG, PNG, JPG, GIF (Max: 2MB)</p>
+            <x-input-error class="mt-2" :messages="$errors->get('profile_picture')" />
+        </div>
 
         <div>
             <x-input-label for="name" :value="__('Name')" />
