@@ -220,10 +220,6 @@ In conclusion, FreelanceHub is a functional and useful freelancer marketplace pl
 9. **Access the application**
    - Open browser and go to: `http://localhost:8000`
 
-### Google OAuth Setup (Optional)
-
-To enable Google login, follow the guide in `QUICK_GOOGLE_SETUP.md`
-
 ---
 
 ## Technologies Used
@@ -232,7 +228,6 @@ To enable Google login, follow the guide in `QUICK_GOOGLE_SETUP.md`
 - **MySQL** - Database
 - **Tailwind CSS** - CSS Framework
 - **Alpine.js** - JavaScript Framework
-- **Laravel Socialite** - OAuth Authentication
 - **Laravel Breeze** - Authentication Scaffolding
 
 ---
