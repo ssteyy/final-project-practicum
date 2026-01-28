@@ -142,7 +142,6 @@ The aim of this project is to develop a freelancer marketplace system that makes
 
 The following features are planned for future improvement of the system:
 
-- ✅ Login and registration with Google account (Already Implemented)
 - Online payment integration (Stripe or PayPal)
 - Rating and review system
 - Advanced search and filtering
