@@ -1,4 +1,4 @@
-# Freelancer Marketplace Platform - Project Presentation
+# Freelancer Marketplace Platform
 
 ## 1. Introduction
 
