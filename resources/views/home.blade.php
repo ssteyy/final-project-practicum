@@ -102,10 +102,10 @@
                         1
                     </div>
                     <div class="w-16 h-16 bg-indigo-100 text-indigo-600 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform">
-                        <i class="fas fa-search text-2xl"></i>
+                        <i class="fas fa-briefcase text-2xl"></i>
                     </div>
-                    <h3 class="text-xl font-bold text-gray-900 mb-3">Client Posts Job</h3>
-                    <p class="text-gray-600 leading-relaxed">Clients describe their needs, budget, and timeline. Our platform helps match them with the perfect freelancer.</p>
+                    <h3 class="text-xl font-bold text-gray-900 mb-3">Freelancer Posts Service</h3>
+                    <p class="text-gray-600 leading-relaxed">Freelancers create and publish their services with descriptions, pricing, and portfolio images to showcase their expertise.</p>
                     <div class="mt-6 flex items-center text-indigo-600 font-semibold opacity-0 group-hover:opacity-100 transition-opacity">
                         Learn more
                         <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
@@ -120,10 +120,10 @@
                         2
                     </div>
                     <div class="w-16 h-16 bg-purple-100 text-purple-600 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform">
-                        <i class="fas fa-handshake text-2xl"></i>
+                        <i class="fas fa-shopping-cart text-2xl"></i>
                     </div>
-                    <h3 class="text-xl font-bold text-gray-900 mb-3">Freelancer Bids</h3>
-                    <p class="text-gray-600 leading-relaxed">Experienced professionals review the job and submit their proposals with competitive rates and timelines.</p>
+                    <h3 class="text-xl font-bold text-gray-900 mb-3">Client Places Order</h3>
+                    <p class="text-gray-600 leading-relaxed">Clients browse services, select what they need, and place orders with specific requirements and project details.</p>
                     <div class="mt-6 flex items-center text-purple-600 font-semibold opacity-0 group-hover:opacity-100 transition-opacity">
                         Learn more
                         <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
@@ -141,7 +141,7 @@
                         <i class="fas fa-check-circle text-2xl"></i>
                     </div>
                     <h3 class="text-xl font-bold text-gray-900 mb-3">Work Completed</h3>
-                    <p class="text-gray-600 leading-relaxed">Freelancer delivers quality work. Payment is released securely after client approval and satisfaction.</p>
+                    <p class="text-gray-600 leading-relaxed">Freelancer delivers quality work through the platform. Client reviews and marks the order as completed with satisfaction.</p>
                     <div class="mt-6 flex items-center text-emerald-600 font-semibold opacity-0 group-hover:opacity-100 transition-opacity">
                         Learn more
                         <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
