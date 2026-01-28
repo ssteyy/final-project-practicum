@@ -15,20 +15,62 @@ class ServiceController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
         $user = Auth::user();
 
         if ($user && $user->role === User::ROLE_FREELANCER) {
-            $services = $user->services()->latest()->get();
+            $query = $user->services();
 
-            return view('services.freelancer-index', compact('services'));
+            // Filter by category if provided
+            if ($request->has('category') && $request->category !== '') {
+                $query->where('category', $request->category);
+            }
+
+            $services = $query->latest()->get();
+
+            // Get all unique categories for this freelancer
+            $categories = $user->services()
+                ->distinct()
+                ->pluck('category')
+                ->sort();
+
+            return view('services.freelancer-index', compact('services', 'categories'));
         }
 
         // Client/Guest view: show all published services
-        $services = Service::where('status', 'published')->latest()->get();
-        // dd($services);
-        return view('services.index', compact('services'));
+        $query = Service::where('status', 'published');
+
+        // Filter by category if provided
+        if ($request->has('category') && $request->category !== '') {
+            $query->where('category', $request->category);
+        }
+
+        // Filter by price range if provided
+        if ($request->has('min_price') && $request->min_price !== '') {
+            $query->where('price', '>=', $request->min_price);
+        }
+        if ($request->has('max_price') && $request->max_price !== '') {
+            $query->where('price', '<=', $request->max_price);
+        }
+
+        // Search by title or description
+        if ($request->has('search') && $request->search !== '') {
+            $query->where(function($q) use ($request) {
+                $q->where('title', 'like', '%' . $request->search . '%')
+                  ->orWhere('description', 'like', '%' . $request->search . '%');
+            });
+        }
+
+        $services = $query->latest()->get();
+
+        // Get all unique categories for filter
+        $categories = Service::where('status', 'published')
+            ->distinct()
+            ->pluck('category')
+            ->sort();
+
+        return view('services.index', compact('services', 'categories'));
     }
 
     /**

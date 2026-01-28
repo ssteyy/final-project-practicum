@@ -23,7 +23,57 @@
                 </div>
             @endif
 
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div class="flex flex-col lg:flex-row gap-8">
+                <!-- Sidebar Filters -->
+                <aside class="lg:w-72 flex-shrink-0">
+                    <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-200 dark:border-gray-700 p-6 sticky top-24">
+                        <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-6 flex items-center">
+                            <svg class="w-5 h-5 mr-2 text-indigo-600 dark:text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path>
+                            </svg>
+                            Categories
+                        </h3>
+
+                        <div class="space-y-2">
+                            <a href="{{ route('services.index') }}" class="flex items-center justify-between p-3 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-700 cursor-pointer transition {{ !request('category') ? 'bg-indigo-50 dark:bg-indigo-900/30 border-2 border-indigo-500 shadow-sm' : 'border-2 border-transparent' }}">
+                                <span class="text-sm font-bold text-gray-700 dark:text-gray-300">All Categories</span>
+                                <span class="px-2.5 py-1 text-xs font-bold rounded-full {{ !request('category') ? 'bg-indigo-600 text-white' : 'bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-400' }}">
+                                    {{ Auth::user()->services()->count() }}
+                                </span>
+                            </a>
+                            @foreach($categories as $cat)
+                                <a href="{{ route('services.index', ['category' => $cat]) }}" class="flex items-center justify-between p-3 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-700 cursor-pointer transition {{ request('category') === $cat ? 'bg-indigo-50 dark:bg-indigo-900/30 border-2 border-indigo-500 shadow-sm' : 'border-2 border-transparent' }}">
+                                    <span class="text-sm font-bold text-gray-700 dark:text-gray-300">{{ $cat }}</span>
+                                    <span class="px-2.5 py-1 text-xs font-bold rounded-full {{ request('category') === $cat ? 'bg-indigo-600 text-white' : 'bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-400' }}">
+                                        {{ Auth::user()->services()->where('category', $cat)->count() }}
+                                    </span>
+                                </a>
+                            @endforeach
+                        </div>
+
+                        @if(request('category'))
+                            <div class="mt-6 pt-6 border-t border-gray-200 dark:border-gray-700">
+                                <a href="{{ route('services.index') }}" class="flex items-center justify-center w-full px-4 py-2.5 border-2 border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-xl font-bold text-sm hover:bg-gray-50 dark:hover:bg-gray-700 transition">
+                                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                    </svg>
+                                    Clear Filter
+                                </a>
+                            </div>
+                        @endif
+                    </div>
+                </aside>
+
+                <!-- Services Grid -->
+                <div class="flex-1">
+                    <div class="mb-6 flex items-center justify-between">
+                        <p class="text-gray-600 dark:text-gray-400 font-semibold">
+                            <span class="text-2xl font-black text-indigo-600 dark:text-indigo-400">{{ $services->count() }}</span>
+                            {{ Str::plural('service', $services->count()) }} found
+                        </p>
+                    </div>
+
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 @forelse ($services as $service)
                     <div class="group relative flex flex-col bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 shadow-sm hover:shadow-2xl hover:-translate-y-2 hover:border-indigo-300 dark:hover:border-indigo-600 transition-all duration-300 overflow-hidden">
 
@@ -98,7 +148,9 @@
                             Create Your First Service
                         </a>
                     </div>
-                @endforelse
+                    @endforelse
+                    </div>
+                </div>
             </div>
         </div>
     </div>

@@ -1,280 +1,249 @@
-# Freelancer Marketplace Platform
-
-## 1. Introduction
-
-### Background of the Project
-- **Modern Gig Economy Solution**: Developed a web-based platform connecting freelancers with clients in the growing gig economy
-- **Laravel Framework**: Built using Laravel 11, leveraging modern PHP development practices and MVC architecture
-- **Role-Based System**: Implements a dual-user system with distinct roles for freelancers and clients
-
-### Importance of the Study
-- **Market Demand**: Addresses the increasing need for digital platforms connecting skilled professionals with businesses and individuals
-- **Economic Impact**: Facilitates remote work opportunities and flexible employment arrangements
-- **Digital Transformation**: Contributes to the shift toward online service marketplaces and digital economies
-
-### Brief Overview of the System
-- **Complete Marketplace**: Full-featured platform for service listing, ordering, and management
-- **User-Friendly Interface**: Clean, responsive design using Tailwind CSS and Blade templates
-- **Secure Authentication**: Laravel's built-in authentication with email verification and password management
-- **Database-Driven**: Robust data management with proper relationships and constraints
+# FreelanceHub – Freelancer Marketplace Platform
+## Project Presentation
 
 ---
 
-## 2. Problem Statement
+## Slide 1: Introduction
 
-### Limitations of the Current System
-- **Manual Processes**: Traditional freelance work often relies on manual communication and payment arrangements
-- **Lack of Trust**: Difficulty in establishing credibility between freelancers and clients without a centralized platform
-- **Payment Security**: Concerns about payment security and dispute resolution in freelance transactions
-- **Limited Reach**: Freelancers struggle to find clients beyond their immediate network
-
-### Problems Faced by Users
-- **For Freelancers**: Difficulty in showcasing skills, finding consistent work, and managing client relationships
-- **For Clients**: Challenges in finding qualified freelancers, comparing services, and ensuring quality delivery
-- **Communication Gaps**: Lack of structured communication channels for project requirements and updates
-- **Payment Disputes**: No standardized process for handling payment disagreements or service issues
-
-### Need for an Improved Solution
-- **Centralized Platform**: Single destination for service discovery, ordering, and management
-- **Trust Building**: Verified user system with service history and ratings
-- **Streamlined Process**: Simplified workflow from service browsing to order completion
-- **Secure Transactions**: Structured payment system with order tracking
+FreelanceHub is a web-based freelancer marketplace platform that helps connect freelancers with clients who need services. The system allows users to create accounts, post services, place orders, and communicate in one platform. It is developed using the Laravel framework with a modern and responsive design. FreelanceHub helps improve communication, organization, and efficiency between freelancers and clients.
 
 ---
 
-## 3. Aim and Objectives
+## Slide 2: Problem Statement
+
+**Problems in Current Freelance Systems:**
+
+- Freelancers and clients use different apps to communicate
+- Communication is not organized in one place
+- Lack of trust and security in some platforms
+- Difficult to track order and project status
+- Clients find it hard to search for suitable services
+- Freelancers struggle to find clients easily
+- No clear system to manage services and orders
+
+**Need:**
+A single platform to manage services, orders, and communication efficiently
+
+---
+
+## Slide 3: Aim and Objectives
 
 ### Aim
-To develop a comprehensive, user-friendly freelancer marketplace platform that connects skilled professionals with clients seeking services, providing a secure and efficient environment for freelance work transactions.
+
+The aim of this project is to develop a freelancer marketplace system that makes it easier for freelancers and clients to connect, communicate, and manage projects.
 
 ### Objectives
 
-#### To analyze the existing system
-- Research current freelance marketplace platforms and their limitations
-- Identify key features required for successful service matching
-- Understand user requirements for both freelancers and clients
-- Analyze security and payment processing needs
-
-#### To design and develop a new system
-- Create intuitive user interfaces for service browsing and management
-- Implement role-based access control for different user types
-- Design database schema supporting service listings and order management
-- Develop RESTful API endpoints for frontend integration
-
-#### To test and evaluate the system
-- Conduct functional testing of all user workflows
-- Perform security testing for authentication and authorization
-- Test database integrity and relationship constraints
-- Evaluate system performance under various load conditions
+1. To allow freelancers to create and manage their services
+2. To allow clients to browse services and place orders
+3. To implement secure user login and registration
+4. To build an order management system with status tracking
+5. To provide a messaging system for communication
+6. To design a simple, responsive, and user-friendly interface
 
 ---
 
-## 4. Methodology
+## Slide 4: Methodology
 
-### Requirement Analysis
-- **User Research**: Identified needs of both freelancers and clients through market analysis
-- **Feature Specification**: Defined core features including service listing, order placement, and user management
-- **Technical Requirements**: Determined technology stack and architectural patterns
-- **Security Considerations**: Planned authentication, authorization, and data protection measures
+### Technologies Used:
+- **Backend:** Laravel Framework (MVC Architecture)
+- **Frontend:** Blade Templates, Tailwind CSS, Alpine.js
+- **Database:** MySQL
+- **Authentication:** Email and Password Login + Google OAuth
 
-### System Design
-- **Database Design**: Created entity-relationship model with proper normalization
-  - Users table with role-based authentication
-  - Services table with freelancer ownership and status management
-  - Orders table linking clients, freelancers, and services
-- **API Design**: RESTful endpoints following Laravel conventions
-- **UI/UX Design**: Responsive interfaces using Tailwind CSS and Blade templates
-
-### Development and Implementation
-- **Backend Development**: Laravel controllers, models, and request validation
-- **Frontend Development**: Blade templates with modern CSS framework
-- **Database Implementation**: Migrations and seeders for data structure
-- **Authentication System**: Laravel's built-in authentication with email verification
-
-### Testing and Evaluation
-- **Unit Testing**: Model and controller testing using Laravel's testing framework
-- **Integration Testing**: Full workflow testing across different user roles
-- **User Acceptance Testing**: Validation of user requirements and interface usability
-- **Performance Testing**: Database query optimization and response time analysis
+### Development Process:
+1. Requirement analysis and planning
+2. Database design using migrations
+3. Backend development using controllers and models
+4. Frontend design using Blade templates
+5. Integration of frontend and backend
+6. Testing and bug fixing
 
 ---
 
-## 5. Results
+## Slide 5: System Functionality
 
-### System developed successfully
-- **Complete Platform**: Fully functional freelancer marketplace with all planned features
-- **Role-Based Access**: Distinct interfaces and permissions for freelancers and clients
-- **Service Management**: Comprehensive service listing, editing, and status control
-- **Order Processing**: End-to-end order workflow from placement to completion
+**What FreelanceHub Offers:**
 
-### Improved efficiency and accuracy
-- **Automated Workflows**: Streamlined processes reducing manual intervention
-- **Data Validation**: Robust input validation preventing data inconsistencies
-- **User Experience**: Intuitive interfaces reducing user errors and improving satisfaction
-- **Search and Discovery**: Efficient service browsing and filtering capabilities
+### 1. User Management
+- User registration and login
+- Google OAuth authentication
+- Role selection (Client or Freelancer)
+- Profile management with image upload
+- Email verification
 
-### User requirements achieved
-- **Freelancer Features**: Service creation, management, and order tracking
-- **Client Features**: Service browsing, order placement, and order monitoring
-- **Security Features**: Authentication, authorization, and data protection
-- **Communication Features**: Structured order requirements and status updates
+### 2. Service Management
+- Freelancers can create services with:
+  - Title and description
+  - Category selection
+  - Price setting
+  - Image upload
+  - Status (Draft/Published)
+- Browse all services with category filtering
+- Sidebar filter to find services by category
+- Service details page
+- Edit and delete services
 
-### Better performance compared to the old system
-- **Response Times**: Optimized database queries and caching strategies
-- **Scalability**: Modular architecture supporting future growth
-- **Maintainability**: Clean code structure following Laravel best practices
-- **Mobile Compatibility**: Responsive design supporting various screen sizes
+### 3. Order Management
+- Clients can place orders on services
+- Order includes:
+  - Service details
+  - Client requirements
+  - Order amount
+  - Status tracking
+- Order status workflow:
+  - **Pending** - Order placed, waiting for freelancer
+  - **Accepted** - Freelancer accepted the order
+  - **In Progress** - Work is ongoing
+  - **Completed** - Work finished
+- View order history
+- Cancel pending orders
 
----
+### 4. Messaging System
+- Chat between client and freelancer for each order
+- Real-time message updates
+- Unread message notifications in navigation bar
+- Messages inbox showing all conversations
+- Unread messages highlighted
+- Auto-scroll to latest messages
+- Message timestamps
 
-## 6. Future Plan
-
-### Add more features and functions
-- **Rating System**: Client feedback and freelancer ratings for quality assurance
-- **Messaging System**: Direct communication between clients and freelancers
-- **Portfolio Management**: Enhanced freelancer profile with work samples
-- **Search Enhancement**: Advanced filtering and recommendation algorithms
-
-### Improve system performance
-- **Caching Implementation**: Redis or Memcached for frequently accessed data
-- **Database Optimization**: Indexing strategies and query optimization
-- **CDN Integration**: Content delivery network for static assets
-- **Load Balancing**: Multi-server deployment for high availability
-
-### Enhance user interface and user experience
-- **Modern Design**: Updated UI components and visual improvements
-- **Accessibility**: WCAG compliance for inclusive user experience
-- **Mobile App**: Native mobile applications for iOS and Android
-- **Real-time Updates**: WebSocket integration for live notifications
-
-### Support more users or platforms
-- **Multi-language Support**: Internationalization for global user base
-- **Payment Gateway Integration**: Multiple payment options including PayPal, Stripe
-- **API Documentation**: Public API for third-party integrations
-- **Analytics Dashboard**: Business intelligence and user behavior insights
-
-### Integrate with other systems or services
-- **Social Media Integration**: OAuth authentication and sharing capabilities
-- **Calendar Integration**: Project scheduling and deadline management
-- **Email Services**: Transactional email providers for notifications
-- **Cloud Storage**: File upload and storage for service attachments
+### 5. User Interface
+- Modern, clean design
+- Responsive layout (works on mobile, tablet, desktop)
+- Dark mode support
+- Smooth animations and transitions
+- Easy navigation
+- Card-based layouts
 
 ---
 
-## 7. Conclusion
+## Slide 6: Results
 
-### Project objectives successfully achieved
-- **Functional Platform**: Complete freelancer marketplace meeting all specified requirements
-- **Quality Standards**: Code following Laravel best practices and security guidelines
-- **User Satisfaction**: Intuitive interfaces addressing both freelancer and client needs
-- **Technical Excellence**: Robust architecture supporting scalability and maintainability
+**System Outcomes:**
 
-### Problems effectively addressed
-- **Marketplace Gap**: Provided solution for connecting freelancers with clients
-- **Trust Issues**: Implemented verification and structured transaction processes
-- **Communication Barriers**: Created standardized order requirements and status tracking
-- **Payment Security**: Established clear order workflow with status management
-
-### The system provides a useful solution
-- **Economic Opportunity**: Platform enabling freelancers to find work and clients to access services
-- **Digital Transformation**: Modern web application supporting remote work trends
-- **Community Building**: Space for professional networking and skill development
-- **Business Efficiency**: Streamlined processes reducing transaction costs and time
-
-### Potential for future enhancement
-- **Scalable Architecture**: Foundation supporting growth and additional features
-- **User Feedback Integration**: Mechanisms for continuous improvement based on user needs
-- **Market Adaptation**: Flexible design accommodating changing freelance market trends
-- **Technology Evolution**: Modern stack supporting integration with emerging technologies
+- Users can register and log in securely
+- Users can choose role as Client or Freelancer
+- Freelancers can create, edit, and delete services
+- Clients can browse services and place orders
+- Orders have clear status tracking:
+  - Pending
+  - Accepted
+  - In Progress
+  - Completed
+- Users can communicate through messaging system
+- Unread messages shown in navigation bar
+- Category filtering for easy service discovery
+- Profile pages showing user information and services
 
 ---
 
-## Technical Implementation Details
+## Slide 7: Future Plan
 
-### Technology Stack
-- **Backend**: Laravel 11, PHP 8.2+
-- **Frontend**: Blade Templates, Tailwind CSS, JavaScript
-- **Database**: MySQL with Eloquent ORM
-- **Authentication**: Laravel Fortify with email verification
-- **Validation**: Laravel Form Request validation
-- **Testing**: PHPUnit with Laravel testing utilities
+The following features are planned for future improvement of the system:
 
-### Key Features Implemented
-- **User Management**: Registration, authentication, profile management
-- **Service Management**: CRUD operations for service listings with status control
-- **Order Management**: Complete order lifecycle from placement to completion
-- **Role-Based Access**: Different permissions and views for freelancers and clients
-- **Data Relationships**: Proper foreign key constraints and Eloquent relationships
-- **Security**: Input validation, CSRF protection, and authorization middleware
-
-### Database Schema
-- **users**: User information with role-based authentication
-- **services**: Service listings with freelancer ownership and status tracking
-- **orders**: Order details linking clients, freelancers, and services
-- **Relationships**: Proper foreign key constraints ensuring data integrity
-
-### Code Quality
-- **MVC Architecture**: Clear separation of concerns following Laravel conventions
-- **Validation**: Comprehensive input validation using Form Request classes
-- **Error Handling**: Proper exception handling and user-friendly error messages
-- **Security**: Built-in Laravel security features including XSS protection and SQL injection prevention
+- ✅ Login and registration with Google account (Already Implemented)
+- Online payment integration (Stripe or PayPal)
+- Rating and review system
+- Advanced search and filtering
+- Mobile application development
+- AI-based service recommendations
+- Escrow payment system
+- Email notifications
+- File sharing in chat
+- Video call integration
 
 ---
 
-## About Laravel
+## Slide 8: Conclusion
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+In conclusion, FreelanceHub is a functional and useful freelancer marketplace platform that meets the project objectives. It helps freelancers and clients manage services, orders, and communication in one system. The platform improves organization, reduces confusion, and provides a better user experience. In the future, more advanced features can be added to improve functionality and user satisfaction.
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+---
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+## Installation Guide
 
-## Learning Laravel
+### Prerequisites
+- PHP 8.1 or higher
+- Composer
+- MySQL
+- Node.js and NPM
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+### Setup Steps
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+1. **Clone the repository**
+   ```bash
+   git clone <repository-url>
+   cd final-project-practicum
+   ```
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+2. **Install dependencies**
+   ```bash
+   composer install
+   npm install
+   ```
 
-## Laravel Sponsors
+3. **Environment setup**
+   ```bash
+   cp .env.example .env
+   php artisan key:generate
+   ```
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+4. **Configure database**
+   - Create a MySQL database
+   - Update `.env` file with database credentials:
+   ```
+   DB_DATABASE=freelancer_market
+   DB_USERNAME=root
+   DB_PASSWORD=
+   ```
 
-### Premium Partners
+5. **Run migrations**
+   ```bash
+   php artisan migrate
+   ```
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[WebReinvent](https://webreinvent.com/)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Jump24](https://jump24.co.uk)**
-- **[Redberry](https://redberry.international/laravel/)**
-- **[Active Logic](https://activelogic.com)**
-- **[byte5](https://byte5.de)**
-- **[OP.GG](https://op.gg)**
+6. **Create storage link**
+   ```bash
+   php artisan storage:link
+   ```
 
-## Contributing
+7. **Build assets**
+   ```bash
+   npm run dev
+   ```
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+8. **Start the server**
+   ```bash
+   php artisan serve
+   ```
 
-## Code of Conduct
+9. **Access the application**
+   - Open browser and go to: `http://localhost:8000`
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+### Google OAuth Setup (Optional)
 
-## Security Vulnerabilities
+To enable Google login, follow the guide in `QUICK_GOOGLE_SETUP.md`
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+---
+
+## Technologies Used
+
+- **Laravel 10.x** - PHP Framework
+- **MySQL** - Database
+- **Tailwind CSS** - CSS Framework
+- **Alpine.js** - JavaScript Framework
+- **Laravel Socialite** - OAuth Authentication
+- **Laravel Breeze** - Authentication Scaffolding
+
+---
 
 ## License
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+This project is open-sourced software licensed under the MIT license.
+
+---
+
+**Thank You!**
+
+For questions or support, please contact the development team.
