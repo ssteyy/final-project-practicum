@@ -118,11 +118,11 @@
                 </div>
 
                 <div class="grid grid-cols-2 gap-4">
-                    <button class="flex items-center justify-center gap-2 py-3 border border-slate-200 bg-white rounded-2xl hover:bg-slate-50 transition font-bold text-slate-700 text-sm">
+                    <a href="{{ route('auth.google') }}" class="flex items-center justify-center gap-2 py-3 border border-slate-200 bg-white rounded-2xl hover:bg-slate-50 transition font-bold text-slate-700 text-sm">
                         <img src="https://www.svgrepo.com/show/355037/google.svg" class="w-4 h-4" alt="Google">
                         Google
-                    </button>
-                    <button class="flex items-center justify-center gap-2 py-3 border border-slate-200 bg-white rounded-2xl hover:bg-slate-50 transition font-bold text-slate-700 text-sm">
+                    </a>
+                    <button class="flex items-center justify-center gap-2 py-3 border border-slate-200 bg-white rounded-2xl hover:bg-slate-50 transition font-bold text-slate-700 text-sm opacity-50 cursor-not-allowed" disabled>
                         <i class="fab fa-github"></i>
                         GitHub
                     </button>

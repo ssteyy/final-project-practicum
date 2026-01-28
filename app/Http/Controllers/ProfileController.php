@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\ProfileUpdateRequest;
+use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -19,6 +20,21 @@ class ProfileController extends Controller
     {
         return view('profile.edit', [
             'user' => $request->user(),
+        ]);
+    }
+
+    /**
+     * Display the freelancer's public profile.
+     */
+    public function show($id): View
+    {
+        $freelancer = User::with(['services' => function($query) {
+            $query->where('status', 'published')->latest();
+        }])->findOrFail($id);
+
+        return view('profile.profiledetails', [
+            'freelancer' => $freelancer,
+            'services' => $freelancer->services,
         ]);
     }
 
