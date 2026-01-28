@@ -154,9 +154,9 @@
                             <div>
                                 <x-input-label for="status" :value="__('Visibility Status')" class="text-base font-semibold" />
                                 <select id="status" name="status" class="mt-2 block w-full border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-xl shadow-sm text-base" required>
-                                <option value="draft" {{ old('status') == 'draft' ? 'selected' : '' }}>📝 Draft - Save for later</option>
-                                <option value="published" {{ old('status') == 'published' ? 'selected' : '' }}>✅ Published - Visible to clients</option>
-                                <option value="archived" {{ old('status') == 'archived' ? 'selected' : '' }}>📦 Archived - Hidden from clients</option>
+                                <option value="draft" {{ old('status') == 'draft' ? 'selected' : '' }}>Draft - Save for later</option>
+                                <option value="published" {{ old('status') == 'published' ? 'selected' : '' }}>Published - Visible to clients</option>
+                                <option value="archived" {{ old('status') == 'archived' ? 'selected' : '' }}>Archived - Hidden from clients</option>
                                 </select>
                                 <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">Choose "Published" to make your service visible to clients immediately</p>
                                 <x-input-error :messages="$errors->get('status')" class="mt-2" />
