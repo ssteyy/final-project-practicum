@@ -78,7 +78,7 @@ class ServiceController extends Controller
      */
     public function create()
     {
-        if (Auth::check() && Auth::user()->role === 'admin') {
+        if (!Auth::check() || Auth::user()->role !== User::ROLE_FREELANCER) {
             abort(403);
         }
         return view('services.create');
@@ -121,8 +121,11 @@ class ServiceController extends Controller
         }
 
         // Freelancer can view their own services regardless of status
-        if (Auth::check() && Auth::user()->role === User::ROLE_FREELANCER && $service->freelancer_id !== Auth::id()) {
-            abort(403);
+        // But can only view other freelancers' published services
+        if (Auth::check() && Auth::user()->role === User::ROLE_FREELANCER) {
+            if ($service->freelancer_id !== Auth::id() && $service->status !== 'published') {
+                abort(403);
+            }
         }
 
         return view('services.show', compact('service'));
@@ -133,7 +136,7 @@ class ServiceController extends Controller
      */
     public function edit(Service $service)
     {
-        if ($service->freelancer_id !== Auth::id() || Auth::user()->role !== User::ROLE_FREELANCER) {
+        if (Auth::user()->role !== User::ROLE_ADMIN && $service->freelancer_id !== Auth::id()) {
             abort(403);
         }
         return view('services.edit', compact('service'));
@@ -144,6 +147,10 @@ class ServiceController extends Controller
      */
     public function update(UpdateServiceRequest $request, Service $service)
     {
+        if (Auth::user()->role !== User::ROLE_ADMIN && $service->freelancer_id !== Auth::id()) {
+            abort(403);
+        }
+
         $validated = $request->validated();
 
         // Handle image upload from file
@@ -171,7 +178,7 @@ class ServiceController extends Controller
      */
     public function destroy(Service $service)
     {
-        if ($service->freelancer_id !== Auth::id() || Auth::user()->role !== User::ROLE_FREELANCER) {
+        if (Auth::user()->role !== User::ROLE_ADMIN && $service->freelancer_id !== Auth::id()) {
             abort(403);
         }
 

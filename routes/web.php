@@ -1,7 +1,11 @@
 <?php
 
+use App\Http\Controllers\AdminController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Auth\GoogleAuthController;
+use App\Http\Controllers\ServiceController;
+use App\Models\Service;
+use App\Models\User;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -15,9 +19,6 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-use App\Http\Controllers\ServiceController;
-use App\Models\Service;
-
 Route::get('/', function () {
     $services = Service::where('status', 'published')->latest()->take(6)->get();
     return view('home', compact('services'));
@@ -26,8 +27,17 @@ Route::get('/', function () {
 Route::get('/services', [ServiceController::class, 'index'])->name('services.index');
 
 Route::get('/dashboard', function () {
+    if (auth()->check() && auth()->user()->role === User::ROLE_ADMIN) {
+        return redirect()->route('admin.dashboard');
+    }
     return view('dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
+
+Route::middleware(['auth', 'verified'])->prefix('admin')->name('admin.')->group(function () {
+    Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('dashboard');
+    Route::get('/services', [AdminController::class, 'services'])->name('services.index');
+    Route::get('/orders', [AdminController::class, 'orders'])->name('orders.index');
+});
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
@@ -50,9 +60,17 @@ Route::get('auth/google/callback', [GoogleAuthController::class, 'handleGoogleCa
 // Chat Routes
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/messages', [App\Http\Controllers\ChatController::class, 'index'])->name('messages.index');
-    Route::get('/chat/{order}', [App\Http\Controllers\ChatController::class, 'show'])->name('chat.show');
+    // Redirect old chat.show to unified interface
+    Route::get('/chat/{order}', function(App\Models\Order $order) {
+        return redirect()->route('messages.index', ['order_id' => $order->id]);
+    })->name('chat.show');
     Route::post('/chat/{order}', [App\Http\Controllers\ChatController::class, 'store'])->name('chat.store');
     Route::get('/chat/{order}/messages', [App\Http\Controllers\ChatController::class, 'getMessages'])->name('chat.messages');
+});
+
+// Review Routes
+Route::middleware(['auth', 'verified'])->group(function () {
+    Route::post('/orders/{order}/reviews', [App\Http\Controllers\ReviewController::class, 'store'])->name('reviews.store');
 });
 
 require __DIR__.'/auth.php';

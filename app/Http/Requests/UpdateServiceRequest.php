@@ -11,7 +11,8 @@ class UpdateServiceRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return $this->user()->role === 'freelancer' && $this->route('service')->freelancer_id === $this->user()->id;
+        return $this->user()->role === 'admin'
+            || ($this->user()->role === 'freelancer' && $this->route('service')->freelancer_id === $this->user()->id);
     }
 
     /**
@@ -25,6 +26,7 @@ class UpdateServiceRequest extends FormRequest
             'title' => ['required', 'string', 'max:255'],
             'description' => ['required', 'string'],
             'price' => ['required', 'numeric', 'min:0.01'],
+            'pricing_type' => ['required', 'in:hourly,project,fixed'],
             'category' => ['required', 'string', 'max:255'],
             'status' => ['required', 'in:draft,published,archived'],
             'image_path' => ['nullable', 'image', 'mimes:jpeg,png,jpg,gif,svg', 'max:2048'],

@@ -81,9 +81,17 @@
                                 <span class="px-3 py-1.5 text-xs font-bold uppercase tracking-wider rounded-lg bg-indigo-50 text-indigo-600 dark:bg-indigo-900/40 dark:text-indigo-300">
                                     {{ $service->category }}
                                 </span>
-                                <span class="text-2xl font-black text-gray-900 dark:text-white">
-                                    ${{ number_format($service->price, 0) }}
-                                </span>
+                                <div class="flex flex-col items-end gap-2">
+                                    <span class="text-2xl font-black text-gray-900 dark:text-white">
+                                        ${{ number_format($service->price, 0) }}
+                                    </span>
+                                    <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold
+                                        {{ $service->pricing_type === 'hourly' ? 'bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300' :
+                                           ($service->pricing_type === 'project' ? 'bg-purple-100 text-purple-700 dark:bg-purple-900/40 dark:text-purple-300' :
+                                           'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300') }}">
+                                        {{ $service->pricing_type === 'hourly' ? '🕐 Hourly' : ($service->pricing_type === 'project' ? '📋 Project' : '💰 Fixed') }}
+                                    </span>
+                                </div>
                             </div>
 
                             <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-2 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors line-clamp-2">
@@ -103,7 +111,20 @@
                                             {{ substr($service->freelancer->name, 0, 1) }}
                                         </div>
                                     @endif
-                                    <span class="text-sm font-semibold text-gray-600 dark:text-gray-300">{{ $service->freelancer->name }}</span>
+                                    <div>
+                                        <span class="text-sm font-semibold text-gray-600 dark:text-gray-300 block">{{ $service->freelancer->name }}</span>
+                                        @php
+                                            $avgRating = $service->freelancer->averageRating();
+                                        @endphp
+                                        @if($avgRating)
+                                            <div class="flex items-center space-x-1">
+                                                <svg class="w-3.5 h-3.5 text-yellow-400" fill="currentColor" viewBox="0 0 20 20">
+                                                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
+                                                </svg>
+                                                <span class="text-xs font-bold text-gray-600 dark:text-gray-400">{{ round($avgRating, 1) }}</span>
+                                            </div>
+                                        @endif
+                                    </div>
                                 </div>
 
                                 <a href="{{ route('services.show', $service) }}" class="inline-flex items-center text-sm font-bold text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300 group">

@@ -11,7 +11,8 @@ class UpdateOrderRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return $this->user()->role === 'freelancer' && $this->route('order')->freelancer_id === $this->user()->id;
+        return $this->user()->role === 'admin'
+            || ($this->user()->role === 'freelancer' && $this->route('order')->freelancer_id === $this->user()->id);
     }
 
     /**

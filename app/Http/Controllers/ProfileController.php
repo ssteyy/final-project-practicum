@@ -30,11 +30,17 @@ class ProfileController extends Controller
     {
         $freelancer = User::with(['services' => function($query) {
             $query->where('status', 'published')->latest();
-        }])->findOrFail($id);
+        }, 'reviewsReceived.client'])->findOrFail($id);
+
+        $averageRating = $freelancer->reviewsReceived()->avg('rating');
+        $totalReviews = $freelancer->reviewsReceived()->count();
 
         return view('profile.profiledetails', [
             'freelancer' => $freelancer,
             'services' => $freelancer->services,
+            'reviews' => $freelancer->reviewsReceived,
+            'averageRating' => $averageRating ? round($averageRating, 1) : null,
+            'totalReviews' => $totalReviews,
         ]);
     }
 

@@ -1,4 +1,5 @@
 import './bootstrap';
+import './auto-refresh';
 
 import Alpine from 'alpinejs';
 

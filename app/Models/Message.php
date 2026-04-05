@@ -14,6 +14,8 @@ class Message extends Model
         'sender_id',
         'receiver_id',
         'message',
+        'message_type',
+        'file_path',
         'is_read',
     ];
 
@@ -22,6 +24,33 @@ class Message extends Model
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
     ];
+
+    /**
+     * Message type constants
+     */
+    const TYPE_TEXT = 'text';
+    const TYPE_IMAGE = 'image';
+    const TYPE_VIDEO = 'video';
+    const TYPE_VOICE = 'voice';
+
+    /**
+     * Check if message is a media message
+     */
+    public function isMediaMessage(): bool
+    {
+        return in_array($this->message_type, [self::TYPE_IMAGE, self::TYPE_VIDEO, self::TYPE_VOICE]);
+    }
+
+    /**
+     * Get the full URL for the media file
+     */
+    public function getMediaUrlAttribute(): ?string
+    {
+        if ($this->file_path) {
+            return asset('storage/' . $this->file_path);
+        }
+        return null;
+    }
 
     /**
      * Get the order that owns the message

@@ -60,6 +60,17 @@
                                 <p class="text-3xl font-black text-indigo-600 dark:text-indigo-400">{{ $services->count() }}</p>
                                 <p class="text-sm font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wider">Services</p>
                             </div>
+                            @if($averageRating)
+                            <div class="bg-gradient-to-br from-yellow-50 to-amber-50 dark:from-gray-700 dark:to-gray-800 rounded-2xl p-4 text-center border-2 border-yellow-200 dark:border-yellow-800 shadow-lg min-w-[120px]">
+                                <div class="flex items-center justify-center mb-1">
+                                    <svg class="w-6 h-6 text-yellow-400 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
+                                    </svg>
+                                    <p class="text-3xl font-black text-yellow-600 dark:text-yellow-400">{{ $averageRating }}</p>
+                                </div>
+                                <p class="text-sm font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wider">Rating</p>
+                            </div>
+                            @endif
                             <div class="bg-gradient-to-br from-emerald-50 to-teal-50 dark:from-gray-700 dark:to-gray-800 rounded-2xl p-4 text-center border-2 border-emerald-200 dark:border-emerald-800 shadow-lg min-w-[120px]">
                                 <p class="text-3xl font-black text-emerald-600 dark:text-emerald-400">
                                     {{ $freelancer->created_at->diffInMonths(now()) }}+
@@ -208,6 +219,66 @@
                     @endif
                 </div>
             </div>
+
+            <!-- Reviews Section -->
+            @if($totalReviews > 0)
+            <div class="mt-8 bg-white dark:bg-gray-800 overflow-hidden shadow-2xl sm:rounded-3xl border border-gray-200 dark:border-gray-700">
+                <div class="p-8">
+                    <div class="flex items-center justify-between mb-8">
+                        <h2 class="text-3xl font-extrabold text-gray-900 dark:text-white flex items-center">
+                            <svg class="w-8 h-8 mr-3 text-yellow-500" fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
+                            </svg>
+                            Client Reviews
+                        </h2>
+                        <div class="text-right">
+                            <div class="flex items-center space-x-2 mb-1">
+                                <span class="text-4xl font-black text-yellow-500">{{ $averageRating }}</span>
+                                <svg class="w-8 h-8 text-yellow-400" fill="currentColor" viewBox="0 0 20 20">
+                                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
+                                </svg>
+                            </div>
+                            <p class="text-sm text-gray-600 dark:text-gray-400">Based on {{ $totalReviews }} {{ Str::plural('review', $totalReviews) }}</p>
+                        </div>
+                    </div>
+
+                    <div class="space-y-6">
+                        @foreach($reviews as $review)
+                        <div class="bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-700/50 dark:to-gray-800/50 rounded-2xl p-6 border border-gray-200 dark:border-gray-600 hover:shadow-lg transition-shadow">
+                            <div class="flex items-start justify-between mb-4">
+                                <div class="flex items-center space-x-4">
+                                    @if($review->client->profile_picture)
+                                        <img src="{{ asset('storage/' . $review->client->profile_picture) }}"
+                                             alt="{{ $review->client->name }}"
+                                             class="w-12 h-12 rounded-full object-cover border-2 border-indigo-200 dark:border-indigo-700">
+                                    @else
+                                        <div class="w-12 h-12 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white text-lg font-bold border-2 border-indigo-200 dark:border-indigo-700">
+                                            {{ substr($review->client->name, 0, 1) }}
+                                        </div>
+                                    @endif
+                                    <div>
+                                        <h4 class="text-lg font-bold text-gray-900 dark:text-white">{{ $review->client->name }}</h4>
+                                        <p class="text-sm text-gray-500 dark:text-gray-400">{{ $review->created_at->diffForHumans() }}</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-center space-x-1">
+                                    @for($i = 1; $i <= 5; $i++)
+                                        <svg class="w-5 h-5 {{ $i <= $review->rating ? 'text-yellow-400' : 'text-gray-300 dark:text-gray-600' }}" fill="currentColor" viewBox="0 0 20 20">
+                                            <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
+                                        </svg>
+                                    @endfor
+                                    <span class="ml-2 text-sm font-bold text-gray-700 dark:text-gray-300">{{ $review->rating }}/5</span>
+                                </div>
+                            </div>
+                            @if($review->review)
+                            <p class="text-gray-700 dark:text-gray-300 leading-relaxed whitespace-pre-wrap">{{ $review->review }}</p>
+                            @endif
+                        </div>
+                        @endforeach
+                    </div>
+                </div>
+            </div>
+            @endif
 
             <!-- Back Button -->
             <div class="mt-8 text-center">

@@ -19,11 +19,22 @@ class OrderController extends Controller
     {
         $user = Auth::user();
 
+        if ($user->role === User::ROLE_ADMIN) {
+            $orders = Order::with('service', 'client', 'freelancer')->latest()->get();
+            return view('admin.orders.index', compact('orders'));
+        }
+
         if ($user->role === User::ROLE_FREELANCER) {
-            $orders = Order::where('freelancer_id', $user->id)->with('service', 'client')->latest()->get();
+            // Freelancers should not see cancelled orders
+            $orders = Order::where('freelancer_id', $user->id)
+                ->where('status', '!=', 'cancelled')
+                ->with('service', 'client')
+                ->latest()
+                ->get();
             return view('orders.freelancer-index', compact('orders'));
         }
 
+        // Clients can see all their orders including cancelled ones
         $orders = Order::where('client_id', $user->id)->with('service', 'freelancer')->latest()->get();
         return view('orders.client-index', compact('orders'));
     }
@@ -46,7 +57,7 @@ class OrderController extends Controller
     public function create(Request $request)
     {
         $service = Service::findOrFail($request->query('id'));
-        
+
         if (Auth::user()->role !== User::ROLE_CLIENT) {
             abort(403);
         }
@@ -71,12 +82,17 @@ class OrderController extends Controller
     {
         $service = Service::findOrFail($request->service_id);
 
+        // Calculate total amount with 15% platform fee
+        $serviceFee = $service->price;
+        $platformFee = $serviceFee * 0.15;
+        $totalAmount = $serviceFee + $platformFee;
+
         Order::create([
             'service_id' => $service->id,
             'client_id' => Auth::id(),
             'freelancer_id' => $service->freelancer_id,
             'requirements' => $request->requirements,
-            'amount' => $service->price,
+            'amount' => $totalAmount,
             'status' => 'pending',
         ]);
 
@@ -100,7 +116,7 @@ class OrderController extends Controller
      */
     public function edit(Order $order)
     {
-        if ($order->freelancer_id !== Auth::id() || Auth::user()->role !== User::ROLE_FREELANCER) {
+        if (Auth::user()->role !== User::ROLE_ADMIN && ($order->freelancer_id !== Auth::id() || Auth::user()->role !== User::ROLE_FREELANCER)) {
             abort(403);
         }
 
@@ -112,6 +128,10 @@ class OrderController extends Controller
      */
     public function update(UpdateOrderRequest $request, Order $order)
     {
+        if (Auth::user()->role !== User::ROLE_ADMIN && !($order->freelancer_id === Auth::id() && Auth::user()->role === User::ROLE_FREELANCER)) {
+            abort(403);
+        }
+
         $order->update($request->validated());
 
         return redirect()->route('orders.index')->with('status', 'Order status updated successfully.');
@@ -122,7 +142,11 @@ class OrderController extends Controller
      */
     public function destroy(Order $order)
     {
-        // Only client can cancel a pending order
+        if (Auth::user()->role === User::ROLE_ADMIN) {
+            $order->delete();
+            return redirect()->route('orders.index')->with('status', 'Order removed successfully.');
+        }
+
         if ($order->client_id !== Auth::id() || $order->status !== 'pending') {
             abort(403);
         }

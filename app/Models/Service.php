@@ -17,6 +17,7 @@ class Service extends Model
         'title',
         'description',
         'price',
+        'pricing_type',
         'category',
         'status',
         'image_path',

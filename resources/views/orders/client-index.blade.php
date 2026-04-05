@@ -1,11 +1,20 @@
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
-            {{ __('My Orders (Client)') }}
-        </h2>
+        <div class="flex items-center justify-between">
+            <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
+                {{ __('My Orders (Client)') }}
+            </h2>
+            <div class="flex items-center space-x-2 text-sm text-gray-600 dark:text-gray-400">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path>
+                </svg>
+                <span class="font-semibold">{{ $orders->count() }}</span>
+                <span>{{ $orders->count() === 1 ? 'Order' : 'Orders' }}</span>
+            </div>
+        </div>
     </x-slot>
 
-    <div class="py-12">
+    <div class="py-8">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             @if (session('status'))
                 <div x-data="{ show: true }" x-show="show" x-transition.opacity class="flex items-center p-4 mb-6 text-emerald-800 border-l-4 border-emerald-500 bg-emerald-50 dark:bg-emerald-900/20 dark:text-emerald-400 rounded-r-xl shadow-sm">
@@ -17,81 +26,256 @@
                 </div>
             @endif
 
-            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-2xl border border-gray-100 dark:border-gray-700">
-                <div class="p-6 text-gray-900 dark:text-gray-100">
-                    <div class="space-y-4">
-                        @forelse ($orders as $order)
-                            <div class="group bg-white dark:bg-gray-800 p-5 rounded-2xl border border-gray-200 dark:border-gray-700 hover:border-indigo-500 dark:hover:border-indigo-400 transition-all duration-300 shadow-sm hover:shadow-md flex items-center gap-5">
-                                <!-- Service Image -->
-                                <div class="flex-shrink-0">
-                                    @if($order->service->image_path || $order->service->image_url)
-                                        <div class="w-24 h-24 rounded-xl overflow-hidden shadow-md">
-                                            @if($order->service->image_path)
-                                                <img src="{{ asset('storage/' . $order->service->image_path) }}" alt="{{ $order->service->title }}" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300">
-                                            @elseif($order->service->image_url)
-                                                <img src="{{ $order->service->image_url }}" alt="{{ $order->service->title }}" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300">
-                                            @endif
-                                        </div>
-                                    @else
-                                        <div class="w-24 h-24 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center shadow-md">
-                                            <svg class="w-12 h-12 text-white opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
-                                        </div>
-                                    @endif
-                                </div>
+            <div class="bg-white dark:bg-gray-800 shadow-xl rounded-2xl border border-gray-200 dark:border-gray-700 overflow-hidden">
+                <!-- Table Header -->
+                <div class="bg-gradient-to-r from-indigo-500 to-purple-600 px-6 py-4">
+                    <h3 class="text-lg font-bold text-white flex items-center">
+                        <svg class="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path>
+                        </svg>
+                        My Placed Orders
+                    </h3>
+                </div>
 
-                                <!-- Order Details -->
-                                <div class="flex-1">
-                                    <h3 class="text-lg font-bold">
-                                        <a href="{{ route('services.show', $order->service) }}" class="text-gray-900 dark:text-white hover:text-indigo-600 transition">
-                                            {{ $order->service->title }}
-                                        </a>
-                                    </h3>
-                                    <p class="text-sm text-gray-500">Freelancer: <span class="text-gray-700 dark:text-gray-300 font-medium">{{ $order->freelancer->name }}</span></p>
-                                    <p class="text-2xl font-black text-emerald-600 dark:text-emerald-400 mt-2">${{ number_format($order->amount, 2) }}</p>
-                                </div>
+                @if($orders->count() > 0)
+                    <!-- Desktop Table View -->
+                    <div class="hidden md:block overflow-x-auto">
+                        <table class="w-full">
+                            <thead class="bg-gray-50 dark:bg-gray-900/50 border-b border-gray-200 dark:border-gray-700">
+                                <tr>
+                                    <th class="px-6 py-4 text-left text-xs font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wider">
+                                        Order ID
+                                    </th>
+                                    <th class="px-6 py-4 text-left text-xs font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wider">
+                                        Freelancer
+                                    </th>
+                                    <th class="px-6 py-4 text-left text-xs font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wider">
+                                        Service
+                                    </th>
+                                    <th class="px-6 py-4 text-left text-xs font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wider">
+                                        Amount
+                                    </th>
+                                    <th class="px-6 py-4 text-left text-xs font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wider">
+                                        Status
+                                    </th>
+                                    <th class="px-6 py-4 text-left text-xs font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wider">
+                                        Order Date
+                                    </th>
+                                    <th class="px-6 py-4 text-center text-xs font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wider">
+                                        Actions
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
+                                @foreach ($orders as $order)
+                                    <tr class="hover:bg-gray-50 dark:hover:bg-gray-900/30 transition-colors duration-150">
+                                        <!-- Order ID -->
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <div class="flex items-center">
+                                                <div class="flex-shrink-0 w-10 h-10 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-lg flex items-center justify-center">
+                                                    <span class="text-white font-bold text-sm">#{{ $order->id }}</span>
+                                                </div>
+                                            </div>
+                                        </td>
 
-                                <div class="text-right">
-                                    <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold uppercase tracking-tight
-                                        {{ $order->status === 'completed' ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300' :
-                                           ($order->status === 'pending' ? 'bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300' :
-                                           'bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300') }}">
-                                        <span class="w-1.5 h-1.5 rounded-full mr-2 {{ $order->status === 'completed' ? 'bg-emerald-500' : ($order->status === 'pending' ? 'bg-amber-500' : 'bg-blue-500') }}"></span>
+                                        <!-- Freelancer -->
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <div class="flex items-center">
+                                                @if($order->freelancer->profile_picture)
+                                                    <img src="{{ asset('storage/' . $order->freelancer->profile_picture) }}" alt="{{ $order->freelancer->name }}" class="w-10 h-10 rounded-full object-cover mr-3 border-2 border-indigo-500">
+                                                @else
+                                                    <div class="w-10 h-10 rounded-full bg-indigo-500 flex items-center justify-center text-white font-bold mr-3">
+                                                        {{ substr($order->freelancer->name, 0, 1) }}
+                                                    </div>
+                                                @endif
+                                                <div>
+                                                    <div class="text-sm font-semibold text-gray-900 dark:text-white">
+                                                        {{ $order->freelancer->name }}
+                                                    </div>
+                                                    <div class="text-xs text-gray-500 dark:text-gray-400">
+                                                        {{ $order->freelancer->email }}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </td>
+
+                                        <!-- Service -->
+                                        <td class="px-6 py-4">
+                                            <div class="flex items-center max-w-xs">
+                                                @if($order->service->image_path || $order->service->image_url)
+                                                    <div class="w-12 h-12 rounded-lg overflow-hidden mr-3 flex-shrink-0">
+                                                        @if($order->service->image_path)
+                                                            <img src="{{ asset('storage/' . $order->service->image_path) }}" alt="{{ $order->service->title }}" class="w-full h-full object-cover">
+                                                        @elseif($order->service->image_url)
+                                                            <img src="{{ $order->service->image_url }}" alt="{{ $order->service->title }}" class="w-full h-full object-cover">
+                                                        @endif
+                                                    </div>
+                                                @endif
+                                                <div class="min-w-0 flex-1">
+                                                    <a href="{{ route('services.show', $order->service) }}" class="text-sm font-semibold text-gray-900 dark:text-white hover:text-indigo-600 dark:hover:text-indigo-400 transition truncate block">
+                                                        {{ $order->service->title }}
+                                                    </a>
+                                                    <div class="text-xs text-gray-500 dark:text-gray-400 truncate">
+                                                        {{ Str::limit($order->service->description, 50) }}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </td>
+
+                                        <!-- Amount -->
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <div class="text-lg font-black text-emerald-600 dark:text-emerald-400">
+                                                ${{ number_format($order->amount, 2) }}
+                                            </div>
+                                        </td>
+
+                                        <!-- Status -->
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold uppercase tracking-tight
+                                                {{ $order->status === 'completed' ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300' :
+                                                   ($order->status === 'pending' ? 'bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300' :
+                                                   ($order->status === 'in progress' ? 'bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300' :
+                                                   'bg-gray-100 text-gray-700 dark:bg-gray-900/40 dark:text-gray-300')) }}">
+                                                <span class="w-2 h-2 rounded-full mr-2 {{ $order->status === 'completed' ? 'bg-emerald-500' : ($order->status === 'pending' ? 'bg-amber-500' : ($order->status === 'in progress' ? 'bg-blue-500' : 'bg-gray-500')) }}"></span>
+                                                {{ $order->status }}
+                                            </span>
+                                        </td>
+
+                                        <!-- Order Date -->
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <div class="text-sm text-gray-900 dark:text-white font-medium">
+                                                {{ $order->created_at->format('M d, Y') }}
+                                            </div>
+                                            <div class="text-xs text-gray-500 dark:text-gray-400">
+                                                {{ $order->created_at->format('h:i A') }}
+                                            </div>
+                                        </td>
+
+                                        <!-- Actions -->
+                                        <td class="px-6 py-4 whitespace-nowrap text-center">
+                                            <div class="flex items-center justify-center space-x-2">
+                                                <a href="{{ route('chat.show', $order) }}"
+                                                   class="inline-flex items-center px-3 py-2 text-xs font-semibold text-white bg-indigo-600 rounded-lg hover:bg-indigo-700 transition shadow-sm hover:shadow-md"
+                                                   title="Chat with {{ $order->freelancer->name }}">
+                                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path>
+                                                    </svg>
+                                                </a>
+                                                <a href="{{ route('orders.show', $order) }}"
+                                                   class="inline-flex items-center px-3 py-2 text-xs font-semibold text-gray-700 dark:text-gray-200 bg-gray-100 dark:bg-gray-700 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition shadow-sm hover:shadow-md"
+                                                   title="View Details">
+                                                    View Details
+                                                </a>
+                                                @if ($order->status === 'pending')
+                                                    <button
+                                                        type="button"
+                                                        x-data=""
+                                                        x-on:click="$dispatch('open-modal', { name: 'cancel-order', url: '{{ route('orders.destroy', $order) }}' })"
+                                                        class="inline-flex items-center px-3 py-2 text-xs font-semibold text-white bg-red-600 rounded-lg hover:bg-red-700 transition shadow-sm hover:shadow-md"
+                                                        title="Cancel Order">
+                                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                                        </svg>
+                                                    </button>
+                                                @elseif ($order->status === 'completed' && !$order->review)
+                                                    <a href="{{ route('orders.show', $order) }}#review-section"
+                                                       class="inline-flex items-center px-3 py-2 text-xs font-semibold text-white bg-emerald-600 rounded-lg hover:bg-emerald-700 transition shadow-sm hover:shadow-md"
+                                                       title="Confirm & Review">
+                                                        <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                                        </svg>
+                                                        Review
+                                                    </a>
+                                                @elseif ($order->status === 'completed' && $order->review)
+                                                    <span class="inline-flex items-center px-3 py-2 text-xs font-semibold text-emerald-700 dark:text-emerald-300 bg-emerald-100 dark:bg-emerald-900/40 rounded-lg">
+                                                        <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                                            <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
+                                                        </svg>
+                                                        Reviewed
+                                                    </span>
+                                                @endif
+                                            </div>
+                                        </td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Mobile Card View -->
+                    <div class="md:hidden divide-y divide-gray-200 dark:divide-gray-700">
+                        @foreach ($orders as $order)
+                            <div class="p-4 hover:bg-gray-50 dark:hover:bg-gray-900/30 transition-colors">
+                                <div class="flex items-start justify-between mb-3">
+                                    <div class="flex items-center">
+                                        <div class="w-10 h-10 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-lg flex items-center justify-center mr-3">
+                                            <span class="text-white font-bold text-sm">#{{ $order->id }}</span>
+                                        </div>
+                                        <div>
+                                            <div class="text-sm font-semibold text-gray-900 dark:text-white">
+                                                {{ $order->freelancer->name }}
+                                            </div>
+                                            <div class="text-xs text-gray-500 dark:text-gray-400">
+                                                {{ $order->created_at->format('M d, Y') }}
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-bold
+                                        {{ $order->status === 'completed' ? 'bg-emerald-100 text-emerald-700' :
+                                           ($order->status === 'pending' ? 'bg-amber-100 text-amber-700' :
+                                           'bg-blue-100 text-blue-700') }}">
                                         {{ $order->status }}
                                     </span>
-
-                                    <div class="mt-4 flex items-center justify-end space-x-2">
-                                        <a href="{{ route('chat.show', $order) }}"
-                                           class="inline-flex items-center px-3 py-2 text-sm font-semibold text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-900/30 rounded-lg hover:bg-indigo-100 dark:hover:bg-indigo-900/50 transition"
-                                           title="Chat with {{ $order->freelancer->name }}">
-                                            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path>
-                                            </svg>
-                                            Chat
-                                        </a>
-                                        <a href="{{ route('orders.show', $order) }}" class="px-4 py-2 text-sm font-semibold text-gray-700 dark:text-gray-200 bg-gray-100 dark:bg-gray-700 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition">
-                                            View
-                                        </a>
-
-                                        @if ($order->status === 'pending')
-                                            <button
-                                                type="button"
-                                                x-data=""
-                                                x-on:click="$dispatch('open-modal', { name: 'cancel-order', url: '{{ route('orders.destroy', $order) }}' })"
-                                                class="text-sm font-semibold text-red-500 hover:text-red-700 transition"
-                                            >
-                                                Cancel
-                                            </button>
-                                        @endif
+                                </div>
+                                <div class="mb-3">
+                                    <a href="{{ route('services.show', $order->service) }}" class="text-sm font-semibold text-gray-900 dark:text-white hover:text-indigo-600">
+                                        {{ $order->service->title }}
+                                    </a>
+                                    <div class="text-lg font-black text-emerald-600 dark:text-emerald-400 mt-1">
+                                        ${{ number_format($order->amount, 2) }}
                                     </div>
                                 </div>
+                                <div class="flex space-x-2">
+                                    <a href="{{ route('chat.show', $order) }}" class="flex-1 text-center px-3 py-2 text-xs font-semibold text-white bg-indigo-600 rounded-lg hover:bg-indigo-700">
+                                        Chat
+                                    </a>
+                                    <a href="{{ route('orders.show', $order) }}" class="flex-1 text-center px-3 py-2 text-xs font-semibold text-gray-700 dark:text-gray-200 bg-gray-100 dark:bg-gray-700 rounded-lg hover:bg-gray-200">
+                                        View
+                                    </a>
+                                    @if ($order->status === 'pending')
+                                        <button
+                                            type="button"
+                                            x-data=""
+                                            x-on:click="$dispatch('open-modal', { name: 'cancel-order', url: '{{ route('orders.destroy', $order) }}' })"
+                                            class="flex-1 text-center px-3 py-2 text-xs font-semibold text-white bg-red-600 rounded-lg hover:bg-red-700">
+                                            Cancel
+                                        </button>
+                                    @elseif ($order->status === 'completed' && !$order->review)
+                                        <a href="{{ route('orders.show', $order) }}#review-section" class="flex-1 text-center px-3 py-2 text-xs font-semibold text-white bg-emerald-600 rounded-lg hover:bg-emerald-700">
+                                            Review
+                                        </a>
+                                    @endif
+                                </div>
                             </div>
-                        @empty
-                            <div class="text-center py-12 border-2 border-dashed border-gray-200 dark:border-gray-700 rounded-2xl text-gray-500">
-                                You have not placed any orders yet.
-                            </div>
-                        @endforelse
+                        @endforeach
                     </div>
-                </div>
+                @else
+                    <div class="p-12 text-center">
+                        <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gray-100 dark:bg-gray-900 mb-4">
+                            <svg class="w-8 h-8 text-gray-400 dark:text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path>
+                            </svg>
+                        </div>
+                        <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">No Orders Yet</h3>
+                        <p class="text-gray-500 dark:text-gray-400 mb-6">You haven't placed any orders yet. Browse our services to get started!</p>
+                        <a href="{{ route('services.index') }}" class="inline-flex items-center px-4 py-2 bg-indigo-600 text-white font-semibold rounded-lg hover:bg-indigo-700 transition">
+                            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                            </svg>
+                            Browse Services
+                        </a>
+                    </div>
+                @endif
             </div>
         </div>
     </div>

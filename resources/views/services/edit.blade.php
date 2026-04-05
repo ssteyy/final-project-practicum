@@ -139,6 +139,20 @@
                                     <x-input-error :messages="$errors->get('price')" class="mt-2" />
                                 </div>
 
+                                <!-- Pricing Type -->
+                                <div>
+                                    <x-input-label for="pricing_type" :value="__('Pricing Type')" class="text-base font-semibold" />
+                                    <select id="pricing_type" name="pricing_type" class="mt-2 block w-full border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-xl shadow-sm text-base" required>
+                                        <option value="fixed" {{ old('pricing_type', $service->pricing_type) == 'fixed' ? 'selected' : '' }}>Fixed - One-time price</option>
+                                        <option value="hourly" {{ old('pricing_type', $service->pricing_type) == 'hourly' ? 'selected' : '' }}>Hourly - Price per hour</option>
+                                        <option value="project" {{ old('pricing_type', $service->pricing_type) == 'project' ? 'selected' : '' }}>Project - Price per milestone</option>
+                                    </select>
+                                    <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">Choose how you want to charge for this service</p>
+                                    <x-input-error :messages="$errors->get('pricing_type')" class="mt-2" />
+                                </div>
+                            </div>
+
+                            <div class="mt-6">
                                 <!-- Category -->
                                 <div>
                                     <x-input-label for="category" :value="__('Category')" class="text-base font-semibold" />

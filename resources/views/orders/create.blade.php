@@ -40,11 +40,30 @@
                                         {{ substr($service->freelancer->name, 0, 1) }}
                                     </div>
                                 @endif
-                                <span class="text-white/90 font-medium">{{ $service->freelancer->name }}</span>
+                                <div>
+                                    <span class="text-white/90 font-medium block">{{ $service->freelancer->name }}</span>
+                                    @if($service->freelancer->reviewsReceived->count() > 0)
+                                        <div class="flex items-center mt-0.5">
+                                            <svg class="w-3.5 h-3.5 text-yellow-300 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
+                                            </svg>
+                                            <span class="text-sm font-bold text-white">{{ number_format($service->freelancer->averageRating(), 1) }}</span>
+                                            <span class="text-xs text-white/70 ml-1">({{ $service->freelancer->reviewsReceived->count() }})</span>
+                                        </div>
+                                    @endif
+                                </div>
                             </div>
-                            <div class="inline-flex items-center px-4 py-2 bg-white/20 backdrop-blur-sm rounded-xl border border-white/30">
-                                <span class="text-sm font-semibold text-white/80 mr-2">Service Price:</span>
-                                <span class="text-2xl font-black text-white">${{ number_format($service->price, 2) }}</span>
+                            <div class="flex items-center gap-3 flex-wrap">
+                                <div class="inline-flex items-center px-4 py-2 bg-white/20 backdrop-blur-sm rounded-xl border border-white/30">
+                                    <span class="text-sm font-semibold text-white/80 mr-2">Service Price:</span>
+                                    <span class="text-2xl font-black text-white">${{ number_format($service->price, 2) }}</span>
+                                </div>
+                                <div class="inline-flex items-center px-4 py-2 bg-white/30 backdrop-blur-sm rounded-xl border border-white/40">
+                                    <span class="text-sm font-semibold text-white/80 mr-2">Pricing Type:</span>
+                                    <span class="text-base font-bold text-white">
+                                        {{ $service->pricing_type === 'hourly' ? '🕐 Hourly' : ($service->pricing_type === 'project' ? '📋 Project' : '💰 Fixed') }}
+                                    </span>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -81,22 +100,48 @@
                                 <svg class="w-5 h-5 mr-2 text-indigo-600 dark:text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path></svg>
                                 Order Summary
                             </h3>
+                            @php
+                                $serviceFee = $service->price;
+                                $platformFee = $serviceFee * 0.15;
+                                $totalAmount = $serviceFee + $platformFee;
+                            @endphp
                             <div class="space-y-3">
-                                <div class="flex justify-between items-center">
+                                <div class="flex justify-between items-center py-2">
                                     <span class="text-gray-700 dark:text-gray-300 font-medium">Service</span>
                                     <span class="text-gray-900 dark:text-white font-bold">{{ $service->title }}</span>
                                 </div>
-                                <div class="flex justify-between items-center">
+                                <div class="flex justify-between items-center py-2">
                                     <span class="text-gray-700 dark:text-gray-300 font-medium">Freelancer</span>
                                     <span class="text-gray-900 dark:text-white font-bold">{{ $service->freelancer->name }}</span>
                                 </div>
-                                <div class="flex justify-between items-center">
+                                <div class="flex justify-between items-center py-2">
                                     <span class="text-gray-700 dark:text-gray-300 font-medium">Category</span>
                                     <span class="px-3 py-1 text-xs font-bold uppercase tracking-wider rounded-lg bg-indigo-100 text-indigo-700 dark:bg-indigo-900/40 dark:text-indigo-300">{{ $service->category }}</span>
                                 </div>
-                                <div class="pt-3 border-t-2 border-indigo-200 dark:border-indigo-800 flex justify-between items-center">
+                                <div class="flex justify-between items-center py-2">
+                                    <span class="text-gray-700 dark:text-gray-300 font-medium">Pricing Type</span>
+                                    <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold uppercase
+                                        {{ $service->pricing_type === 'hourly' ? 'bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300' :
+                                           ($service->pricing_type === 'project' ? 'bg-purple-100 text-purple-700 dark:bg-purple-900/40 dark:text-purple-300' :
+                                           'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300') }}">
+                                        {{ $service->pricing_type === 'hourly' ? '🕐 Hourly' : ($service->pricing_type === 'project' ? '📋 Project' : '💰 Fixed') }}
+                                    </span>
+                                </div>
+
+                                <div class="border-t-2 border-indigo-200 dark:border-indigo-800 pt-3 mt-3 space-y-2">
+                                    <div class="flex justify-between items-center">
+                                        <span class="text-gray-700 dark:text-gray-300 font-medium">Service Fee</span>
+                                        <span class="text-lg font-bold text-gray-900 dark:text-white">${{ number_format($serviceFee, 2) }}</span>
+                                    </div>
+                                    <div class="flex justify-between items-center">
+                                        <span class="text-gray-700 dark:text-gray-300 font-medium">Platform Fee (15%)</span>
+                                        <span class="text-lg font-bold text-indigo-600 dark:text-indigo-400">${{ number_format($platformFee, 2) }}</span>
+                                    </div>
+                                </div>
+
+                                <div class="pt-3 border-t-2 border-indigo-300 dark:border-indigo-700 flex justify-between items-center bg-white/50 dark:bg-gray-900/30 rounded-xl p-3">
                                     <span class="text-lg font-bold text-gray-900 dark:text-white">Total Amount</span>
-                                    <span class="text-3xl font-black text-indigo-600 dark:text-indigo-400">${{ number_format($service->price, 2) }}</span>
+                                    <span class="text-3xl font-black text-emerald-600 dark:text-emerald-400">${{ number_format($totalAmount, 2) }}</span>
                                 </div>
                             </div>
                         </div>

@@ -54,6 +54,15 @@
                                 <div>
                                     <p class="text-sm text-gray-500 dark:text-gray-400">Offered by</p>
                                     <p class="text-lg font-bold text-indigo-600 dark:text-indigo-400">{{ $service->freelancer->name }}</p>
+                                    @if($service->freelancer->reviewsReceived->count() > 0)
+                                        <div class="flex items-center mt-1">
+                                            <svg class="w-4 h-4 text-yellow-400 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
+                                            </svg>
+                                            <span class="text-sm font-bold text-gray-900 dark:text-white">{{ number_format($service->freelancer->averageRating(), 1) }}</span>
+                                            <span class="text-xs text-gray-500 dark:text-gray-400 ml-1">({{ $service->freelancer->reviewsReceived->count() }} {{ Str::plural('review', $service->freelancer->reviewsReceived->count()) }})</span>
+                                        </div>
+                                    @endif
                                 </div>
                             </div>
 
@@ -71,6 +80,14 @@
                             <div class="text-center mb-4">
                                 <p class="text-sm font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wider mb-2">Service Price</p>
                                 <p class="text-5xl font-black text-indigo-600 dark:text-indigo-400">${{ number_format($service->price, 2) }}</p>
+                                <div class="mt-3 flex justify-center">
+                                    <span class="inline-flex items-center px-4 py-2 rounded-full text-sm font-bold
+                                        {{ $service->pricing_type === 'hourly' ? 'bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300' :
+                                           ($service->pricing_type === 'project' ? 'bg-purple-100 text-purple-700 dark:bg-purple-900/40 dark:text-purple-300' :
+                                           'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300') }}">
+                                        {{ $service->pricing_type === 'hourly' ? '🕐 Hourly Rate' : ($service->pricing_type === 'project' ? '📋 Per Project' : '💰 Fixed Price') }}
+                                    </span>
+                                </div>
                             </div>
 
                             @if (Auth::check() && Auth::user()->role === \App\Models\User::ROLE_CLIENT)

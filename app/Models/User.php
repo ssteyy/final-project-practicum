@@ -12,6 +12,7 @@ class User extends Authenticatable
 {
     const ROLE_CLIENT = 'client';
     const ROLE_FREELANCER = 'freelancer';
+    const ROLE_ADMIN = 'admin';
     use HasApiTokens, HasFactory, Notifiable;
 
     public function services()
@@ -22,6 +23,21 @@ class User extends Authenticatable
     public function orders()
     {
         return $this->hasMany(Order::class, 'client_id');
+    }
+
+    public function reviewsGiven()
+    {
+        return $this->hasMany(Review::class, 'client_id');
+    }
+
+    public function reviewsReceived()
+    {
+        return $this->hasMany(Review::class, 'freelancer_id');
+    }
+
+    public function averageRating()
+    {
+        return $this->reviewsReceived()->avg('rating');
     }
 
     /**

@@ -10,9 +10,9 @@ use Illuminate\Support\Facades\Auth;
 class ChatController extends Controller
 {
     /**
-     * Display all conversations (messages inbox)
+     * Display all conversations (messages inbox) with optional selected conversation
      */
-    public function index()
+    public function index(Request $request)
     {
         $userId = Auth::id();
 
@@ -54,7 +54,33 @@ class ChatController extends Controller
             ];
         });
 
-        return view('chat.index', compact('conversations'));
+        // Get selected conversation if order_id is provided
+        $selectedOrder = null;
+        $messages = collect();
+        $otherParty = null;
+
+        if ($request->has('order_id')) {
+            $selectedOrder = Order::find($request->order_id);
+
+            if ($selectedOrder && (Auth::id() === $selectedOrder->client_id || Auth::id() === $selectedOrder->freelancer_id)) {
+                // Get messages for selected order
+                $messages = Message::where('order_id', $selectedOrder->id)
+                    ->with(['sender', 'receiver'])
+                    ->orderBy('created_at', 'asc')
+                    ->get();
+
+                // Mark messages as read
+                Message::where('order_id', $selectedOrder->id)
+                    ->where('receiver_id', Auth::id())
+                    ->where('is_read', false)
+                    ->update(['is_read' => true]);
+
+                // Determine the other party
+                $otherParty = Auth::id() === $selectedOrder->client_id ? $selectedOrder->freelancer : $selectedOrder->client;
+            }
+        }
+
+        return view('chat.index', compact('conversations', 'selectedOrder', 'messages', 'otherParty'));
     }
 
     /**
@@ -96,18 +122,39 @@ class ChatController extends Controller
         }
 
         $request->validate([
-            'message' => 'required|string|max:5000',
+            'message' => 'nullable|string|max:5000',
+            'file' => 'nullable|file|max:51200', // 50MB max
+            'message_type' => 'nullable|in:text,image,video,voice',
         ]);
 
         // Determine receiver
         $receiverId = Auth::id() === $order->client_id ? $order->freelancer_id : $order->client_id;
 
-        $message = Message::create([
+        $messageData = [
             'order_id' => $order->id,
             'sender_id' => Auth::id(),
             'receiver_id' => $receiverId,
             'message' => $request->message,
-        ]);
+            'message_type' => $request->message_type ?? 'text',
+        ];
+
+        // Handle file upload
+        if ($request->hasFile('file')) {
+            $file = $request->file('file');
+            $messageType = $request->message_type ?? 'text';
+
+            // Determine file extension based on message type
+            $extension = $file->getClientOriginalExtension();
+            $filename = time() . '_' . uniqid() . '.' . $extension;
+
+            // Store file in chat_media directory
+            $path = $file->storeAs('chat_media', $filename, 'public');
+
+            $messageData['file_path'] = $path;
+            $messageData['message_type'] = $messageType;
+        }
+
+        $message = Message::create($messageData);
 
         if ($request->ajax()) {
             return response()->json([
