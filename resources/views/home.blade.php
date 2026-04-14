@@ -23,7 +23,7 @@
                 <div class="hidden md:flex space-x-8 items-center">
                     <a href="{{ url('/services') }}" class="text-gray-600 hover:text-indigo-600 font-medium transition">Find Services</a>
                     <a href="#how-it-works" class="text-gray-600 hover:text-indigo-600 font-medium transition">How it Works</a>
-                    <a href="{{ url('/register') }}" class="bg-gradient-to-r from-indigo-600 to-purple-600 text-white px-6 py-2.5 rounded-xl font-semibold hover:from-indigo-700 hover:to-purple-700 transition shadow-lg hover:shadow-xl">Join Now</a>
+                    <a href="{{ url('/login') }}" class="bg-gradient-to-r from-indigo-600 to-purple-600 text-white px-6 py-2.5 rounded-xl font-semibold hover:from-indigo-700 hover:to-purple-700 transition shadow-lg hover:shadow-xl">Join Now</a>
                 </div>
             </div>
         </div>

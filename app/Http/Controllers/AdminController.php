@@ -73,11 +73,32 @@ class AdminController extends Controller
                     ->orWhereHas('service', function ($q) use ($request) {
                         $q->where('title', 'like', '%' . $request->search . '%');
                     });
+
             });
         }
 
         $orders = $query->latest()->paginate(18)->withQueryString();
 
         return view('admin.orders.index', compact('orders'));
+    }
+
+    public function users(Request $request)
+    {
+        if (auth()->user()->role !== User::ROLE_ADMIN) {
+            abort(403);
+        }
+
+        $query = User::query();
+
+        if ($request->filled('search')) {
+            $query->where(function ($q) use ($request) {
+                $q->where('name', 'like', '%' . $request->search . '%')
+                    ->orWhere('email', 'like', '%' . $request->search . '%');
+            });
+        }
+
+        $users = $query->latest()->paginate(18)->withQueryString();
+
+        return view('admin.users.index', compact('users'));
     }
 }
