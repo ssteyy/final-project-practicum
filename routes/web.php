@@ -20,7 +20,13 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('/', function () {
-    $services = Service::where('status', 'published')->latest()->take(6)->get();
+    $services = Service::where('status', 'published')
+        ->whereHas('freelancer', function($q) {
+            $q->where('is_active', true);
+        })
+        ->latest()
+        ->take(6)
+        ->get();
     return view('home', compact('services'));
 })->name('home');
 
@@ -36,8 +42,17 @@ Route::get('/dashboard', function () {
 Route::middleware(['auth', 'verified'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('dashboard');
     Route::get('/services', [AdminController::class, 'services'])->name('services.index');
+    Route::get('/services/create', [AdminController::class, 'createService'])->name('services.create');
+    Route::post('/services', [AdminController::class, 'storeService'])->name('services.store');
     Route::get('/orders', [AdminController::class, 'orders'])->name('orders.index');
     Route::get('/users', [AdminController::class, 'users'])->name('users.index');
+    Route::get('/users/create', [AdminController::class, 'createUser'])->name('users.create');
+    Route::post('/users', [AdminController::class, 'storeUser'])->name('users.store');
+    Route::get('/users/{user}', [AdminController::class, 'showUser'])->name('users.show');
+    Route::delete('/users/{user}', [AdminController::class, 'destroyUser'])->name('users.destroy');
+    Route::patch('/users/{user}/reactivate', [AdminController::class, 'reactivateUser'])->name('users.reactivate');
+    Route::patch('/services/{service}/approve', [ServiceController::class, 'approve'])->name('services.approve');
+    Route::patch('/services/{service}/reject', [ServiceController::class, 'reject'])->name('services.reject');
 });
 
 Route::middleware('auth')->group(function () {

@@ -95,7 +95,8 @@
                                 <span class="px-3 py-1.5 text-xs font-bold uppercase tracking-wider rounded-lg shadow-lg backdrop-blur-sm
                                     {{ $service->status === 'published' ? 'bg-emerald-500/90 text-white' :
                                        ($service->status === 'draft' ? 'bg-amber-500/90 text-white' :
-                                       'bg-gray-500/90 text-white') }}">
+                                       ($service->status === 'rejected' ? 'bg-red-500/90 text-white' :
+                                       'bg-gray-500/90 text-white')) }}">
                                     {{ $service->status }}
                                 </span>
                             </div>

@@ -53,6 +53,7 @@ class User extends Authenticatable
         'profile_picture',
         'google_id',
         'email_verified_at',
+        'is_active',
     ];
 
     /**

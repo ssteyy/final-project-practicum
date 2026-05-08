@@ -132,9 +132,30 @@ class OrderController extends Controller
             abort(403);
         }
 
+        $oldStatus = $order->status;
+        $newStatus = $request->status;
+
         $order->update($request->validated());
 
-        return redirect()->route('orders.index')->with('status', 'Order status updated successfully.');
+        // Log the status change for admin actions
+        if (Auth::user()->role === User::ROLE_ADMIN && $oldStatus !== $newStatus) {
+            // You could add notification logic here for both client and freelancer
+            // For now, we'll just log it
+            \Log::info("Admin " . Auth::user()->name . " changed order #{$order->id} status from '{$oldStatus}' to '{$newStatus}'");
+
+            // TODO: Send notifications to client and freelancer about status change
+        }
+
+        $message = Auth::user()->role === User::ROLE_ADMIN
+            ? "Order status updated successfully. Both client and freelancer will be notified."
+            : "Order status updated successfully.";
+
+        // Redirect admins back to admin orders page
+        if (Auth::user()->role === User::ROLE_ADMIN) {
+            return redirect()->route('admin.orders.index')->with('status', $message);
+        }
+
+        return redirect()->back()->with('status', $message);
     }
 
     /**

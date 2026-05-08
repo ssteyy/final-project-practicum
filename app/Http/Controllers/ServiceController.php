@@ -12,24 +12,20 @@ use App\Http\Requests\UpdateServiceRequest;
 
 class ServiceController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index(Request $request)
     {
         $user = Auth::user();
 
+        // Freelancer view
         if ($user && $user->role === User::ROLE_FREELANCER) {
             $query = $user->services();
 
-            // Filter by category if provided
             if ($request->has('category') && $request->category !== '') {
                 $query->where('category', $request->category);
             }
 
             $services = $query->latest()->get();
 
-            // Get all unique categories for this freelancer
             $categories = $user->services()
                 ->distinct()
                 ->pluck('category')
@@ -38,23 +34,16 @@ class ServiceController extends Controller
             return view('services.freelancer-index', compact('services', 'categories'));
         }
 
-        // Client/Guest view: show all published services
-        $query = Service::where('status', 'published');
+        // Client view → ONLY published AND from active freelancers
+        $query = Service::where('status', 'published')
+            ->whereHas('freelancer', function($q) {
+                $q->where('is_active', true);
+            });
 
-        // Filter by category if provided
         if ($request->has('category') && $request->category !== '') {
             $query->where('category', $request->category);
         }
 
-        // Filter by price range if provided
-        if ($request->has('min_price') && $request->min_price !== '') {
-            $query->where('price', '>=', $request->min_price);
-        }
-        if ($request->has('max_price') && $request->max_price !== '') {
-            $query->where('price', '<=', $request->max_price);
-        }
-
-        // Search by title or description
         if ($request->has('search') && $request->search !== '') {
             $query->where(function($q) use ($request) {
                 $q->where('title', 'like', '%' . $request->search . '%')
@@ -64,8 +53,10 @@ class ServiceController extends Controller
 
         $services = $query->latest()->get();
 
-        // Get all unique categories for filter
         $categories = Service::where('status', 'published')
+            ->whereHas('freelancer', function($q) {
+                $q->where('is_active', true);
+            })
             ->distinct()
             ->pluck('category')
             ->sort();
@@ -73,39 +64,36 @@ class ServiceController extends Controller
         return view('services.index', compact('services', 'categories'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
     public function create()
     {
         if (!Auth::check() || Auth::user()->role !== User::ROLE_FREELANCER) {
             abort(403);
         }
+
         return view('services.create');
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(StoreServiceRequest $request)
     {
         $validated = $request->validated();
         $validated['freelancer_id'] = Auth::id();
 
-        // Handle image upload from file
+        // New services start as draft, waiting for admin approval
+        $validated['status'] = 'draft';
+
         if ($request->hasFile('image_path')) {
             $path = $request->file('image_path')->store('services', 'public');
             $validated['image_path'] = $path;
         }
 
-        // If image_url is provided, use it
         if ($request->filled('image_url')) {
             $validated['image_url'] = $request->input('image_url');
         }
 
         Service::create($validated);
 
-        return redirect()->route('services.index')->with('status', 'Service created successfully.');
+        return redirect()->route('services.index')
+            ->with('status', 'Service submitted. Waiting for admin approval.');
     }
 
     /**
@@ -139,6 +127,7 @@ class ServiceController extends Controller
         if (Auth::user()->role !== User::ROLE_ADMIN && $service->freelancer_id !== Auth::id()) {
             abort(403);
         }
+
         return view('services.edit', compact('service'));
     }
 
@@ -153,12 +142,17 @@ class ServiceController extends Controller
 
         $validated = $request->validated();
 
-        // Handle image upload from file
+        // 🚨 freelancer cannot change status
+        if (Auth::user()->role !== User::ROLE_ADMIN) {
+            unset($validated['status']);
+        }
+
         if ($request->hasFile('image_path')) {
             // Delete old image if exists
             if ($service->image_path && Storage::disk('public')->exists($service->image_path)) {
                 Storage::disk('public')->delete($service->image_path);
             }
+
             $path = $request->file('image_path')->store('services', 'public');
             $validated['image_path'] = $path;
         }
@@ -170,7 +164,7 @@ class ServiceController extends Controller
 
         $service->update($validated);
 
-        return redirect()->route('services.index')->with('status', 'Service updated successfully.');
+        return redirect()->route('services.index')->with('status', 'Updated successfully.');
     }
 
     /**
@@ -184,6 +178,24 @@ class ServiceController extends Controller
 
         $service->delete();
 
-        return redirect()->route('services.index')->with('status', 'Service deleted successfully.');
+        return back()->with('status', 'Deleted successfully.');
+    }
+
+    public function approve(Service $service)
+    {
+        $service->update([
+            'status' => 'published' // ✅ correct
+        ]);
+
+        return back();
+    }
+
+    public function reject(Service $service)
+    {
+        $service->update([
+            'status' => 'rejected' // ✅ correct
+        ]);
+
+        return back();
     }
 }

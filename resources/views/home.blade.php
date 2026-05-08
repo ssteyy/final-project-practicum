@@ -162,7 +162,7 @@
             @if($services->count() > 0)
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                 @foreach($services as $service)
-                <div class="group bg-white rounded-2xl border border-gray-200 shadow-sm hover:shadow-2xl hover:-translate-y-2 hover:border-indigo-300 transition-all duration-300 overflow-hidden">
+                <a href="{{ route('services.show', $service) }}" class="group bg-white rounded-2xl border border-gray-200 shadow-sm hover:shadow-2xl hover:-translate-y-2 hover:border-indigo-300 transition-all duration-300 overflow-hidden block">
                     <!-- Service Image -->
                     <div class="w-full h-48 overflow-hidden bg-gray-100 relative">
                         @if($service->image_path || $service->image_url)
@@ -222,13 +222,10 @@
                                 </div>
                             </div>
 
-                            <a href="{{ route('services.show', $service) }}" class="inline-flex items-center text-sm font-bold text-indigo-600 hover:text-indigo-700 group">
-                                View
-                                <svg class="w-4 h-4 ml-1 transform group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
-                            </a>
+
                         </div>
                     </div>
-                </div>
+                </a>
                 @endforeach
             </div>
 
