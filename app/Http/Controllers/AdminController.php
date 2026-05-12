@@ -20,7 +20,9 @@ class AdminController extends Controller
         $totalOrders = Order::count();
         $totalClients = User::where('role', User::ROLE_CLIENT)->count();
         $totalFreelancers = User::where('role', User::ROLE_FREELANCER)->count();
-        $recentOrders = Order::with('service', 'client', 'freelancer')->latest()->take(5)->get();
+        $recentDraftServices = Service::where('status', 'draft')->with('freelancer')->latest()->take(5)->get();
+        $recentPendingOrders = Order::whereIn('status', ['pending', 'in progress'])->with('service', 'client', 'freelancer')->latest()->take(5)->get();
+        $recentOrders = $recentDraftServices->concat($recentPendingOrders)->sortByDesc('created_at')->take(5);
 
         return view('admin.dashboard', compact(
             'totalServices',
@@ -51,7 +53,13 @@ class AdminController extends Controller
 
         $services = $query->latest()->paginate(18)->withQueryString();
 
-        return view('admin.services.index', compact('services'));
+        // Stats for the page
+        $totalServices = Service::count();
+        $publishedServices = Service::where('status', 'published')->count();
+        $draftServices = Service::where('status', 'draft')->count();
+        $rejectedServices = Service::where('status', 'rejected')->count();
+
+        return view('admin.services.index', compact('services', 'totalServices', 'publishedServices', 'draftServices', 'rejectedServices'));
     }
 
     public function orders(Request $request)
@@ -79,7 +87,13 @@ class AdminController extends Controller
 
         $orders = $query->latest()->paginate(18)->withQueryString();
 
-        return view('admin.orders.index', compact('orders'));
+        // Stats for the page
+        $totalOrders = Order::count();
+        $totalRevenue = Order::sum('amount');
+        $pendingOrders = Order::where('status', 'pending')->count();
+        $completedOrders = Order::where('status', 'completed')->count();
+
+        return view('admin.orders.index', compact('orders', 'totalOrders', 'totalRevenue', 'pendingOrders', 'completedOrders'));
     }
 
     public function users(Request $request)
@@ -93,13 +107,19 @@ class AdminController extends Controller
         if ($request->filled('search')) {
             $query->where(function ($q) use ($request) {
                 $q->where('name', 'like', '%' . $request->search . '%')
-                    ->orWhere('email', 'like', '%' . $request->search . '%');
+                  ->orWhere('email', 'like', '%' . $request->search . '%');
             });
         }
 
         $users = $query->latest()->paginate(18)->withQueryString();
 
-        return view('admin.users.index', compact('users'));
+        // Stats for the page
+        $totalUsers = User::count();
+        $activeUsers = User::where('is_active', true)->count();
+        $totalClients = User::where('role', User::ROLE_CLIENT)->count();
+        $totalFreelancers = User::where('role', User::ROLE_FREELANCER)->count();
+
+        return view('admin.users.index', compact('users', 'totalUsers', 'activeUsers', 'totalClients', 'totalFreelancers'));
     }
 
     public function showUser(User $user)

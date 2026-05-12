@@ -36,7 +36,13 @@ Route::get('/dashboard', function () {
     if (auth()->check() && auth()->user()->role === User::ROLE_ADMIN) {
         return redirect()->route('admin.dashboard');
     }
-    return view('dashboard');
+
+    $recentServices = [];
+    if (auth()->check() && auth()->user()->role === \App\Models\User::ROLE_FREELANCER) {
+        $recentServices = auth()->user()->services()->orderBy('status')->orderBy('created_at', 'desc')->take(3)->get();
+    }
+
+    return view('dashboard', compact('recentServices'));
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::middleware(['auth', 'verified'])->prefix('admin')->name('admin.')->group(function () {

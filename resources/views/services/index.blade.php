@@ -5,7 +5,7 @@
         </h2>
     </x-slot>
 
-    <div class="py-12 bg-gradient-to-br from-gray-50 via-indigo-50/30 to-purple-50/30 dark:bg-gray-900/50 min-h-screen">
+    <div class="py-12 bg-gray-50 dark:bg-gray-900 min-h-screen">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <div class="flex flex-col lg:flex-row gap-8">
                 <!-- Sidebar Filters -->

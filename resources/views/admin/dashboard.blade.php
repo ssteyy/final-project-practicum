@@ -127,38 +127,74 @@
                         <p class="text-gray-500 dark:text-gray-400 mt-1 font-medium">Monitoring platform activity and growth.</p>
                     </div>
                 </div>
-                <div class="flex items-center gap-3">
+                {{-- <div class="flex items-center gap-3">
                     <button class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-sm font-semibold shadow-md transition">+ New Service</button>
-                </div>
+                </div> --}}
             </div>
 
-            <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-6 mb-10">
-                @php
-                    $stats = [
-                        ['label' => 'Total Services', 'value' => $totalServices, 'color' => 'text-blue-600', 'bg' => 'bg-blue-50'],
-                        ['label' => 'Total Orders', 'value' => $totalOrders, 'color' => 'text-indigo-600', 'bg' => 'bg-indigo-50'],
-                        ['label' => 'Total Clients', 'value' => $totalClients, 'color' => 'text-emerald-600', 'bg' => 'bg-emerald-50'],
-                        ['label' => 'Freelancers', 'value' => $totalFreelancers, 'color' => 'text-amber-600', 'bg' => 'bg-amber-50'],
-                    ];
-                @endphp
-
-                @foreach($stats as $stat)
-                <div class="bg-white dark:bg-gray-800 p-6 rounded-3xl border border-gray-100 dark:border-gray-700 shadow-sm transition-transform hover:scale-[1.02]">
-                    <div class="flex items-center justify-between mb-4">
-                        <div class="p-2 {{ $stat['bg'] }} dark:bg-gray-700 rounded-lg">
-                            <svg class="w-6 h-6 {{ $stat['color'] }}" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/></svg>
+            <!-- Stats Cards -->
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-10">
+                <div class="bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-900/20 dark:to-blue-800/20 rounded-2xl p-6 border border-blue-200 dark:border-blue-800">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm font-semibold text-blue-600 dark:text-blue-400 uppercase tracking-wider">Total Services</p>
+                            <p class="text-3xl font-black text-blue-700 dark:text-blue-300 mt-2">{{ $totalServices }}</p>
                         </div>
-                        <span class="text-xs font-bold text-emerald-500 bg-emerald-50 dark:bg-emerald-500/10 px-2 py-1 rounded-lg">Live</span>
+                        <div class="w-12 h-12 bg-blue-500 rounded-xl flex items-center justify-center">
+                            <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+                            </svg>
+                        </div>
                     </div>
-                    <p class="text-sm font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">{{ $stat['label'] }}</p>
-                    <p class="text-3xl font-bold text-gray-900 dark:text-white mt-1">{{ $stat['value'] }}</p>
                 </div>
-                @endforeach
+
+                <div class="bg-gradient-to-br from-indigo-50 to-indigo-100 dark:from-indigo-900/20 dark:to-indigo-800/20 rounded-2xl p-6 border border-indigo-200 dark:border-indigo-800">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm font-semibold text-indigo-600 dark:text-indigo-400 uppercase tracking-wider">Total Orders</p>
+                            <p class="text-3xl font-black text-indigo-700 dark:text-indigo-300 mt-2">{{ $totalOrders }}</p>
+                        </div>
+                        <div class="w-12 h-12 bg-indigo-500 rounded-xl flex items-center justify-center">
+                            <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-gradient-to-br from-emerald-50 to-emerald-100 dark:from-emerald-900/20 dark:to-emerald-800/20 rounded-2xl p-6 border border-emerald-200 dark:border-emerald-800">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm font-semibold text-emerald-600 dark:text-emerald-400 uppercase tracking-wider">Total Clients</p>
+                            <p class="text-3xl font-black text-emerald-700 dark:text-emerald-300 mt-2">{{ $totalClients }}</p>
+                        </div>
+                        <div class="w-12 h-12 bg-emerald-500 rounded-xl flex items-center justify-center">
+                            <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-gradient-to-br from-amber-50 to-amber-100 dark:from-amber-900/20 dark:to-amber-800/20 rounded-2xl p-6 border border-amber-200 dark:border-amber-800">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm font-semibold text-amber-600 dark:text-amber-400 uppercase tracking-wider">Freelancers</p>
+                            <p class="text-3xl font-black text-amber-700 dark:text-amber-300 mt-2">{{ $totalFreelancers }}</p>
+                        </div>
+                        <div class="w-12 h-12 bg-amber-500 rounded-xl flex items-center justify-center">
+                            <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+                            </svg>
+                        </div>
+                    </div>
+                </div>
             </div>
 
+            {{-- Recent Oerders, Services Section --}}
             <div class="bg-white dark:bg-gray-800 rounded-3xl border border-gray-100 dark:border-gray-700 shadow-sm overflow-hidden mb-10">
                 <div class="px-8 py-6 border-b border-gray-50 dark:border-gray-700 flex items-center justify-between bg-white dark:bg-gray-800 sticky top-0 z-10">
-                    <h3 class="text-xl font-bold text-gray-900 dark:text-white">Recent Orders</h3>
+                    <h3 class="text-xl font-bold text-gray-900 dark:text-white">Recent Activity</h3>
                     <a href="#" class="text-sm font-semibold text-indigo-600 hover:underline">View all activity</a>
                 </div>
 
@@ -167,40 +203,105 @@
                         <thead>
                             <tr class="bg-gray-50/50 dark:bg-gray-900/50">
                                 <th class="px-8 py-4 text-xs font-semibold uppercase text-gray-500">ID</th>
-                                <th class="px-8 py-4 text-xs font-semibold uppercase text-gray-500">Stakeholders</th>
                                 <th class="px-8 py-4 text-xs font-semibold uppercase text-gray-500">Service</th>
+                                <th class="px-8 py-4 text-xs font-semibold uppercase text-gray-500">Stakeholders</th>
                                 <th class="px-8 py-4 text-xs font-semibold uppercase text-gray-500">Amount</th>
                                 <th class="px-8 py-4 text-xs font-semibold uppercase text-gray-500">Status</th>
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-gray-50 dark:divide-gray-700">
-                            @forelse($recentOrders as $order)
-                                <tr class="hover:bg-gray-50/80 dark:hover:bg-gray-700/30 transition-colors">
-                                    <td class="px-8 py-5 text-sm font-bold text-gray-400 font-mono">#{{ $order->id }}</td>
-                                    <td class="px-8 py-5">
-                                        <div class="flex flex-col">
-                                            <span class="text-sm font-semibold text-gray-900 dark:text-white">{{ $order->client->name ?? 'Unknown' }}</span>
-                                            <span class="text-xs text-gray-400">to {{ $order->freelancer->name ?? 'Unknown' }}</span>
-                                        </div>
+                            @forelse($recentOrders as $item)
+                                <tr class="hover:bg-gray-50/80 dark:hover:bg-gray-700/30 transition-colors cursor-pointer" onclick="window.location.href='{{ $item instanceof \App\Models\Service ? route('admin.services.index') : route('admin.orders.index') }}'">
+                                    <td class="px-8 py-5 text-sm font-bold text-gray-400 font-mono">
+                                        @if($item instanceof \App\Models\Service)
+                                            <a href="{{ route('admin.services.index') }}" class="hover:text-indigo-600">#{{ $item->id }}</a>
+                                        @else
+                                            <a href="{{ route('admin.orders.index') }}" class="hover:text-indigo-600">#{{ $item->id }}</a>
+                                        @endif
                                     </td>
-                                    <td class="px-8 py-5 text-sm text-gray-600 dark:text-gray-300 font-medium">{{ $order->service->title ?? 'Deleted' }}</td>
-                                    <td class="px-8 py-5 text-sm font-bold text-gray-900 dark:text-white">${{ number_format($order->amount, 2) }}</td>
+
+                                    <td class="px-8 py-5">
+                                         <div class="flex items-center gap-3">
+                                             @php
+                                                 $service = $item instanceof \App\Models\Service ? $item : $item->service;
+                                             @endphp
+                                             @if($service && ($service->image_path || $service->image_url))
+                                                 <div class="w-8 h-8 rounded-lg overflow-hidden bg-gray-100 dark:bg-gray-700 flex-shrink-0">
+                                                     @if($service->image_path)
+                                                         <img src="{{ asset('storage/' . $service->image_path) }}" alt="Service" class="w-full h-full object-cover">
+                                                     @elseif($service->image_url)
+                                                         <img src="{{ $service->image_url }}" alt="Service" class="w-full h-full object-cover">
+                                                     @endif
+                                                 </div>
+                                             @else
+                                                 <div class="w-8 h-8 rounded-lg bg-gray-100 dark:bg-gray-700 flex items-center justify-center flex-shrink-0">
+                                                     <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                                                     </svg>
+                                                 </div>
+                                             @endif
+                                             <span class="text-sm text-gray-600 dark:text-gray-300 font-medium">{{ $service ? $service->title : 'Deleted Service' }}</span>
+                                         </div>
+                                     </td>
+                                    <td class="px-8 py-5">
+                                         @if($item instanceof \App\Models\Service)
+                                             <div class="flex items-center gap-2">
+                                                 @if($item->freelancer && $item->freelancer->profile_picture)
+                                                     <img src="{{ asset('storage/' . $item->freelancer->profile_picture) }}" alt="{{ $item->freelancer->name }}" class="w-6 h-6 rounded-full object-cover">
+                                                 @else
+                                                     <div class="w-6 h-6 rounded-full bg-gray-300 dark:bg-gray-600 flex items-center justify-center text-xs text-gray-600 dark:text-gray-400 font-bold">
+                                                         {{ substr($item->freelancer->name ?? 'U', 0, 1) }}
+                                                     </div>
+                                                 @endif
+                                                 <span class="text-sm font-semibold text-gray-900 dark:text-white">{{ $item->freelancer->name ?? 'Unknown' }}</span>
+                                             </div>
+                                         @else
+                                             <div class="flex items-center gap-3">
+                                                 <div class="flex items-center gap-2">
+                                                     @if($item->client && $item->client->profile_picture)
+                                                         <img src="{{ asset('storage/' . $item->client->profile_picture) }}" alt="{{ $item->client->name }}" class="w-6 h-6 rounded-full object-cover">
+                                                     @else
+                                                         <div class="w-6 h-6 rounded-full bg-gray-300 dark:bg-gray-600 flex items-center justify-center text-xs text-gray-600 dark:text-gray-400 font-bold">
+                                                             {{ substr($item->client->name ?? 'U', 0, 1) }}
+                                                         </div>
+                                                     @endif
+                                                     <span class="text-sm font-semibold text-gray-900 dark:text-white">{{ $item->client->name ?? 'Unknown' }}</span>
+                                                 </div>
+                                                 <span class="text-xs text-gray-400">to</span>
+                                                 <div class="flex items-center gap-2">
+                                                     @if($item->freelancer && $item->freelancer->profile_picture)
+                                                         <img src="{{ asset('storage/' . $item->freelancer->profile_picture) }}" alt="{{ $item->freelancer->name }}" class="w-6 h-6 rounded-full object-cover">
+                                                     @else
+                                                         <div class="w-6 h-6 rounded-full bg-gray-300 dark:bg-gray-600 flex items-center justify-center text-xs text-gray-600 dark:text-gray-400 font-bold">
+                                                             {{ substr($item->freelancer->name ?? 'U', 0, 1) }}
+                                                         </div>
+                                                     @endif
+                                                     <span class="text-sm font-semibold text-gray-900 dark:text-white">{{ $item->freelancer->name ?? 'Unknown' }}</span>
+                                                 </div>
+                                             </div>
+                                         @endif
+                                     </td>
+                                    <td class="px-8 py-5 text-sm font-bold text-gray-900 dark:text-white">
+                                        ${{ $item instanceof \App\Models\Service ? number_format($item->price, 2) : number_format($item->amount, 2) }}
+                                    </td>
                                     <td class="px-8 py-5">
                                         @php
-                                            $statusClass = match($order->status) {
-                                                'completed' => 'bg-emerald-50 text-emerald-700 border-emerald-100 dark:bg-emerald-500/10 dark:text-emerald-400',
+                                            $status = $item->status;
+                                            $statusClass = match($status) {
+                                                'draft' => 'bg-gray-50 text-gray-700 border-gray-100 dark:bg-gray-500/10 dark:text-gray-400',
                                                 'pending' => 'bg-amber-50 text-amber-700 border-amber-100 dark:bg-amber-500/10 dark:text-amber-400',
-                                                default => 'bg-blue-50 text-blue-700 border-blue-100 dark:bg-blue-500/10 dark:text-blue-400',
+                                                'in progress' => 'bg-blue-50 text-blue-700 border-blue-100 dark:bg-blue-500/10 dark:text-blue-400',
+                                                default => 'bg-gray-50 text-gray-700 border-gray-100 dark:bg-gray-500/10 dark:text-gray-400',
                                             };
                                         @endphp
                                         <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold border {{ $statusClass }}">
                                             <span class="w-1.5 h-1.5 rounded-full bg-current mr-2"></span>
-                                            {{ ucfirst($order->status) }}
+                                            {{ ucfirst($status) }}
                                         </span>
                                     </td>
                                 </tr>
                             @empty
-                                <tr><td colspan="5" class="px-8 py-10 text-center text-gray-500">No orders found.</td></tr>
+                                <tr><td colspan="5" class="px-8 py-10 text-center text-gray-500">No recent activity found.</td></tr>
                             @endforelse
                         </tbody>
                     </table>

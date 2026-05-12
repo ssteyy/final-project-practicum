@@ -81,12 +81,9 @@
                                 <p class="text-sm font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wider mb-2">Service Price</p>
                                 <p class="text-5xl font-black text-indigo-600 dark:text-indigo-400">${{ number_format($service->price, 2) }}</p>
                                 <div class="mt-3 flex justify-center">
-                                    <span class="inline-flex items-center px-4 py-2 rounded-full text-sm font-bold
-                                        {{ $service->pricing_type === 'hourly' ? 'bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300' :
-                                           ($service->pricing_type === 'project' ? 'bg-purple-100 text-purple-700 dark:bg-purple-900/40 dark:text-purple-300' :
-                                           'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300') }}">
-                                        {{ $service->pricing_type === 'hourly' ? '🕐 Hourly Rate' : ($service->pricing_type === 'project' ? '📋 Per Project' : '💰 Fixed Price') }}
-                                    </span>
+                                     <span class="inline-flex items-center text-sm font-bold text-gray-600 dark:text-gray-400">
+                                         {{ $service->pricing_type === 'hourly' ? '🕐 Hourly Rate' : ($service->pricing_type === 'project' ? '📋 Per Project' : '💰 Fixed Price') }}
+                                     </span>
                                 </div>
                             </div>
 
