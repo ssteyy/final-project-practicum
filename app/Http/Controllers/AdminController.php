@@ -59,7 +59,7 @@ class AdminController extends Controller
         $draftServices = Service::where('status', 'draft')->count();
         $rejectedServices = Service::where('status', 'rejected')->count();
 
-        return view('admin.services.index', compact('services', 'totalServices', 'publishedServices', 'draftServices', 'rejectedServices'));
+        return view('admin.services.index', compact('services', 'totalServices', 'publishedServices', 'draftServices', 'rejectedServices'))->with('highlightId', $request->highlight);
     }
 
     public function orders(Request $request)
@@ -93,7 +93,7 @@ class AdminController extends Controller
         $pendingOrders = Order::where('status', 'pending')->count();
         $completedOrders = Order::where('status', 'completed')->count();
 
-        return view('admin.orders.index', compact('orders', 'totalOrders', 'totalRevenue', 'pendingOrders', 'completedOrders'));
+        return view('admin.orders.index', compact('orders', 'totalOrders', 'totalRevenue', 'pendingOrders', 'completedOrders'))->with('highlightId', $request->highlight);
     }
 
     public function users(Request $request)

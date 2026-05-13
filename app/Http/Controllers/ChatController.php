@@ -54,15 +54,34 @@ class ChatController extends Controller
             ];
         });
 
-        // Get selected conversation if order_id is provided
+        // Get selected conversation if user is provided
         $selectedOrder = null;
         $messages = collect();
         $otherParty = null;
 
-        if ($request->has('order_id')) {
-            $selectedOrder = Order::find($request->order_id);
+        if ($request->has('user')) {
+            // Handle special case for admin chat
+            if ($request->user === 'adminaccount') {
+                $targetUser = \App\Models\User::where('role', \App\Models\User::ROLE_ADMIN)->first();
+            } else {
+                $targetUser = \App\Models\User::find($request->user);
+            }
 
-            if ($selectedOrder && (Auth::id() === $selectedOrder->client_id || Auth::id() === $selectedOrder->freelancer_id)) {
+            if ($targetUser && $targetUser->id != Auth::id()) {
+                // Find or create order between current user and specified user
+                $selectedOrder = Order::firstOrCreate(
+                    [
+                        'client_id' => min(Auth::id(), $targetUser->id),
+                        'freelancer_id' => max(Auth::id(), $targetUser->id),
+                        'service_id' => \App\Models\Service::where('freelancer_id', $targetUser->id)->where('title', 'Customer Support')->first()->id ?? 1,
+                    ],
+                    [
+                        'requirements' => 'Direct chat with ' . $targetUser->name,
+                        'amount' => 0.00,
+                        'status' => 'completed',
+                    ]
+                );
+
                 // Get messages for selected order
                 $messages = Message::where('order_id', $selectedOrder->id)
                     ->with(['sender', 'receiver'])
@@ -195,4 +214,6 @@ class ChatController extends Controller
             'messages' => $messages,
         ]);
     }
+
+
 }

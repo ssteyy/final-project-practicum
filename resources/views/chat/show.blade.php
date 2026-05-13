@@ -69,10 +69,10 @@
                                                 <p class="text-sm leading-relaxed break-words">{{ $message->message }}</p>
                                             @endif
                                         @elseif($message->message_type === 'voice')
-                                            <audio controls class="w-full mb-2">
+                                            {{-- <audio controls class="w-full mb-2">
                                                 <source src="{{ asset('storage/' . $message->file_path) }}" type="audio/mpeg">
                                                 Your browser does not support the audio tag.
-                                            </audio>
+                                            </audio> --}}
                                             @if($message->message)
                                                 <p class="text-sm leading-relaxed break-words">{{ $message->message }}</p>
                                             @endif
@@ -80,8 +80,20 @@
                                             <p class="text-sm leading-relaxed break-words">{{ $message->message }}</p>
                                         @endif
                                     </div>
-                                    <p class="text-xs text-gray-500 dark:text-gray-400 mt-1 text-right px-2">
-                                        {{ $message->created_at->format('g:i A') }}
+                                    <p class="text-xs text-gray-500 dark:text-gray-400 mt-1 text-right px-2 flex items-center justify-end gap-1">
+                                        {{ $message->created_at->setTimezone('Asia/Bangkok')->format('g:i A') }}
+                                        @if($message->is_read)
+                                            <!-- Double check mark for read messages -->
+                                            <svg class="w-3 h-3 text-blue-500" fill="currentColor" viewBox="0 0 20 20">
+                                                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                                                <path fill-rule="evenodd" d="M20.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L12 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                                            </svg>
+                                        @else
+                                            <!-- Single check mark for unread messages -->
+                                            <svg class="w-3 h-3 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+                                                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                                            </svg>
+                                        @endif
                                     </p>
                                 </div>
                             </div>
@@ -98,33 +110,10 @@
                                     @endif
                                     <div class="flex-1">
                                         <div class="bg-white dark:bg-gray-800 text-gray-900 dark:text-white rounded-2xl rounded-tl-md px-4 py-2.5 shadow-md border border-gray-200 dark:border-gray-700">
-                                            @if($message->message_type === 'image')
-                                                <img src="{{ asset('storage/' . $message->file_path) }}" alt="Image" class="rounded-lg max-w-full h-auto mb-2">
-                                                @if($message->message)
-                                                    <p class="text-sm leading-relaxed break-words">{{ $message->message }}</p>
-                                                @endif
-                                            @elseif($message->message_type === 'video')
-                                                <video controls class="rounded-lg max-w-full h-auto mb-2">
-                                                    <source src="{{ asset('storage/' . $message->file_path) }}" type="video/mp4">
-                                                    Your browser does not support the video tag.
-                                                </video>
-                                                @if($message->message)
-                                                    <p class="text-sm leading-relaxed break-words">{{ $message->message }}</p>
-                                                @endif
-                                            @elseif($message->message_type === 'voice')
-                                                <audio controls class="w-full mb-2">
-                                                    <source src="{{ asset('storage/' . $message->file_path) }}" type="audio/mpeg">
-                                                    Your browser does not support the audio tag.
-                                                </audio>
-                                                @if($message->message)
-                                                    <p class="text-sm leading-relaxed break-words">{{ $message->message }}</p>
-                                                @endif
-                                            @else
-                                                <p class="text-sm leading-relaxed break-words">{{ $message->message }}</p>
-                                            @endif
+                                            <p class="text-sm leading-relaxed break-words">{{ $message->message }}</p>
                                         </div>
                                         <p class="text-xs text-gray-500 dark:text-gray-400 mt-1 px-2">
-                                            {{ $message->created_at->format('g:i A') }}
+                                            {{ $message->created_at->setTimezone('Asia/Phnom_Penh')->format('H:i') }}
                                         </p>
                                     </div>
                                 </div>
@@ -147,50 +136,10 @@
 
                 <!-- Message Input -->
                 <div class="bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 p-4 flex-shrink-0">
-                    <!-- File Preview Area -->
-                    <div id="file-preview" class="hidden mb-3 p-3 bg-gray-100 dark:bg-gray-700 rounded-lg">
-                        <div class="flex items-center justify-between">
-                            <div class="flex items-center space-x-2">
-                                <svg class="w-5 h-5 text-indigo-600 dark:text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"></path>
-                                </svg>
-                                <span id="file-name" class="text-sm text-gray-700 dark:text-gray-300"></span>
-                            </div>
-                            <button type="button" onclick="clearFileSelection()" class="text-red-600 hover:text-red-700">
-                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-                                </svg>
-                            </button>
-                        </div>
-                    </div>
-
                     <form id="chat-form" method="POST" action="{{ route('chat.store', $order) }}" enctype="multipart/form-data" class="space-y-3">
                         @csrf
-                        <input type="hidden" id="message-type" name="message_type" value="text">
-                        <input type="file" id="file-input" name="file" class="hidden" accept="image/*,video/*,audio/*">
 
                         <div class="flex items-end space-x-2">
-                            <!-- Attachment Buttons -->
-                            <div class="flex space-x-1">
-                                <!-- Image Button -->
-                                <button type="button" onclick="selectFile('image')" class="flex-shrink-0 w-10 h-10 bg-gray-200 dark:bg-gray-700 rounded-full flex items-center justify-center text-gray-600 dark:text-gray-300 hover:bg-indigo-100 dark:hover:bg-indigo-900 transition" title="Send Image">
-                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
-                                    </svg>
-                                </button>
-                                <!-- Video Button -->
-                                <button type="button" onclick="selectFile('video')" class="flex-shrink-0 w-10 h-10 bg-gray-200 dark:bg-gray-700 rounded-full flex items-center justify-center text-gray-600 dark:text-gray-300 hover:bg-indigo-100 dark:hover:bg-indigo-900 transition" title="Send Video">
-                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
-                                    </svg>
-                                </button>
-                                <!-- Voice Button -->
-                                <button type="button" onclick="selectFile('voice')" class="flex-shrink-0 w-10 h-10 bg-gray-200 dark:bg-gray-700 rounded-full flex items-center justify-center text-gray-600 dark:text-gray-300 hover:bg-indigo-100 dark:hover:bg-indigo-900 transition" title="Send Voice">
-                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"></path>
-                                    </svg>
-                                </button>
-                            </div>
 
                             <!-- Text Input -->
                             <div class="flex-1">
@@ -209,10 +158,21 @@
                             <!-- Send Button -->
                             <button
                                 type="submit"
-                                class="flex-shrink-0 w-12 h-12 bg-gradient-to-r from-indigo-600 to-purple-600 rounded-full flex items-center justify-center text-white hover:from-indigo-700 hover:to-purple-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 transition shadow-lg hover:shadow-xl transform hover:scale-105"
+                                class="flex-shrink-0 w-12 h-12 bg-gradient-to-r from-orange-500 to-red-600 rounded-full flex items-center justify-center text-white hover:from-orange-600 hover:to-red-700 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 transition shadow-lg hover:shadow-xl transform hover:scale-105 group"
                             >
-                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path>
+                                <!-- Right-pointing Arrow Icon -->
+                                <svg
+                                    class="w-6 h-6 transform transition-transform group-hover:translate-x-1"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    viewBox="0 0 24 24"
+                                >
+                                    <path
+                                        stroke-linecap="round"
+                                        stroke-linejoin="round"
+                                        stroke-width="2.5"
+                                        d="M13 7l5 5m0 0l-5 5m5-5H6"
+                                    />
                                 </svg>
                             </button>
                         </div>
@@ -224,39 +184,7 @@
 
     @push('scripts')
     <script>
-        // File selection handling
-        function selectFile(type) {
-            const fileInput = document.getElementById('file-input');
-            const messageType = document.getElementById('message-type');
 
-            // Set accept attribute based on type
-            if (type === 'image') {
-                fileInput.accept = 'image/*';
-            } else if (type === 'video') {
-                fileInput.accept = 'video/*';
-            } else if (type === 'voice') {
-                fileInput.accept = 'audio/*';
-            }
-
-            messageType.value = type;
-            fileInput.click();
-        }
-
-        // Handle file selection
-        document.getElementById('file-input').addEventListener('change', function(e) {
-            const file = e.target.files[0];
-            if (file) {
-                document.getElementById('file-name').textContent = file.name;
-                document.getElementById('file-preview').classList.remove('hidden');
-            }
-        });
-
-        // Clear file selection
-        function clearFileSelection() {
-            document.getElementById('file-input').value = '';
-            document.getElementById('file-preview').classList.add('hidden');
-            document.getElementById('message-type').value = 'text';
-        }
 
         // Auto-scroll to bottom of chat
         function scrollToBottom() {
@@ -265,7 +193,7 @@
         }
 
         // Scroll to bottom on page load
-        scrollToBottom();
+        setTimeout(scrollToBottom, 100);
 
         // Handle form submission with FormData for file uploads
         document.getElementById('chat-form').addEventListener('submit', function(e) {
@@ -284,7 +212,7 @@
             const submitButton = form.querySelector('button[type="submit"]');
             submitButton.disabled = true;
 
-            // Create FormData for file upload
+            // Create FormData for the message
             const formData = new FormData(form);
 
             // Send message via AJAX
@@ -299,8 +227,11 @@
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
-                    // Reload page to show new message with proper formatting
-                    window.location.reload();
+                    // Scroll to bottom first, then reload page to show new message with proper formatting
+                    scrollToBottom();
+                    setTimeout(() => {
+                        window.location.reload();
+                    }, 200);
                 }
             })
             .catch(error => {

@@ -34,8 +34,8 @@
                     @if($conversations->count() > 0)
                         <div class="flex-1 overflow-y-auto">
                             @foreach($conversations as $conversation)
-                                <a href="{{ route('messages.index', ['order_id' => $conversation['order']->id]) }}"
-                                   class="flex items-center px-4 py-3 border-b border-gray-100 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors duration-150 {{ $selectedOrder && $selectedOrder->id === $conversation['order']->id ? 'bg-indigo-50 dark:bg-indigo-900/20 border-l-4 border-l-indigo-600' : '' }} {{ $conversation['unread_count'] > 0 && (!$selectedOrder || $selectedOrder->id !== $conversation['order']->id) ? 'bg-indigo-50/30 dark:bg-indigo-900/10' : '' }}">
+                                <a href="{{ route('messages.index', ['user' => $conversation['other_party']->id]) }}"
+                                   class="flex items-center px-4 py-3 border-b border-gray-100 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors duration-150 {{ request()->has('user') && request()->user == $conversation['other_party']->id ? 'bg-indigo-50 dark:bg-indigo-900/20 border-l-4 border-l-indigo-600' : '' }} {{ $conversation['unread_count'] > 0 && (!request()->has('user') || request()->user != $conversation['other_party']->id) ? 'bg-indigo-50/30 dark:bg-indigo-900/10' : '' }}">
                                     <!-- Profile Picture -->
                                     <div class="relative flex-shrink-0 mr-3">
                                         @if($conversation['other_party']->profile_picture)
@@ -79,7 +79,7 @@
                                     </div>
 
                                     <!-- Unread Badge -->
-                                    @if($conversation['unread_count'] > 0 && (!$selectedOrder || $selectedOrder->id !== $conversation['order']->id))
+                                     @if($conversation['unread_count'] > 0 && (!request()->has('user') || request()->user != $conversation['other_party']->id))
                                         <div class="flex-shrink-0 ml-2">
                                             <span class="inline-flex items-center justify-center w-5 h-5 text-xs font-bold text-white bg-indigo-600 rounded-full">
                                                 {{ $conversation['unread_count'] > 9 ? '9+' : $conversation['unread_count'] }}

@@ -84,7 +84,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/messages', [App\Http\Controllers\ChatController::class, 'index'])->name('messages.index');
     // Redirect old chat.show to unified interface
     Route::get('/chat/{order}', function(App\Models\Order $order) {
-        return redirect()->route('messages.index', ['order_id' => $order->id]);
+        $otherUserId = auth()->id() === $order->client_id ? $order->freelancer_id : $order->client_id;
+        return redirect()->route('messages.index', ['user' => $otherUserId]);
     })->name('chat.show');
     Route::post('/chat/{order}', [App\Http\Controllers\ChatController::class, 'store'])->name('chat.store');
     Route::get('/chat/{order}/messages', [App\Http\Controllers\ChatController::class, 'getMessages'])->name('chat.messages');

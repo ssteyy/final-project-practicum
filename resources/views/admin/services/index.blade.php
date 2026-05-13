@@ -59,7 +59,24 @@
                             </div>
                         </div>
 
-                        <!-- Profile Dropdown -->
+                        <!-- Profile Dropdown and Chat Button -->
+                        <div class="flex items-center space-x-3">
+                            <!-- Chat Button -->
+                            @php
+                                $unreadCount = \App\Models\Message::where('receiver_id', Auth::id())
+                                    ->where('is_read', false)
+                                    ->count();
+                            @endphp
+                            <a href="{{ route('messages.index') }}" class="relative inline-flex items-center px-3 py-2 border border-gray-200 dark:border-gray-700 text-sm leading-4 font-medium rounded-xl text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150 shadow-sm">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path>
+                                </svg>
+                                @if($unreadCount > 0)
+                                    <span class="absolute -top-1 -right-1 inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-white transform translate-x-1/2 -translate-y-1/2 bg-red-600 rounded-full min-w-[20px]">
+                                        {{ $unreadCount > 99 ? '99+' : $unreadCount }}
+                                    </span>
+                                @endif
+                            </a>
                         <div class="flex items-center">
                             <x-dropdown align="right" width="48">
                                 <x-slot name="trigger">
@@ -225,8 +242,8 @@
                         </thead>
 
                         <tbody class="divide-y divide-gray-50 dark:divide-gray-700">
-                            @forelse($services as $service)
-                                <tr class="hover:bg-gray-50/80 dark:hover:bg-gray-700/30 transition-colors">
+                             @forelse($services as $service)
+                                 <tr class="hover:bg-gray-50/80 dark:hover:bg-gray-700/30 transition-colors {{ $service->id == $highlightId ? 'bg-indigo-50 dark:bg-indigo-900/20 ring-2 ring-indigo-500' : '' }}" data-service-id="{{ $service->id }}">
                                     <td class="px-8 py-5 text-sm font-bold text-gray-400 font-mono">#{{ $service->id }}</td>
                                     <td class="px-8 py-5">
                                         <div class="h-14 w-20 rounded-xl overflow-hidden bg-gray-100 dark:bg-gray-700 border border-gray-100 dark:border-gray-600 shadow-sm">
@@ -263,11 +280,11 @@
                                         @php
                                             $status = $service->status;
                                             $statusClasses = [
-                                                'published' => 'bg-emerald-50 text-emerald-700 border-emerald-100 dark:bg-emerald-500/10 dark:text-emerald-400',
-                                                'pending'   => 'bg-amber-50 text-amber-700 border-amber-100 dark:bg-amber-500/10 dark:text-amber-400',
-                                                'rejected'  => 'bg-red-50 text-red-700 border-red-100 dark:bg-red-500/10 dark:text-red-400',
+                                                'published' => 'bg-emerald-50 text-emerald-700 border-emerald-100 dark:bg-emerald-500/10 dark:text-white',
+                                                'pending'   => 'bg-amber-50 text-amber-700 border-amber-100 dark:bg-amber-500/10 dark:text-white',
+                                                'rejected'  => 'bg-red-50 text-red-700 border-red-100 dark:bg-red-500/10 dark:text-white',
                                             ];
-                                            $class = $statusClasses[$status] ?? 'bg-gray-50 text-gray-700 border-gray-100 dark:bg-gray-500/10 dark:text-gray-400';
+                                            $class = $statusClasses[$status] ?? 'bg-gray-50 text-gray-700 border-gray-100 dark:bg-gray-500/10 dark:text-white';
                                         @endphp
                                         <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold border {{ $class }}">
                                             <span class="w-1.5 h-1.5 rounded-full bg-current mr-2"></span>
@@ -344,4 +361,15 @@
             <div class="h-20"></div>
         </main>
     </div>
+
+    @if($highlightId)
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const highlightedRow = document.querySelector('[data-service-id="{{ $highlightId }}"]');
+            if (highlightedRow) {
+                highlightedRow.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+        });
+    </script>
+    @endif
 </x-app-layout>
