@@ -109,23 +109,23 @@
                     @if($selectedOrder && $otherParty)
                         <!-- Chat Header -->
                         <div class="bg-white dark:bg-gray-800 px-6 py-4 border-b border-gray-200 dark:border-gray-700 flex-shrink-0">
-                            <div class="flex items-center justify-between">
-                                <div class="flex items-center space-x-3">
-                                    @if($otherParty->profile_picture)
-                                        <img src="{{ asset('storage/' . $otherParty->profile_picture) }}" alt="{{ $otherParty->name }}" class="w-10 h-10 rounded-full object-cover border-2 border-indigo-500">
-                                    @else
-                                        <div class="w-10 h-10 rounded-full bg-indigo-500 flex items-center justify-center text-white font-bold">
-                                            {{ substr($otherParty->name, 0, 1) }}
-                                        </div>
-                                    @endif
-                                    <div>
-                                        <h3 class="text-base font-bold text-gray-900 dark:text-white">{{ $otherParty->name }}</h3>
-                                        <p class="text-xs text-gray-500 dark:text-gray-400 flex items-center">
-                                            <span class="w-2 h-2 bg-emerald-500 rounded-full mr-1.5"></span>
-                                            {{ ucfirst($otherParty->role) }}
-                                        </p>
-                                    </div>
-                                </div>
+                             <div class="flex items-center justify-between">
+                                 <a href="{{ route('profile.show', $otherParty->id) }}" class="flex items-center space-x-3 hover:opacity-80 transition-opacity">
+                                     @if($otherParty->profile_picture)
+                                         <img src="{{ asset('storage/' . $otherParty->profile_picture) }}" alt="{{ $otherParty->name }}" class="w-10 h-10 rounded-full object-cover border-2 border-indigo-500">
+                                     @else
+                                         <div class="w-10 h-10 rounded-full bg-indigo-500 flex items-center justify-center text-white font-bold">
+                                             {{ substr($otherParty->name, 0, 1) }}
+                                         </div>
+                                     @endif
+                                     <div>
+                                         <h3 class="text-base font-bold text-gray-900 dark:text-white">{{ $otherParty->name }}</h3>
+                                         <p class="text-xs text-gray-500 dark:text-gray-400 flex items-center">
+                                             <span class="w-2 h-2 bg-emerald-500 rounded-full mr-1.5"></span>
+                                             {{ ucfirst($otherParty->role) }}
+                                         </p>
+                                     </div>
+                                 </a>
                                 <a href="{{ route('orders.show', $selectedOrder) }}" class="text-xs text-indigo-600 dark:text-indigo-400 hover:underline font-semibold flex items-center">
                                     <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
@@ -137,7 +137,30 @@
 
                         <!-- Chat Messages -->
                         <div id="chat-messages" class="flex-1 overflow-y-auto bg-gray-50 dark:bg-gray-900 p-4 space-y-3" style="scroll-behavior: smooth;">
-                            @forelse($messages as $message)
+                            @php
+                                $groupedMessages = $messages->groupBy(function($message) {
+                                    return $message->created_at->format('Y-m-d');
+                                });
+                            @endphp
+
+                            @foreach($groupedMessages as $date => $dayMessages)
+                                <!-- Date Separator -->
+                                <div class="flex items-center justify-center my-4">
+                                    <div class="bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-300 text-xs font-medium px-3 py-1 rounded-full">
+                                        @php
+                                            $dateObj = \Carbon\Carbon::createFromFormat('Y-m-d', $date);
+                                            if ($dateObj->isToday()) {
+                                                echo 'Today';
+                                            } elseif ($dateObj->isYesterday()) {
+                                                echo 'Yesterday';
+                                            } else {
+                                                echo $dateObj->format('M j, Y');
+                                            }
+                                        @endphp
+                                    </div>
+                                </div>
+
+                                @foreach($dayMessages as $message)
                                 @if($message->sender_id === Auth::id())
                                     <!-- Sent Message -->
                                     <div class="flex justify-end">
@@ -167,11 +190,8 @@
                                                 @else
                                                     <p class="text-sm leading-relaxed break-words">{{ $message->message }}</p>
                                                 @endif
-                                            </div>
-                                            <p class="text-xs text-gray-500 dark:text-gray-400 mt-1 text-right px-2">
-                                                {{ $message->created_at->format('g:i A') }}
-                                            </p>
-                                        </div>
+                                             </div>
+                                         </div>
                                     </div>
                                 @else
                                     <!-- Received Message -->
@@ -210,15 +230,14 @@
                                                     @else
                                                         <p class="text-sm leading-relaxed break-words">{{ $message->message }}</p>
                                                     @endif
-                                                </div>
-                                                <p class="text-xs text-gray-500 dark:text-gray-400 mt-1 px-2">
-                                                    {{ $message->created_at->format('g:i A') }}
-                                                </p>
-                                            </div>
+                                                 </div>
+                                             </div>
                                         </div>
                                     </div>
                                 @endif
-                            @empty
+                                @endforeach
+                            @endforeach
+                            @if($messages->isEmpty())
                                 <div class="flex items-center justify-center h-full">
                                     <div class="text-center">
                                         <div class="w-20 h-20 bg-gradient-to-br from-indigo-100 to-purple-100 dark:from-gray-700 dark:to-gray-800 rounded-full flex items-center justify-center mx-auto mb-4">
@@ -230,55 +249,15 @@
                                         <p class="text-gray-400 dark:text-gray-500 text-sm mt-1">Send a message to start</p>
                                     </div>
                                 </div>
-                            @endforelse
+                            @endif
                         </div>
 
                         <!-- Message Input -->
                         <div class="bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 p-4 flex-shrink-0">
-                            <!-- File Preview Area -->
-                            <div id="file-preview" class="hidden mb-3 p-3 bg-gray-100 dark:bg-gray-700 rounded-lg">
-                                <div class="flex items-center justify-between">
-                                    <div class="flex items-center space-x-2">
-                                        <svg class="w-5 h-5 text-indigo-600 dark:text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"></path>
-                                        </svg>
-                                        <span id="file-name" class="text-sm text-gray-700 dark:text-gray-300"></span>
-                                    </div>
-                                    <button type="button" onclick="clearFileSelection()" class="text-red-600 hover:text-red-700">
-                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-                                        </svg>
-                                    </button>
-                                </div>
-                            </div>
-
-                            <form id="chat-form" method="POST" action="{{ route('chat.store', $selectedOrder) }}" enctype="multipart/form-data" class="space-y-3">
+                            <form id="chat-form" method="POST" action="{{ route('chat.store', $selectedOrder) }}" class="space-y-3">
                                 @csrf
-                                <input type="hidden" id="message-type" name="message_type" value="text">
-                                <input type="file" id="file-input" name="file" class="hidden" accept="image/*,video/*,audio/*">
 
                                 <div class="flex items-end space-x-2">
-                                    <!-- Attachment Buttons -->
-                                    <div class="flex space-x-1">
-                                        <!-- Image Button -->
-                                        <button type="button" onclick="selectFile('image')" class="flex-shrink-0 w-10 h-10 bg-gray-200 dark:bg-gray-700 rounded-full flex items-center justify-center text-gray-600 dark:text-gray-300 hover:bg-indigo-100 dark:hover:bg-indigo-900 transition" title="Send Image">
-                                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
-                                            </svg>
-                                        </button>
-                                        <!-- Video Button -->
-                                        <button type="button" onclick="selectFile('video')" class="flex-shrink-0 w-10 h-10 bg-gray-200 dark:bg-gray-700 rounded-full flex items-center justify-center text-gray-600 dark:text-gray-300 hover:bg-indigo-100 dark:hover:bg-indigo-900 transition" title="Send Video">
-                                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
-                                            </svg>
-                                        </button>
-                                        <!-- Voice Button -->
-                                        <button type="button" onclick="selectFile('voice')" class="flex-shrink-0 w-10 h-10 bg-gray-200 dark:bg-gray-700 rounded-full flex items-center justify-center text-gray-600 dark:text-gray-300 hover:bg-indigo-100 dark:hover:bg-indigo-900 transition" title="Send Voice">
-                                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"></path>
-                                            </svg>
-                                        </button>
-                                    </div>
 
                                     <!-- Text Input -->
                                     <div class="flex-1">
@@ -289,6 +268,9 @@
                                             placeholder="Type a message..."
                                             class="block w-full border-gray-300 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-full shadow-sm resize-none px-5 py-3 text-sm"
                                             style="max-height: 120px;"
+                                            required
+                                            pattern=".*\S+.*"
+                                            title="Message cannot be empty or contain only spaces"
                                             onkeydown="if(event.key === 'Enter' && !event.shiftKey) { event.preventDefault(); this.form.dispatchEvent(new Event('submit', {cancelable: true})); }"
                                             oninput="this.style.height = 'auto'; this.style.height = Math.min(this.scrollHeight, 120) + 'px';"
                                         ></textarea>
@@ -328,39 +310,7 @@
     @if($selectedOrder && $otherParty)
         @push('scripts')
         <script>
-            // File selection handling
-            function selectFile(type) {
-                const fileInput = document.getElementById('file-input');
-                const messageType = document.getElementById('message-type');
 
-                // Set accept attribute based on type
-                if (type === 'image') {
-                    fileInput.accept = 'image/*';
-                } else if (type === 'video') {
-                    fileInput.accept = 'video/*';
-                } else if (type === 'voice') {
-                    fileInput.accept = 'audio/*';
-                }
-
-                messageType.value = type;
-                fileInput.click();
-            }
-
-            // Handle file selection
-            document.getElementById('file-input').addEventListener('change', function(e) {
-                const file = e.target.files[0];
-                if (file) {
-                    document.getElementById('file-name').textContent = file.name;
-                    document.getElementById('file-preview').classList.remove('hidden');
-                }
-            });
-
-            // Clear file selection
-            function clearFileSelection() {
-                document.getElementById('file-input').value = '';
-                document.getElementById('file-preview').classList.add('hidden');
-                document.getElementById('message-type').value = 'text';
-            }
 
             // Auto-scroll to bottom of chat
             function scrollToBottom() {
@@ -373,7 +323,7 @@
             // Scroll to bottom on page load
             scrollToBottom();
 
-            // Handle form submission with FormData for file uploads
+            // Handle form submission
             const chatForm = document.getElementById('chat-form');
             if (chatForm) {
                 chatForm.addEventListener('submit', function(e) {
@@ -381,18 +331,16 @@
 
                     const form = this;
                     const messageInput = document.getElementById('message-input');
-                    const fileInput = document.getElementById('file-input');
                     const message = messageInput.value.trim();
-                    const hasFile = fileInput.files.length > 0;
 
-                    // Require either message or file
-                    if (!message && !hasFile) return;
+                    // Prevent sending empty messages or messages with only whitespace
+                    if (!message || /^\s*$/.test(messageInput.value)) return;
 
                     // Disable submit button temporarily
                     const submitButton = form.querySelector('button[type="submit"]');
                     submitButton.disabled = true;
 
-                    // Create FormData for file upload
+                    // Create FormData for the message
                     const formData = new FormData(form);
 
                     // Send message via AJAX
@@ -438,12 +386,9 @@
                                     <div class="flex items-end space-x-2 max-w-xs lg:max-w-md">
                                         ${getProfilePicture()}
                                         <div class="flex-1">
-                                            <div class="bg-white dark:bg-gray-800 text-gray-900 dark:text-white rounded-2xl rounded-tl-md px-4 py-2.5 shadow-md border border-gray-200 dark:border-gray-700">
-                                                <p class="text-sm leading-relaxed break-words">${escapeHtml(message.message)}</p>
-                                            </div>
-                                            <p class="text-xs text-gray-500 dark:text-gray-400 mt-1 px-2">
-                                                ${formatTime(message.created_at)}
-                                            </p>
+                                             <div class="bg-white dark:bg-gray-800 text-gray-900 dark:text-white rounded-2xl rounded-tl-md px-4 py-2.5 shadow-md border border-gray-200 dark:border-gray-700">
+                                                 <p class="text-sm leading-relaxed break-words">${escapeHtml(message.message)}</p>
+                                             </div>
                                         </div>
                                     </div>
                                 `;

@@ -1,4 +1,4 @@
-<x-app-layout>
+{{-- <x-app-layout>
     <x-slot name="header">
         <div class="flex items-center justify-between">
             <div class="flex items-center">
@@ -49,7 +49,30 @@
 
                 <!-- Chat Messages -->
                 <div id="chat-messages" class="flex-1 overflow-y-auto bg-gray-50 dark:bg-gray-900 p-4 space-y-3" style="scroll-behavior: smooth;">
-                    @forelse($messages as $message)
+                    @php
+                        $groupedMessages = $messages->groupBy(function($message) {
+                            return $message->created_at->format('Y-m-d');
+                        });
+                    @endphp
+
+                    @foreach($groupedMessages as $date => $dayMessages)
+                        <!-- Date Separator -->
+                        <div class="flex items-center justify-center my-4">
+                            <div class="bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-300 text-xs font-medium px-3 py-1 rounded-full">
+                                @php
+                                    $dateObj = \Carbon\Carbon::createFromFormat('Y-m-d', $date);
+                                    if ($dateObj->isToday()) {
+                                        echo 'Today';
+                                    } elseif ($dateObj->isYesterday()) {
+                                        echo 'Yesterday';
+                                    } else {
+                                        echo $dateObj->format('M j, Y');
+                                    }
+                                @endphp
+                            </div>
+                        </div>
+
+                        @foreach($dayMessages as $message)
                         @if($message->sender_id === Auth::id())
                             <!-- Sent Message (Right) -->
                             <div class="flex justify-end">
@@ -69,10 +92,10 @@
                                                 <p class="text-sm leading-relaxed break-words">{{ $message->message }}</p>
                                             @endif
                                         @elseif($message->message_type === 'voice')
-                                            {{-- <audio controls class="w-full mb-2">
+                                            <audio controls class="w-full mb-2">
                                                 <source src="{{ asset('storage/' . $message->file_path) }}" type="audio/mpeg">
                                                 Your browser does not support the audio tag.
-                                            </audio> --}}
+                                            </audio>
                                             @if($message->message)
                                                 <p class="text-sm leading-relaxed break-words">{{ $message->message }}</p>
                                             @endif
@@ -119,7 +142,9 @@
                                 </div>
                             </div>
                         @endif
-                    @empty
+                        @endforeach
+                    @endforeach
+                    @if($messages->isEmpty())
                         <div class="flex items-center justify-center h-full">
                             <div class="text-center">
                                 <div class="w-20 h-20 bg-gradient-to-br from-indigo-100 to-purple-100 dark:from-gray-700 dark:to-gray-800 rounded-full flex items-center justify-center mx-auto mb-4">
@@ -131,12 +156,12 @@
                                 <p class="text-gray-400 dark:text-gray-500 text-sm mt-2">Send a message to start the conversation</p>
                             </div>
                         </div>
-                    @endforelse
+                    @endif
                 </div>
 
                 <!-- Message Input -->
                 <div class="bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 p-4 flex-shrink-0">
-                    <form id="chat-form" method="POST" action="{{ route('chat.store', $order) }}" enctype="multipart/form-data" class="space-y-3">
+                    <form id="chat-form" method="POST" action="{{ route('chat.store', $order) }}" class="space-y-3">
                         @csrf
 
                         <div class="flex items-end space-x-2">
@@ -150,6 +175,9 @@
                                     placeholder="Type a message..."
                                     class="block w-full border-gray-300 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-full shadow-sm resize-none px-5 py-3 text-sm"
                                     style="max-height: 120px;"
+                                    required
+                                    pattern=".*\S+.*"
+                                    title="Message cannot be empty or contain only spaces"
                                     onkeydown="if(event.key === 'Enter' && !event.shiftKey) { event.preventDefault(); this.form.dispatchEvent(new Event('submit', {cancelable: true})); }"
                                     oninput="this.style.height = 'auto'; this.style.height = Math.min(this.scrollHeight, 120) + 'px';"
                                 ></textarea>
@@ -201,12 +229,10 @@
 
             const form = this;
             const messageInput = document.getElementById('message-input');
-            const fileInput = document.getElementById('file-input');
             const message = messageInput.value.trim();
-            const hasFile = fileInput.files.length > 0;
 
-            // Require either message or file
-            if (!message && !hasFile) return;
+            // Prevent sending empty messages or messages with only whitespace
+            if (!message || /^\s*$/.test(messageInput.value)) return;
 
             // Disable submit button temporarily
             const submitButton = form.querySelector('button[type="submit"]');
@@ -306,4 +332,4 @@
         }
     </script>
     @endpush
-</x-app-layout>
+</x-app-layout> --}}
