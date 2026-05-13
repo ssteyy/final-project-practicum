@@ -188,53 +188,6 @@
                     </a>
                  @endif
              </div>
-
-             @if (Auth::user()->role === \App\Models\User::ROLE_FREELANCER && $recentServices->count() > 0)
-             <!-- Recent Services -->
-             <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-4 mt-8">Your Recent Services</h3>
-             <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                 @foreach($recentServices as $service)
-                 <a href="{{ route('services.show', $service) }}" class="group bg-white dark:bg-gray-800 p-6 rounded-3xl border border-gray-100 dark:border-gray-700 shadow-sm hover:shadow-2xl hover:-translate-y-2 hover:border-indigo-300 dark:hover:border-indigo-600 transition-all duration-300">
-                     <div class="flex items-start justify-between mb-4">
-                         <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white mb-3">
-                             @if($service->image_path || $service->image_url)
-                                 @if($service->image_path)
-                                     <img src="{{ asset('storage/' . $service->image_path) }}" alt="{{ $service->title }}" class="w-full h-full object-cover rounded-xl">
-                                 @elseif($service->image_url)
-                                     <img src="{{ $service->image_url }}" alt="{{ $service->title }}" class="w-full h-full object-cover rounded-xl">
-                                 @endif
-                             @else
-                                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
-                                 </svg>
-                             @endif
-                         </div>
-                         <span class="px-2 py-1 text-xs font-bold rounded-lg bg-indigo-50 text-indigo-600 dark:bg-indigo-900/40 dark:text-indigo-300">
-                             {{ $service->category }}
-                         </span>
-                     </div>
-                     <h4 class="text-lg font-bold text-gray-900 dark:text-white mb-2 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors line-clamp-2">
-                         {{ $service->title }}
-                     </h4>
-                     <p class="text-sm text-gray-600 dark:text-gray-400 line-clamp-2 mb-3">
-                         ${{ number_format($service->price, 0) }} • {{ $service->pricing_type }}
-                     </p>
-                     <div class="flex items-center justify-between">
-                         <span class="text-xs font-medium text-gray-500 dark:text-gray-400">
-                             {{ $service->created_at->diffForHumans() }}
-                         </span>
-                         <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-bold
-                             {{ $service->status === 'published' ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300' :
-                                ($service->status === 'draft' ? 'bg-gray-100 text-gray-700 dark:bg-gray-900/40 dark:text-gray-300' :
-                                'bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-300') }}">
-                             {{ ucfirst($service->status) }}
-                         </span>
-                     </div>
-                 </a>
-                 @endforeach
-             </div>
-             @endif
-
          </div>
      </div>
  </x-app-layout>
