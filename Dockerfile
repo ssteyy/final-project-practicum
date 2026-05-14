@@ -5,10 +5,10 @@ WORKDIR /var/www/html
 # Install dependencies
 RUN apt-get update && apt-get install -y \
     git curl zip unzip \
-    libpng-dev libonig-dev libxml2-dev libzip-dev libicu-dev \
-    && docker-php-ext-install pdo pdo_mysql mbstring zip exif pcntl bcmath gd intl
+    libpng-dev libonig-dev libxml2-dev libzip-dev \
+    && docker-php-ext-install pdo pdo_mysql mbstring zip
 
-# Enable Apache rewrite
+# Enable Apache rewrite (VERY IMPORTANT for Laravel)
 RUN a2enmod rewrite
 
 # Install Composer
@@ -17,24 +17,23 @@ COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 # Copy project
 COPY . .
 
-# Ensure .env exists
-RUN cp -n .env.example .env || true
+# Install PHP dependencies
+RUN composer install --no-dev --optimize-autoloader
 
-# Install dependencies
-RUN composer install --optimize-autoloader
-
-# Fix permissions (CRITICAL for stability)
+# Fix permissions (VERY IMPORTANT)
 RUN chown -R www-data:www-data /var/www/html \
     && chmod -R 775 storage bootstrap/cache
 
-# Apache config (stable)
-RUN echo '<VirtualHost *:80>
-    DocumentRoot /var/www/html/public
-    <Directory /var/www/html/public>
-        AllowOverride All
-        Require all granted
-    </Directory>
+# Apache config (FIXED)
+RUN echo '<VirtualHost *:80>\n\
+    DocumentRoot /var/www/html/public\n\
+    <Directory /var/www/html/public>\n\
+        AllowOverride All\n\
+        Require all granted\n\
+    </Directory>\n\
 </VirtualHost>' > /etc/apache2/sites-available/000-default.conf
+
+RUN php artisan config:clear
 
 EXPOSE 80
 
