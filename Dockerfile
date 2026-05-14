@@ -51,8 +51,8 @@ RUN chown -R www-data:www-data /var/www/html \
     && chmod -R 775 /var/www/html/storage \
     && chmod -R 775 /var/www/html/bootstrap/cache
 
-# Create Apache configuration
-RUN echo '<VirtualHost *:80>\n\
+# Create Apache configuration (use placeholder for port)
+RUN echo '<VirtualHost *:${PORT}>\n\
     DocumentRoot /var/www/html/public\n\
     <Directory /var/www/html/public>\n\
         AllowOverride All\n\
@@ -62,8 +62,18 @@ RUN echo '<VirtualHost *:80>\n\
     CustomLog ${APACHE_LOG_DIR}/access.log combined\n\
 </VirtualHost>' > /etc/apache2/sites-available/000-default.conf
 
-# Expose port 80
-EXPOSE 80
+# Update ports.conf to use PORT
+RUN echo "Listen \${PORT}" > /etc/apache2/ports.conf
 
-# Start Apache
-CMD ["apache2-foreground"]
+# Create startup script
+RUN echo '#!/bin/bash\n\
+export PORT=${PORT:-80}\n\
+sed -i "s/\${PORT}/$PORT/g" /etc/apache2/sites-available/000-default.conf\n\
+sed -i "s/\${PORT}/$PORT/g" /etc/apache2/ports.conf\n\
+apache2-foreground' > /var/www/html/start.sh && chmod +x /var/www/html/start.sh
+
+# Expose port (Render will override)
+EXPOSE 10000
+
+# Start Apache with dynamic port
+CMD ["./start.sh"]
