@@ -33,6 +33,8 @@ RUN echo '<VirtualHost *:80>\n\
     </Directory>\n\
 </VirtualHost>' > /etc/apache2/sites-available/000-default.conf
 
+RUN php artisan config:clear
+
 EXPOSE 80
 
 CMD ["apache2-foreground"]
