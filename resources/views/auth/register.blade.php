@@ -168,15 +168,15 @@
                     <div class="relative flex justify-center text-sm"><span class="px-4 bg-slate-50 text-slate-400 font-medium">Or continue with</span></div>
                 </div>
 
-                <div class="grid grid-cols-2 gap-4">
+                <div class="grid grid-cols-1 gap-4">
                     <a href="{{ route('auth.google') }}" class="flex items-center justify-center gap-2 py-3 border border-slate-200 bg-white rounded-2xl hover:bg-slate-50 transition font-bold text-slate-700 text-sm">
                         <img src="https://www.svgrepo.com/show/355037/google.svg" class="w-4 h-4" alt="Google">
                         Google
                     </a>
-                    <button class="flex items-center justify-center gap-2 py-3 border border-slate-200 bg-white rounded-2xl hover:bg-slate-50 transition font-bold text-slate-700 text-sm opacity-50 cursor-not-allowed" disabled>
+                    {{-- <button class="flex items-center justify-center gap-2 py-3 border border-slate-200 bg-white rounded-2xl hover:bg-slate-50 transition font-bold text-slate-700 text-sm opacity-50 cursor-not-allowed" disabled>
                         <i class="fab fa-github"></i>
                         GitHub
-                    </button>
+                    </button> --}}
                 </div>
 
                 <p class="mt-8 text-center text-sm text-slate-500 font-medium">
