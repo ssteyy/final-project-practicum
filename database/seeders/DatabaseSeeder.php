@@ -26,18 +26,6 @@ class DatabaseSeeder extends Seeder
             ]
         );
 
-        // Create support service for admin
-        Service::firstOrCreate(
-            ['freelancer_id' => $admin->id, 'title' => 'Customer Support'],
-            [
-                'description' => 'Customer support and assistance services.',
-                'price' => 0.00,
-                'category' => 'Support',
-                'status' => 'published',
-                'image_url' => 'https://images.unsplash.com/photo-1552664730-d307ca884978?w=800&auto=format&fit=crop&q=60'
-            ]
-        );
-
         // Create freelancer user (ID will be 2 or auto-increment)
         $freelancer = User::firstOrCreate(
             ['email' => 'freelancer@freelancehub.com'],

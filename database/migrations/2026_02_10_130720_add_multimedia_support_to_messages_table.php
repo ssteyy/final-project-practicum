@@ -18,9 +18,6 @@ return new class extends Migration
             // Add message type column (text, image, video, voice)
             $table->enum('message_type', ['text', 'image', 'video', 'voice'])->default('text')->after('receiver_id');
 
-            // Add file path for media files
-            $table->string('file_path')->nullable()->after('message_type');
-
             // Make message nullable since media messages might not have text
             $table->text('message')->nullable()->change();
         });
@@ -33,7 +30,7 @@ return new class extends Migration
     {
         Schema::table('messages', function (Blueprint $table) {
             // Remove new columns
-            $table->dropColumn(['message_type', 'file_path']);
+            $table->dropColumn(['message_type']);
 
             // Revert order_id to not nullable
             $table->foreignId('order_id')->nullable(false)->change();
