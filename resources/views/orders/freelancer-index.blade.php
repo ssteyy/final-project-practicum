@@ -82,7 +82,7 @@
                                         <td class="px-6 py-4 whitespace-nowrap">
                                             <div class="flex items-center">
                                                 @if($order->client->profile_picture)
-                                                    <img src="{{ asset('storage/' . $order->client->profile_picture) }}" alt="{{ $order->client->name }}" class="w-10 h-10 rounded-full object-cover mr-3 border-2 border-emerald-500">
+                                                    <img src="{{ str_starts_with($order->client->profile_picture, 'http') ? $order->client->profile_picture : asset('storage/' . $order->client->profile_picture) }}" alt="{{ $order->client->name }}" class="w-10 h-10 rounded-full object-cover mr-3 border-2 border-emerald-500">
                                                 @else
                                                     <div class="w-10 h-10 rounded-full bg-emerald-500 flex items-center justify-center text-white font-bold mr-3">
                                                         {{ substr($order->client->name, 0, 1) }}

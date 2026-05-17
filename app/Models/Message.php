@@ -75,4 +75,19 @@ class Message extends Model
     {
         return $this->belongsTo(User::class, 'receiver_id');
     }
+
+    /**
+     * Get decrypted message
+     */
+    public function getDecryptedMessageAttribute(): ?string
+    {
+        if ($this->message) {
+            try {
+                return \Illuminate\Support\Facades\Crypt::decryptString($this->message);
+            } catch (\Exception $e) {
+                return $this->message;
+            }
+        }
+        return null;
+    }
 }

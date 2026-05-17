@@ -1,4 +1,13 @@
 <x-app-layout>
+    <style>
+        .floating-chat-button,
+        .chat-fab,
+        .fixed.bottom-6.right-6,
+        [data-floating-chat] {
+            display: none !important;
+        }
+    </style>
+
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight flex items-center">
             <svg class="w-6 h-6 mr-2 text-indigo-600 dark:text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -39,9 +48,9 @@
                                     <!-- Profile Picture -->
                                     <div class="relative flex-shrink-0 mr-3">
                                         @if($conversation['other_party']->profile_picture)
-                                            <img src="{{ asset('storage/' . $conversation['other_party']->profile_picture) }}"
-                                                 alt="{{ $conversation['other_party']->name }}"
-                                                 class="w-12 h-12 rounded-full object-cover {{ $conversation['unread_count'] > 0 ? 'ring-2 ring-indigo-500' : '' }}">
+                                            <img src="{{ str_starts_with($conversation['other_party']->profile_picture, 'http') ? $conversation['other_party']->profile_picture : asset('storage/' . $conversation['other_party']->profile_picture) }}"
+                                                  alt="{{ $conversation['other_party']->name }}"
+                                                  class="w-12 h-12 rounded-full object-cover {{ $conversation['unread_count'] > 0 ? 'ring-2 ring-indigo-500' : '' }}">
                                         @else
                                             <div class="w-12 h-12 rounded-full {{ $conversation['unread_count'] > 0 ? 'bg-indigo-500 ring-2 ring-indigo-400' : 'bg-gray-400 dark:bg-gray-600' }} flex items-center justify-center text-white font-bold">
                                                 {{ substr($conversation['other_party']->name, 0, 1) }}
@@ -69,7 +78,7 @@
                                                 @if($conversation['last_message']->sender_id === Auth::id())
                                                     <span class="text-gray-500 dark:text-gray-500">You: </span>
                                                 @endif
-                                                {{ Str::limit($conversation['last_message']->message, 35) }}
+                                                {{ Str::limit($conversation['last_message']->decrypted_message, 35) }}
                                             </p>
                                         @else
                                             <p class="text-xs text-gray-400 dark:text-gray-500 italic">
@@ -105,14 +114,14 @@
                 </div>
 
                 <!-- Right Side - Chat Area -->
-                <div class="flex-1 flex flex-col">
+                <div class="flex-1 flex flex-col min-h-0">
                     @if($selectedOrder && $otherParty)
                         <!-- Chat Header -->
                         <div class="bg-white dark:bg-gray-800 px-6 py-4 border-b border-gray-200 dark:border-gray-700 flex-shrink-0">
                              <div class="flex items-center justify-between">
                                  <a href="{{ route('profile.show', $otherParty->id) }}" class="flex items-center space-x-3 hover:opacity-80 transition-opacity">
                                      @if($otherParty->profile_picture)
-                                         <img src="{{ asset('storage/' . $otherParty->profile_picture) }}" alt="{{ $otherParty->name }}" class="w-10 h-10 rounded-full object-cover border-2 border-indigo-500">
+                                          <img src="{{ str_starts_with($otherParty->profile_picture, 'http') ? $otherParty->profile_picture : asset('storage/' . $otherParty->profile_picture) }}" alt="{{ $otherParty->name }}" class="w-10 h-10 rounded-full object-cover border-2 border-indigo-500">
                                      @else
                                          <div class="w-10 h-10 rounded-full bg-indigo-500 flex items-center justify-center text-white font-bold">
                                              {{ substr($otherParty->name, 0, 1) }}
@@ -136,7 +145,7 @@
                         </div>
 
                         <!-- Chat Messages -->
-                        <div id="chat-messages" class="flex-1 overflow-y-auto bg-gray-50 dark:bg-gray-900 p-4 space-y-3" style="scroll-behavior: smooth;">
+                        <div id="chat-messages" class="flex-1 overflow-y-auto min-h-0 bg-gray-50 dark:bg-gray-900 p-4 space-y-3" style="scroll-behavior: smooth;">
                             @php
                                 $groupedMessages = $messages->groupBy(function($message) {
                                     return $message->created_at->format('Y-m-d');
@@ -169,7 +178,7 @@
                                                 @if($message->message_type === 'image')
                                                     <img src="{{ asset('storage/' . $message->file_path) }}" alt="Image" class="rounded-lg max-w-full h-auto mb-2">
                                                     @if($message->message)
-                                                        <p class="text-sm leading-relaxed break-words">{{ $message->message }}</p>
+                                                        <p class="text-sm leading-relaxed break-words">{{ $message->decrypted_message }}</p>
                                                     @endif
                                                 @elseif($message->message_type === 'video')
                                                     <video controls class="rounded-lg max-w-full h-auto mb-2">
@@ -177,7 +186,7 @@
                                                         Your browser does not support the video tag.
                                                     </video>
                                                     @if($message->message)
-                                                        <p class="text-sm leading-relaxed break-words">{{ $message->message }}</p>
+                                                        <p class="text-sm leading-relaxed break-words">{{ $message->decrypted_message }}</p>
                                                     @endif
                                                 @elseif($message->message_type === 'voice')
                                                     <audio controls class="w-full mb-2">
@@ -185,20 +194,28 @@
                                                         Your browser does not support the audio tag.
                                                     </audio>
                                                     @if($message->message)
-                                                        <p class="text-sm leading-relaxed break-words">{{ $message->message }}</p>
+                                                        <p class="text-sm leading-relaxed break-words">{{ $message->decrypted_message }}</p>
                                                     @endif
                                                 @else
-                                                    <p class="text-sm leading-relaxed break-words">{{ $message->message }}</p>
-                                                @endif
-                                             </div>
-                                         </div>
-                                    </div>
+                                                     <p class="text-sm leading-relaxed break-words">{{ $message->decrypted_message }}</p>
+                                                 @endif
+                                                 <div class="flex items-center justify-end gap-1 mt-1">
+                                                     <span class="text-[10px] text-white/70">{{ $message->created_at->timezone('Asia/Bangkok')->format('h:i A') }}</span>
+                                                     @if($message->is_read)
+                                                         <span class="text-[10px] text-emerald-300">✓✓</span>
+                                                     @else
+                                                         <span class="text-[10px] text-white/50">✓</span>
+                                                     @endif
+                                                 </div>
+                                              </div>
+                                          </div>
+                                     </div>
                                 @else
                                     <!-- Received Message -->
                                     <div class="flex justify-start">
                                         <div class="flex items-end space-x-2 max-w-xs lg:max-w-md">
                                             @if($otherParty->profile_picture)
-                                                <img src="{{ asset('storage/' . $otherParty->profile_picture) }}" alt="{{ $otherParty->name }}" class="w-8 h-8 rounded-full object-cover flex-shrink-0">
+                                                <img src="{{ str_starts_with($otherParty->profile_picture, 'http') ? $otherParty->profile_picture : asset('storage/' . $otherParty->profile_picture) }}" alt="{{ $otherParty->name }}" class="w-8 h-8 rounded-full object-cover flex-shrink-0">
                                             @else
                                                 <div class="w-8 h-8 rounded-full bg-gray-400 dark:bg-gray-600 flex items-center justify-center text-white font-bold text-xs flex-shrink-0">
                                                     {{ substr($otherParty->name, 0, 1) }}
@@ -209,7 +226,7 @@
                                                     @if($message->message_type === 'image')
                                                         <img src="{{ asset('storage/' . $message->file_path) }}" alt="Image" class="rounded-lg max-w-full h-auto mb-2">
                                                         @if($message->message)
-                                                            <p class="text-sm leading-relaxed break-words">{{ $message->message }}</p>
+                                                            <p class="text-sm leading-relaxed break-words">{{ $message->decrypted_message }}</p>
                                                         @endif
                                                     @elseif($message->message_type === 'video')
                                                         <video controls class="rounded-lg max-w-full h-auto mb-2">
@@ -217,7 +234,7 @@
                                                             Your browser does not support the video tag.
                                                         </video>
                                                         @if($message->message)
-                                                            <p class="text-sm leading-relaxed break-words">{{ $message->message }}</p>
+                                                            <p class="text-sm leading-relaxed break-words">{{ $message->decrypted_message }}</p>
                                                         @endif
                                                     @elseif($message->message_type === 'voice')
                                                         <audio controls class="w-full mb-2">
@@ -225,15 +242,18 @@
                                                             Your browser does not support the audio tag.
                                                         </audio>
                                                         @if($message->message)
-                                                            <p class="text-sm leading-relaxed break-words">{{ $message->message }}</p>
+                                                            <p class="text-sm leading-relaxed break-words">{{ $message->decrypted_message }}</p>
                                                         @endif
                                                     @else
-                                                        <p class="text-sm leading-relaxed break-words">{{ $message->message }}</p>
-                                                    @endif
-                                                 </div>
-                                             </div>
-                                        </div>
-                                    </div>
+                                                         <p class="text-sm leading-relaxed break-words">{{ $message->decrypted_message }}</p>
+                                                     @endif
+                                                     <div class="mt-1 text-right">
+                                                         <span class="text-[10px] text-gray-400">{{ $message->created_at->timezone('Asia/Bangkok')->format('h:i A') }}</span>
+                                                     </div>
+                                                  </div>
+                                              </div>
+                                         </div>
+                                     </div>
                                 @endif
                                 @endforeach
                             @endforeach
@@ -310,21 +330,49 @@
     @if($selectedOrder && $otherParty)
         @push('scripts')
         <script>
+            // Disable browser scroll restoration
+            if ('scrollRestoration' in history) {
+                history.scrollRestoration = 'manual';
+            }
 
-
-            // Auto-scroll to bottom of chat
+            // Scroll chat to bottom
             function scrollToBottom() {
                 const chatMessages = document.getElementById('chat-messages');
+
                 if (chatMessages) {
                     chatMessages.scrollTop = chatMessages.scrollHeight;
                 }
             }
 
-            // Scroll to bottom on page load
-            scrollToBottom();
+            window.onload = function () {
+                setTimeout(() => {
+                    scrollToBottom();
+                }, 200);
+            };
+
+                        // Extra force for refresh issue
+                        if (force) {
+                            setTimeout(() => {
+                                chatMessages.scrollTop = 999999;
+                            }, 300);
+                        }
+                    });
+                }
+            }
+
+            // Wait until EVERYTHING loads
+            window.addEventListener('load', function () {
+                scrollToBottom(true);
+            });
+
+            // Also run after DOM ready
+            document.addEventListener('DOMContentLoaded', function () {
+                scrollToBottom(true);
+            });
 
             // Handle form submission
             const chatForm = document.getElementById('chat-form');
+
             if (chatForm) {
                 chatForm.addEventListener('submit', function(e) {
                     e.preventDefault();
@@ -333,10 +381,12 @@
                     const messageInput = document.getElementById('message-input');
                     const message = messageInput.value.trim();
 
-                    // Prevent sending empty messages or messages with only whitespace
-                    if (!message || /^\s*$/.test(messageInput.value)) return;
+                    // Prevent empty messages
+                    if (!message || /^\s*$/.test(messageInput.value)) {
+                        return;
+                    }
 
-                    // Disable submit button temporarily
+                    // Disable button
                     const submitButton = form.querySelector('button[type="submit"]');
                     submitButton.disabled = true;
 
@@ -355,8 +405,14 @@
                     .then(response => response.json())
                     .then(data => {
                         if (data.success) {
-                            // Reload page to show new message with proper formatting
-                            window.location.reload();
+
+                            // Clear input
+                            messageInput.value = '';
+
+                            // FORCE reload with bottom scroll
+                            sessionStorage.setItem('scrollChatBottom', 'true');
+
+                            window.location.href = window.location.href;
                         }
                     })
                     .catch(error => {
@@ -369,52 +425,109 @@
                 });
             }
 
+            // After refresh, force scroll bottom
+            if (sessionStorage.getItem('scrollChatBottom')) {
+
+                window.addEventListener('load', () => {
+
+                    setTimeout(() => {
+                        scrollToBottom(true);
+
+                        sessionStorage.removeItem('scrollChatBottom');
+                    }, 500);
+
+                });
+            }
+
             // Poll for new messages every 3 seconds
             let lastMessageId = {{ $messages->last()->id ?? 0 }};
 
             setInterval(function() {
-                fetch('{{ route('chat.messages', $selectedOrder) }}?last_message_id=' + lastMessageId)
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.messages && data.messages.length > 0) {
-                            const chatMessages = document.getElementById('chat-messages');
 
-                            data.messages.forEach(message => {
-                                const messageDiv = document.createElement('div');
-                                messageDiv.className = 'flex justify-start';
-                                messageDiv.innerHTML = `
-                                    <div class="flex items-end space-x-2 max-w-xs lg:max-w-md">
-                                        ${getProfilePicture()}
-                                        <div class="flex-1">
-                                             <div class="bg-white dark:bg-gray-800 text-gray-900 dark:text-white rounded-2xl rounded-tl-md px-4 py-2.5 shadow-md border border-gray-200 dark:border-gray-700">
-                                                 <p class="text-sm leading-relaxed break-words">${escapeHtml(message.message)}</p>
-                                             </div>
+                fetch('{{ route('chat.messages', $selectedOrder) }}?last_message_id=' + lastMessageId)
+
+                .then(response => response.json())
+
+                .then(data => {
+
+                    if (data.messages && data.messages.length > 0) {
+
+                        const chatMessages = document.getElementById('chat-messages');
+
+                        data.messages.forEach(message => {
+
+                            const messageDiv = document.createElement('div');
+
+                            messageDiv.className = 'flex justify-start';
+
+                            messageDiv.innerHTML = `
+                                <div class="flex items-end space-x-2 max-w-xs lg:max-w-md">
+                                    ${getProfilePicture()}
+                                    <div class="flex-1">
+                                        <div class="bg-white dark:bg-gray-800 text-gray-900 dark:text-white rounded-2xl rounded-tl-md px-4 py-2.5 shadow-md border border-gray-200 dark:border-gray-700">
+                                            <p class="text-sm leading-relaxed break-words">
+                                                ${escapeHtml(message.message)}
+                                            </p>
+
+                                            <div class="mt-1 flex items-center justify-end gap-1">
+                                                <span class="text-[10px] text-gray-400">
+                                                    ${new Date(message.created_at).toLocaleTimeString('en-US', {
+                                                        hour: 'numeric',
+                                                        minute: '2-digit',
+                                                        hour12: true
+                                                    })}
+                                                </span>
+                                            </div>
                                         </div>
                                     </div>
-                                `;
-                                chatMessages.appendChild(messageDiv);
-                                lastMessageId = message.id;
-                            });
+                                </div>
+                            `;
 
-                            scrollToBottom();
-                        }
-                    })
-                    .catch(error => console.error('Error polling messages:', error));
+                            chatMessages.appendChild(messageDiv);
+
+                            lastMessageId = message.id;
+                        });
+
+                        // Auto scroll when new messages arrive
+                        scrollToBottom(true);
+                    }
+                })
+
+                .catch(error => console.error('Error polling messages:', error));
+
             }, 3000);
 
-            // Helper function to get profile picture HTML
+            // Helper function to get profile picture
             function getProfilePicture() {
+
                 @if($otherParty->profile_picture)
-                    return '<img src="{{ asset('storage/' . $otherParty->profile_picture) }}" alt="{{ $otherParty->name }}" class="w-8 h-8 rounded-full object-cover flex-shrink-0">';
+
+                    return `
+                        <img
+                            src="{{ str_starts_with($otherParty->profile_picture, 'http') ? $otherParty->profile_picture : asset('storage/' . $otherParty->profile_picture) }}"
+                            alt="{{ $otherParty->name }}"
+                            class="w-8 h-8 rounded-full object-cover flex-shrink-0"
+                        >
+                    `;
+
                 @else
-                    return '<div class="w-8 h-8 rounded-full bg-gray-400 dark:bg-gray-600 flex items-center justify-center text-white font-bold text-xs flex-shrink-0">{{ substr($otherParty->name, 0, 1) }}</div>';
+
+                    return `
+                        <div class="w-8 h-8 rounded-full bg-gray-400 dark:bg-gray-600 flex items-center justify-center text-white font-bold text-xs flex-shrink-0">
+                            {{ substr($otherParty->name, 0, 1) }}
+                        </div>
+                    `;
+
                 @endif
             }
 
-            // Helper function to escape HTML
+            // Escape HTML
             function escapeHtml(text) {
+
                 const div = document.createElement('div');
+
                 div.textContent = text;
+
                 return div.innerHTML;
             }
 

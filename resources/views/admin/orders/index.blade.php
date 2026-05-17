@@ -223,7 +223,7 @@
                 </div>
             </div>
 
-            <div class="bg-white dark:bg-gray-800 rounded-3xl border border-gray-100 dark:border-gray-700 shadow-sm overflow-hidden mb-12">
+            <div class="bg-white dark:bg-gray-800 rounded-3xl border border-gray-100 dark:border-gray-700 shadow-sm overflow-hidden mb-10">
 
                 <div class="px-8 py-6 border-b border-gray-50 dark:border-gray-700 flex items-center justify-between bg-white dark:bg-gray-800 sticky top-0 z-10">
                     <h3 class="text-xl font-bold text-gray-900 dark:text-white">All Orders</h3>
@@ -265,12 +265,31 @@
                                         </div>
                                     </td>
 
-                                    <td class="px-8 py-5">
-                                        <div class="flex flex-col">
-                                            <span class="text-sm font-bold text-gray-900 dark:text-white">{{ $order->client->name ?? 'Unknown' }}</span>
-                                            <span class="text-xs text-gray-400 font-medium">to {{ $order->freelancer->name ?? 'Unknown' }}</span>
-                                        </div>
-                                    </td>
+                                     <td class="px-8 py-5">
+                                         <div class="flex items-center gap-3">
+                                             <div class="flex items-center gap-2">
+                                                 @if($order->client && $order->client->profile_picture)
+                                                     <img src="{{ str_starts_with($order->client->profile_picture, 'http') ? $order->client->profile_picture : asset('storage/' . $order->client->profile_picture) }}" alt="{{ $order->client->name }}" class="w-6 h-6 rounded-full object-cover">
+                                                 @else
+                                                     <div class="w-6 h-6 rounded-full bg-gray-300 dark:bg-gray-600 flex items-center justify-center text-xs text-gray-600 dark:text-gray-400 font-bold">
+                                                         {{ substr($order->client->name ?? 'U', 0, 1) }}
+                                                     </div>
+                                                 @endif
+                                                 <span class="text-sm font-semibold text-gray-900 dark:text-white">{{ $order->client->name ?? 'Unknown' }}</span>
+                                             </div>
+                                             <span class="text-xs text-gray-400">to</span>
+                                             <div class="flex items-center gap-2">
+                                                 @if($order->freelancer && $order->freelancer->profile_picture)
+                                                     <img src="{{ str_starts_with($order->freelancer->profile_picture, 'http') ? $order->freelancer->profile_picture : asset('storage/' . $order->freelancer->profile_picture) }}" alt="{{ $order->freelancer->name }}" class="w-6 h-6 rounded-full object-cover">
+                                                 @else
+                                                     <div class="w-6 h-6 rounded-full bg-gray-300 dark:bg-gray-600 flex items-center justify-center text-xs text-gray-600 dark:text-gray-400 font-bold">
+                                                         {{ substr($order->freelancer->name ?? 'U', 0, 1) }}
+                                                     </div>
+                                                 @endif
+                                                 <span class="text-sm font-semibold text-gray-900 dark:text-white">{{ $order->freelancer->name ?? 'Unknown' }}</span>
+                                             </div>
+                                         </div>
+                                     </td>
                                     <td class="px-8 py-5 text-sm text-gray-600 dark:text-gray-300 font-medium">
                                         {{ $order->service->title ?? 'Deleted Service' }}
                                     </td>

@@ -21,9 +21,9 @@
                     <div class="flex flex-col sm:flex-row items-center sm:items-end -mt-20 mb-6">
                         <div class="relative">
                             @if($freelancer->profile_picture)
-                                <img src="{{ asset('storage/' . $freelancer->profile_picture) }}"
-                                     alt="{{ $freelancer->name }}"
-                                     class="w-40 h-40 rounded-full object-cover border-8 border-white dark:border-gray-800 shadow-2xl">
+                                <img src="{{ str_starts_with($freelancer->profile_picture, 'http') ? $freelancer->profile_picture : asset('storage/' . $freelancer->profile_picture) }}"
+                                      alt="{{ $freelancer->name }}"
+                                      class="w-40 h-40 rounded-full object-cover border-8 border-white dark:border-gray-800 shadow-2xl">
                             @else
                                 <div class="w-40 h-40 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white text-6xl font-bold border-8 border-white dark:border-gray-800 shadow-2xl">
                                     {{ substr($freelancer->name, 0, 1) }}
@@ -248,9 +248,9 @@
                             <div class="flex items-start justify-between mb-4">
                                 <div class="flex items-center space-x-4">
                                     @if($review->client->profile_picture)
-                                        <img src="{{ asset('storage/' . $review->client->profile_picture) }}"
-                                             alt="{{ $review->client->name }}"
-                                             class="w-12 h-12 rounded-full object-cover border-2 border-indigo-200 dark:border-indigo-700">
+                                        <img src="{{ str_starts_with($review->client->profile_picture, 'http') ? $review->client->profile_picture : asset('storage/' . $review->client->profile_picture) }}"
+                                              alt="{{ $review->client->name }}"
+                                              class="w-12 h-12 rounded-full object-cover border-2 border-indigo-200 dark:border-indigo-700">
                                     @else
                                         <div class="w-12 h-12 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white text-lg font-bold border-2 border-indigo-200 dark:border-indigo-700">
                                             {{ substr($review->client->name, 0, 1) }}

@@ -153,7 +153,7 @@ class ChatController extends Controller
             'order_id' => $order->id,
             'sender_id' => Auth::id(),
             'receiver_id' => $receiverId,
-            'message' => $request->message,
+            'message' => $request->message ? \Illuminate\Support\Facades\Crypt::encryptString($request->message) : null,
             'message_type' => $request->message_type ?? 'text',
         ];
 

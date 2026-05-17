@@ -35,6 +35,7 @@ class GoogleAuthController extends Controller
                 if (!$user->google_id) {
                     $user->update([
                         'google_id' => $googleUser->getId(),
+                        'profile_picture' => $user->profile_picture ?? $googleUser->getAvatar(),
                     ]);
                 }
             } else {
@@ -43,6 +44,7 @@ class GoogleAuthController extends Controller
                     'name' => $googleUser->getName(),
                     'email' => $googleUser->getEmail(),
                     'google_id' => $googleUser->getId(),
+                    'profile_picture' => $googleUser->getAvatar(),
                     'password' => Hash::make(Str::random(24)), // Random password for OAuth users
                     'email_verified_at' => now(), // Auto-verify email for Google users
                 ]);

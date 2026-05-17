@@ -114,7 +114,11 @@ Route::get('/messages', function (Request $request) {
 });
 
 Route::post('/messages', function (Request $request) {
-    $message = Message::create($request->only((new Message())->getFillable()));
+    $data = $request->only((new Message())->getFillable());
+    if (!empty($data['message'])) {
+        $data['message'] = \Illuminate\Support\Facades\Crypt::encryptString($data['message']);
+    }
+    $message = Message::create($data);
     return response()->json($message->load(['order', 'sender', 'receiver']), 201);
 });
 

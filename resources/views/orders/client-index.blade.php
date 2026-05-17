@@ -82,7 +82,7 @@
                                         <td class="px-6 py-4 whitespace-nowrap">
                                             <div class="flex items-center">
                                                 @if($order->freelancer->profile_picture)
-                                                    <img src="{{ asset('storage/' . $order->freelancer->profile_picture) }}" alt="{{ $order->freelancer->name }}" class="w-10 h-10 rounded-full object-cover mr-3 border-2 border-indigo-500">
+                                                    <img src="{{ str_starts_with($order->freelancer->profile_picture, 'http') ? $order->freelancer->profile_picture : asset('storage/' . $order->freelancer->profile_picture) }}" alt="{{ $order->freelancer->name }}" class="w-10 h-10 rounded-full object-cover mr-3 border-2 border-indigo-500">
                                                 @else
                                                     <div class="w-10 h-10 rounded-full bg-indigo-500 flex items-center justify-center text-white font-bold mr-3">
                                                         {{ substr($order->freelancer->name, 0, 1) }}

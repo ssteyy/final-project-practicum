@@ -279,11 +279,11 @@
                                     <td class="px-8 py-5">
                                         @php
                                             $status = $service->status;
-                                            $statusClasses = [
-                                                'published' => 'bg-emerald-50 text-emerald-700 border-emerald-100 dark:bg-emerald-500/10 dark:text-white',
-                                                'pending'   => 'bg-amber-50 text-amber-700 border-amber-100 dark:bg-amber-500/10 dark:text-white',
-                                                'rejected'  => 'bg-red-50 text-red-700 border-red-100 dark:bg-red-500/10 dark:text-white',
-                                            ];
+                                             $statusClasses = [
+                                                 'published' => 'bg-emerald-100 text-emerald-700 border-emerald-200 dark:bg-emerald-500/10 dark:text-emerald-400',
+                                                 'pending'   => 'bg-amber-100 text-amber-700 border-amber-200 dark:bg-amber-500/10 dark:text-amber-400',
+                                                 'rejected'  => 'bg-red-100 text-red-700 border-red-200 dark:bg-red-500/10 dark:text-red-400',
+                                             ];
                                             $class = $statusClasses[$status] ?? 'bg-gray-50 text-gray-700 border-gray-100 dark:bg-gray-500/10 dark:text-white';
                                         @endphp
                                         <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold border {{ $class }}">

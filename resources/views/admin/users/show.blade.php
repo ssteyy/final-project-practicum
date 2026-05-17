@@ -70,7 +70,7 @@
                         <div class="flex items-center justify-between">
                             <div class="flex items-center space-x-4">
                                 @if($user->profile_picture)
-                                    <img src="{{ asset('storage/' . $user->profile_picture) }}" alt="{{ $user->name }}" class="w-16 h-16 rounded-full object-cover border-4 border-indigo-100 dark:border-indigo-900">
+                                    <img src="{{ str_starts_with($user->profile_picture, 'http') ? $user->profile_picture : asset('storage/' . $user->profile_picture) }}" alt="{{ $user->name }}" class="w-16 h-16 rounded-full object-cover border-4 border-indigo-100 dark:border-indigo-900">
                                 @else
                                     <div class="w-16 h-16 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white text-2xl font-bold border-4 border-indigo-100 dark:border-indigo-900">
                                         {{ substr($user->name, 0, 1) }}

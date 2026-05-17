@@ -82,7 +82,7 @@
                                 <x-slot name="trigger">
                                     <button class="inline-flex items-center px-4 py-2 border border-gray-200 dark:border-gray-700 text-sm leading-4 font-medium rounded-xl text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150 shadow-sm">
                                         @if(Auth::user()->profile_picture)
-                                            <img src="{{ asset('storage/' . Auth::user()->profile_picture) }}" alt="{{ Auth::user()->name }}" class="w-8 h-8 rounded-full object-cover mr-3 border-2 border-indigo-500 shadow-sm">
+                                            <img src="{{ str_starts_with(Auth::user()->profile_picture, 'http') ? Auth::user()->profile_picture : asset('storage/' . Auth::user()->profile_picture) }}" alt="{{ Auth::user()->name }}" class="w-8 h-8 rounded-full object-cover mr-3 border-2 border-indigo-500 shadow-sm">
                                         @else
                                             <div class="w-8 h-8 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white text-sm font-bold mr-3 shadow-sm">
                                                 {{ substr(Auth::user()->name, 0, 1) }}
@@ -267,7 +267,7 @@
                                         <td class="px-8 py-5">
                                             <div class="flex items-center gap-3">
                                                 @if($user->profile_picture)
-                                                    <img src="{{ asset('storage/' . $user->profile_picture) }}" alt="{{ $user->name }}" class="h-10 w-10 rounded-full object-cover">
+                                                    <img src="{{ str_starts_with($user->profile_picture, 'http') ? $user->profile_picture : asset('storage/' . $user->profile_picture) }}" alt="{{ $user->name }}" class="h-10 w-10 rounded-full object-cover">
                                                 @else
                                                     <div class="h-10 w-10 rounded-full bg-indigo-100 dark:bg-gray-700 flex items-center justify-center text-indigo-600 dark:text-indigo-400 font-bold text-sm">
                                                         {{ substr($user->name, 0, 2) }}

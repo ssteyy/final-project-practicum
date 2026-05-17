@@ -13,7 +13,7 @@
                 <div class="relative z-10 flex flex-col md:flex-row md:items-center justify-between">
                     <div class="flex items-center space-x-4">
                         @if(Auth::user()->profile_picture)
-                            <img src="{{ asset('storage/' . Auth::user()->profile_picture) }}" alt="{{ Auth::user()->name }}" class="w-16 h-16 rounded-full object-cover border-4 border-white/30 shadow-lg">
+                            <img src="{{ str_starts_with(Auth::user()->profile_picture, 'http') ? Auth::user()->profile_picture : asset('storage/' . Auth::user()->profile_picture) }}" alt="{{ Auth::user()->name }}" class="w-16 h-16 rounded-full object-cover border-4 border-white/30 shadow-lg">
                         @else
                             <div class="w-16 h-16 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center text-white text-2xl font-bold border-4 border-white/30 shadow-lg">
                                 {{ substr(Auth::user()->name, 0, 1) }}
