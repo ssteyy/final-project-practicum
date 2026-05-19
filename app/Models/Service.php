@@ -17,6 +17,8 @@ class Service extends Model
         'title',
         'description',
         'price',
+        'original_price',
+        'platform_fee',
         'pricing_type',
         'category',
         'status',
@@ -26,6 +28,8 @@ class Service extends Model
 
     protected $casts = [
         'price' => 'float',
+        'original_price' => 'float',
+        'platform_fee' => 'float',
     ];
 
     public function freelancer()

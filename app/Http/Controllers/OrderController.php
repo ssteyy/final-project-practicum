@@ -83,8 +83,8 @@ class OrderController extends Controller
         $service = Service::findOrFail($request->service_id);
 
         // Calculate total amount with 15% platform fee
-        $serviceFee = $service->price;
-        $platformFee = $serviceFee * 0.15;
+        $serviceFee = $service->original_price ?? $service->price;
+        $platformFee = $service->platform_fee ?? ($serviceFee * 0.15);
         $totalAmount = $serviceFee + $platformFee;
 
         Order::create([
@@ -92,6 +92,8 @@ class OrderController extends Controller
             'client_id' => Auth::id(),
             'freelancer_id' => $service->freelancer_id,
             'requirements' => $request->requirements,
+            'original_price' => $serviceFee,
+            'platform_fee' => $platformFee,
             'amount' => $totalAmount,
             'status' => 'pending',
         ]);

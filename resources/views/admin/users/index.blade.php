@@ -26,7 +26,7 @@
 
                 <a href="#" class="group flex items-center px-4 py-3 text-sm font-medium transition-all duration-200 bg-indigo-50 text-indigo-700 dark:bg-indigo-900/20 dark:text-indigo-400 rounded-2xl">
                     <svg class="mr-3 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
-                    Manage User
+                    Manage Users
                 </a>
 
                 <a href="{{ route('admin.services.index') }}" @click="sidebarOpen = false" class="group flex items-center px-4 py-3 text-sm font-medium text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800 rounded-2xl transition-all">
@@ -253,6 +253,7 @@
                         <table class="w-full text-left border-collapse">
                             <thead>
                                 <tr class="bg-gray-50/50 dark:bg-gray-900/50">
+                                    <th class="px-8 py-4 text-xs font-semibold uppercase tracking-wider text-gray-500">User ID</th>
                                     <th class="px-8 py-4 text-xs font-semibold uppercase tracking-wider text-gray-500">User Details</th>
                                     <th class="px-8 py-4 text-xs font-semibold uppercase tracking-wider text-gray-500">Role</th>
                                     <th class="px-8 py-4 text-xs font-semibold uppercase tracking-wider text-gray-500">Joined Date</th>
@@ -264,6 +265,9 @@
                             <tbody class="divide-y divide-gray-50 dark:divide-gray-700">
                                 @forelse($users as $user)
                                     <tr class="hover:bg-gray-50/80 dark:hover:bg-gray-700/30 transition-colors">
+                                        <td class="px-8 py-5 text-sm font-mono text-gray-500 dark:text-gray-400">
+                                             #{{ $user->id }}
+                                         </td>
                                         <td class="px-8 py-5">
                                             <div class="flex items-center gap-3">
                                                 @if($user->profile_picture)
@@ -278,12 +282,13 @@
                                                     <span class="text-xs text-gray-400">{{ $user->email }}</span>
                                                 </div>
                                             </div>
-                                        </td>
-                                        <td class="px-8 py-5">
-                                            <span class="text-xs font-bold px-2.5 py-1 rounded-lg bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 border border-gray-200 dark:border-gray-600">
-                                                {{ ucfirst($user->role ?? 'User') }}
-                                            </span>
-                                        </td>
+                                         </td>
+
+                                         <td class="px-8 py-5">
+                                             <span class="text-xs font-bold px-2.5 py-1 rounded-lg bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 border border-gray-200 dark:border-gray-600">
+                                                 {{ ucfirst($user->role ?? 'User') }}
+                                             </span>
+                                         </td>
                                         <td class="px-8 py-5 text-sm text-gray-500 dark:text-gray-400">
                                             {{ $user->created_at->format('M d, Y') }}
                                         </td>

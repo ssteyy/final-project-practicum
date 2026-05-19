@@ -208,6 +208,10 @@ class AdminController extends Controller
         $data = $request->all();
         $data['status'] = 'published'; // Admin created services are published by default
 
+        // Pricing columns
+        $data['original_price'] = $data['price'];
+        $data['platform_fee'] = $data['price'] * 0.15;
+
         if ($request->hasFile('image_path')) {
             $path = $request->file('image_path')->store('services', 'public');
             $data['image_path'] = $path;

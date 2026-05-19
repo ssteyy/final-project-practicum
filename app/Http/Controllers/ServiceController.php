@@ -81,6 +81,10 @@ class ServiceController extends Controller
         // New services start as draft, waiting for admin approval
         $validated['status'] = 'draft';
 
+        // Pricing columns
+        $validated['original_price'] = $validated['price'];
+        $validated['platform_fee'] = $validated['price'] * 0.15;
+
         if ($request->hasFile('image_path')) {
             $path = $request->file('image_path')->store('services', 'public');
             $validated['image_path'] = $path;

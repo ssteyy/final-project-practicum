@@ -17,11 +17,15 @@ class Order extends Model
         'freelancer_id',
         'requirements',
         'amount',
+        'original_price',
+        'platform_fee',
         'status',
     ];
 
     protected $casts = [
         'amount' => 'float',
+        'original_price' => 'float',
+        'platform_fee' => 'float',
     ];
 
     public function service()
