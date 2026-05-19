@@ -184,7 +184,7 @@ This project is open-source and licensed under the MIT License.
 
 ---
 
-## Slide 6: Results
+## Chapter 6: Results
 
 **System Outcomes:**
 
@@ -204,7 +204,7 @@ This project is open-source and licensed under the MIT License.
 
 ---
 
-## Slide 7: Future Plan
+## Chapter 7: Future Plan
 
 The following features are planned for future improvement of the system:
 
@@ -220,7 +220,7 @@ The following features are planned for future improvement of the system:
 
 ---
 
-## Slide 8: Conclusion
+## chapter 8: Conclusion
 
 In conclusion, FreelanceHub is a functional and useful freelancer marketplace platform that meets the project objectives. It helps freelancers and clients manage services, orders, and communication in one system. The platform improves organization, reduces confusion, and provides a better user experience. In the future, more advanced features can be added to improve functionality and user satisfaction.
 
