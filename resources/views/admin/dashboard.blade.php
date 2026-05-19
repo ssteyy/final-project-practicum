@@ -146,14 +146,11 @@
                  </div>
 
                  <div>
-                    <a href="{{ route('admin.dashboard') }}" onclick="alert('Export feature coming soon!'); return false;" class="inline-flex items-center px-4 py-2 bg-white dark:bg-gray-800 border border-indigo-600 dark:border-indigo-600 hover:bg-gray-50 dark:hover:bg-gray-700 text-sm font-semibold rounded-xl shadow-sm transition text-indigo-600 dark:text-indigo-400">
-                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2 2 2 0 012 2v14a2 2 0 01-2 2z"></path></svg>
-                        Export to Excel
-                    </a>
+                     <a href="{{ route('admin.export.orders') }}" class="inline-flex items-center px-4 py-2 bg-white dark:bg-gray-800 border border-indigo-600 dark:border-indigo-600 hover:bg-gray-50 dark:hover:bg-gray-700 text-sm font-semibold rounded-xl shadow-sm transition text-indigo-600 dark:text-indigo-400">
+                         <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2 2 2 0 012 2v14a2 2 0 01-2 2z"></path></svg>
+                         Export to Excel
+                     </a>
                  </div>
-                {{-- <div class="flex items-center gap-3">
-                    <button class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-sm font-semibold shadow-md transition">+ New Service</button>
-                </div> --}}
             </div>
 
             <!-- Stats Cards -->

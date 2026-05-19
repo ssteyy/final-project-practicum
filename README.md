@@ -1,103 +1,169 @@
 # FreelanceHub – Freelancer Marketplace Platform
+
 ## Project Presentation
 
----
+### Chapter 1: Introduction
 
-## Slide 1: Introduction
+FreelanceHub is a modern web-based freelancer marketplace platform developed using the Laravel framework. The system is designed to connect freelancers and clients in a single, organized platform. It allows freelancers to offer their services, clients to discover and hire them, and both parties to communicate and manage orders efficiently.
 
-FreelanceHub is a web-based freelancer marketplace platform that helps connect freelancers with clients who need services. The system allows users to create accounts, post services, place orders, and communicate in one platform. It is developed using the Laravel framework with a modern and responsive design. FreelanceHub helps improve communication, organization, and efficiency between freelancers and clients.
-
----
-
-## Slide 2: Problem Statement
-
-**Problems in Current Freelance Systems:**
-
-- Freelancers and clients use different apps to communicate
-- Communication is not organized in one place
-- Lack of trust and security in some platforms
-- Difficult to track order and project status
-- Clients find it hard to search for suitable services
-- Freelancers struggle to find clients easily
-- No clear system to manage services and orders
-
-**Need:**
-A single platform to manage services, orders, and communication efficiently
+The platform features a clean, responsive user interface built with Tailwind CSS and Alpine.js. It includes role-based access control (Client, Freelancer, and Admin), secure authentication with Google OAuth, and a complete order management system with pricing transparency (original price + 15% platform fee).
 
 ---
 
-## Slide 3: Aim and Objectives
+### Chapter 2: Problem Statement
 
-### Aim
+Existing freelance platforms often suffer from several limitations:
 
-The aim of this project is to develop a freelancer marketplace system that makes it easier for freelancers and clients to connect, communicate, and manage projects.
+- Communication is scattered across multiple tools (email, WhatsApp, etc.)
+- No centralized system for managing services and orders
+- Lack of transparency in pricing and fees
+- Difficulty for clients to find reliable freelancers
+- Limited tools for administrators to monitor platform activity
 
-### Objectives
-
-1. To allow freelancers to create and manage their services
-2. To allow clients to browse services and place orders
-3. To implement secure user login and registration
-4. To build an order management system with status tracking
-5. To provide a messaging system for communication
-6. To design a simple, responsive, and user-friendly interface
+**Need:**  
+A unified, professional platform that handles service posting, order placement, communication, and admin oversight in one place.
 
 ---
 
-## Slide 4: Methodology
+### Chapter 3: Aim and Objectives
 
-### Technologies Used:
-- **Backend:** Laravel Framework (MVC Architecture)
+**Aim:**  
+To develop a complete freelancer marketplace system that simplifies the process of hiring freelancers and managing freelance projects.
+
+**Objectives:**
+1. Allow freelancers to create and manage services with pricing details
+2. Enable clients to browse, search, and place orders on services
+3. Implement secure authentication and role-based access
+4. Provide real-time messaging between clients and freelancers
+5. Build an admin dashboard with user, service, and order management
+6. Support Excel export for order reports with proper pricing breakdown
+7. Design a modern, responsive, and user-friendly interface
+
+---
+
+### Chapter 4: Methodology & Technologies
+
+**Technologies Used:**
+- **Backend:** Laravel 10 (MVC Architecture)
 - **Frontend:** Blade Templates, Tailwind CSS, Alpine.js
 - **Database:** MySQL
-- **Authentication:** Email and Password Login + Google OAuth
+- **Authentication:** Laravel Breeze + Google OAuth
+- **Excel Export:** PhpSpreadsheet
 
-### Development Process:
-1. Requirement analysis and planning
-2. Database design using migrations
-3. Backend development using controllers and models
-4. Frontend design using Blade templates
-5. Integration of frontend and backend
-6. Testing and bug fixing
+**Development Approach:**
+- Database design with proper migrations and relationships
+- Role-based access control (Client, Freelancer, Admin)
+- Pricing system with `original_price`, `platform_fee`, and `amount`
+- Clean separation between admin and user interfaces
+- Focus on security, usability, and maintainability
 
 ---
 
-## Slide 5: System Functionality
+### Chapter 5: System Functionality
 
-**What FreelanceHub Offers:**
+**1. User Management**
+- Registration and login with email/password and Google OAuth
+- Role selection during registration (Client/Freelancer)
+- Profile management with profile picture upload
+- Admin can manage all users (view, activate/deactivate)
 
-### 1. User Management
-- User registration and login
-- Google OAuth authentication
-- Role selection (Client or Freelancer)
-- Profile management with image upload
-- Email verification
+**2. Service Management**
+- Freelancers can create services with title, description, category, price, and image
+- Pricing system stores `original_price` and calculates 15% `platform_fee`
+- Services can be in Draft or Published status
+- Clients can browse and search services by category
 
-### 2. Service Management
-- Freelancers can create services with:
-  - Title and description
-  - Category selection
-  - Price setting
-  - Image upload
-  - Status (Draft/Published)
-- Browse all services with category filtering
-- Sidebar filter to find services by category
-- Service details page
-- Edit and delete services
+**3. Order Management**
+- Clients can place orders with specific requirements
+- Order includes original price, platform fee, and total amount
+- Status workflow: Pending → In Progress → Completed
+- Admin can view all orders and export monthly reports to Excel
 
-### 3. Order Management
-- Clients can place orders on services
-- Order includes:
-  - Service details
-  - Client requirements
-  - Order amount
-  - Status tracking
-- Order status workflow:
-  - **Pending** - Order placed, waiting for freelancer
-  - **Accepted** - Freelancer accepted the order
-  - **In Progress** - Work is ongoing
-  - **Completed** - Work finished
-- View order history
-- Cancel pending orders
+**4. Messaging System**
+- Real-time chat between clients and freelancers
+- Messages are linked to specific orders
+
+**5. Admin Dashboard**
+- Overview of users, services, and orders
+- Export monthly order reports to Excel (with client & freelancer names)
+- Manage users, approve/reject services
+
+---
+
+## Installation Guide
+
+### Prerequisites
+- PHP 8.1 or higher
+- Composer
+- Node.js & npm
+- MySQL
+
+### Installation Steps
+
+1. **Clone the project**
+   ```bash
+   git clone https://github.com/your-username/freelancer-market.git
+   cd freelancer-market
+   ```
+
+2. **Install dependencies**
+   ```bash
+   composer install
+   npm install
+   ```
+
+3. **Configure environment**
+   ```bash
+   cp .env.example .env
+   php artisan key:generate
+   ```
+
+   Update your database settings in `.env`.
+
+4. **Run migrations**
+   ```bash
+   php artisan migrate
+   ```
+
+5. **Seed the database (Recommended)**
+   ```bash
+   php artisan db:seed
+   ```
+
+6. **Build frontend assets**
+   ```bash
+   npm run build
+   ```
+
+7. **Start the development server**
+   ```bash
+   php artisan serve
+   ```
+
+Visit: `http://127.0.0.1:8000`
+
+---
+
+### Default Accounts
+
+| Role        | Email                          | Password         |
+|-------------|--------------------------------|------------------|
+| Admin       | admin@freelancehub.com         | admin123         |
+| Freelancer  | freelancer@freelancehub.com    | freelancer123    |
+
+---
+
+### Important Notes
+
+- Enable PHP extensions `gd` and `zip` for Excel export feature.
+- All dates in reports are displayed in **GMT+7**.
+- The system automatically applies a 15% platform fee on every service.
+
+---
+
+## License
+
+This project is open-source and licensed under the MIT License.
 
 ### 4. Messaging System
 - Chat between client and freelancer for each order

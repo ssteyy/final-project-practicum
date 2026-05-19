@@ -60,6 +60,7 @@ Route::middleware(['auth', 'verified'])->prefix('admin')->name('admin.')->group(
     Route::patch('/users/{user}/reactivate', [AdminController::class, 'reactivateUser'])->name('users.reactivate');
     Route::patch('/services/{service}/approve', [ServiceController::class, 'approve'])->name('services.approve');
     Route::patch('/services/{service}/reject', [ServiceController::class, 'reject'])->name('services.reject');
+    Route::get('/export/orders', [AdminController::class, 'exportOrders'])->name('export.orders');
 });
 
 Route::middleware('auth')->group(function () {

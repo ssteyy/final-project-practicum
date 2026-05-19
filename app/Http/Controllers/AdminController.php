@@ -106,6 +106,86 @@ class AdminController extends Controller
         return view('admin.orders.show', compact('order'));
     }
 
+    public function exportOrders()
+    {
+        if (auth()->user()->role !== User::ROLE_ADMIN) {
+            abort(403);
+        }
+
+        $month = now()->format('F-Y');
+        $filename = "report-order-{$month}.xlsx";
+
+        $orders = \App\Models\Order::with(['client', 'freelancer'])
+            ->whereMonth('created_at', now()->month)
+            ->whereYear('created_at', now()->year)
+            ->where('amount', '>', 0)
+            ->latest()
+            ->get();
+
+        $spreadsheet = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
+        $sheet = $spreadsheet->getActiveSheet();
+
+        // Title
+        $sheet->setCellValue('A1', 'Order Report - ' . now()->format('F Y'));
+        $sheet->mergeCells('A1:H1');
+        $sheet->getStyle('A1')->getFont()->setBold(true)->setSize(16);
+
+        // Headers (row 3)
+        $headers = ['Order ID', 'Client Name', 'Freelancer Name', 'Original Price', 'Platform Fee', 'Amount', 'Status', 'Date'];
+        $columns = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'];
+        foreach ($headers as $index => $header) {
+            $cell = $sheet->getCell($columns[$index] . '3');
+            $cell->setValue($header);
+            $cell->getStyle()->getFont()->setBold(true)->setColor(new \PhpOffice\PhpSpreadsheet\Style\Color('FFFFFF'));
+            $cell->getStyle()->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
+                ->getStartColor()->setRGB('4F46E5');
+            $cell->getStyle()->getAlignment()->setHorizontal('center')->setVertical('center');
+        }
+
+        // Set header row height
+        $sheet->getRowDimension(3)->setRowHeight(30);
+
+        // Data starting from row 4
+        $row = 4;
+        foreach ($orders as $order) {
+            $sheet->setCellValue('A' . $row, $order->id);
+            $sheet->setCellValue('B' . $row, $order->client->name ?? 'N/A');
+            $sheet->setCellValue('C' . $row, $order->freelancer->name ?? 'N/A');
+            $sheet->setCellValue('D' . $row, $order->original_price ?? 0);
+            $sheet->setCellValue('E' . $row, $order->platform_fee ?? 0);
+            $sheet->setCellValue('F' . $row, $order->amount);
+            $sheet->setCellValue('G' . $row, ucfirst($order->status));
+            $sheet->setCellValue('H' . $row, $order->created_at->setTimezone('Asia/Bangkok')->format('Y-m-d H:i'));
+
+            // Center align all data cells
+            foreach ($columns as $col) {
+                $sheet->getCell($col . $row)->getStyle()->getAlignment()->setHorizontal('center')->setVertical('center');
+            }
+            $row++;
+        }
+
+        // Set minimum column width + auto size
+        $minWidths = ['A' => 12, 'B' => 20, 'C' => 20, 'D' => 15, 'E' => 15, 'F' => 15, 'G' => 15, 'H' => 18];
+        foreach ($minWidths as $col => $width) {
+            $sheet->getColumnDimension($col)->setWidth($width);
+        }
+
+        // Add borders
+        $styleArray = [
+            'borders' => [
+                'allBorders' => [
+                    'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN,
+                ],
+            ],
+        ];
+        $sheet->getStyle('A3:H' . ($row - 1))->applyFromArray($styleArray);
+
+        $writer = new \PhpOffice\PhpSpreadsheet\Writer\Xlsx($spreadsheet);
+        return response()->streamDownload(function () use ($writer) {
+            $writer->save('php://output');
+        }, $filename);
+    }
+
     public function users(Request $request)
     {
         if (auth()->user()->role !== User::ROLE_ADMIN) {

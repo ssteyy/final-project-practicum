@@ -97,5 +97,12 @@ class DatabaseSeeder extends Seeder
             'status' => 'published',
             'image_url' => 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=800&auto=format&fit=crop&q=60'
         ]);
+
+        // Remove default/test order between user 1 and user 2
+        \App\Models\Order::where(function ($q) {
+            $q->where('client_id', 1)->where('freelancer_id', 2);
+        })->orWhere(function ($q) {
+            $q->where('client_id', 2)->where('freelancer_id', 1);
+        })->delete();
     }
 }
