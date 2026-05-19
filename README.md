@@ -102,8 +102,8 @@ To develop a complete freelancer marketplace system that simplifies the process 
 
 1. **Clone the project**
    ```bash
-   git clone https://github.com/your-username/freelancer-market.git
-   cd freelancer-market
+   git clone https://github.com/ssteyy/final-project-practicum.git
+   cd final-project-practicum
    ```
 
 2. **Install dependencies**
