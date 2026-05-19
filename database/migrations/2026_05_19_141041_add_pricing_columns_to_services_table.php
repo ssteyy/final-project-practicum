@@ -23,7 +23,12 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('services', function (Blueprint $table) {
-            $table->dropColumn(['original_price', 'platform_fee']);
+            if (Schema::hasColumn('services', 'original_price')) {
+                $table->dropColumn('original_price');
+            }
+            if (Schema::hasColumn('services', 'platform_fee')) {
+                $table->dropColumn('platform_fee');
+            }
         });
     }
 };
