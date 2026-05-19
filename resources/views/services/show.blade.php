@@ -82,7 +82,7 @@
                                 <p class="text-5xl font-black text-indigo-600 dark:text-indigo-400">${{ number_format($service->price, 2) }}</p>
                                 <div class="mt-3 flex justify-center">
                                      <span class="inline-flex items-center text-sm font-bold text-gray-600 dark:text-gray-400">
-                                         {{ $service->pricing_type === 'hourly' ? '🕐 Hourly Rate' : ($service->pricing_type === 'project' ? '📋 Per Project' : '💰 Fixed Price') }}
+                                         {{ $service->pricing_type === 'hourly' ? 'Hourly Rate' : ($service->pricing_type === 'project' ? 'Per Project' : 'Fixed Price') }}
                                      </span>
                                 </div>
                             </div>

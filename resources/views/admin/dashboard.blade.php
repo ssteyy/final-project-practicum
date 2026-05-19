@@ -133,17 +133,24 @@
 
             <div class="p-6 lg:p-10">
                 <div class="flex flex-col md:flex-row md:items-center justify-between mb-10 gap-4">
-                <div class="flex items-center gap-4">
-                    <button @click="sidebarOpen = !sidebarOpen" class="lg:hidden p-2 rounded-xl bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
-                        <svg class="w-6 h-6 text-gray-600 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
-                        </svg>
-                    </button>
-                    <div>
-                        <h2 class="text-3xl font-extrabold text-gray-900 dark:text-white tracking-tight">Analytics Overview</h2>
-                        <p class="text-gray-500 dark:text-gray-400 mt-1 font-medium">Monitoring platform activity and growth.</p>
-                    </div>
-                </div>
+                 <div class="flex items-center gap-4">
+                     <button @click="sidebarOpen = !sidebarOpen" class="lg:hidden p-2 rounded-xl bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
+                         <svg class="w-6 h-6 text-gray-600 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                         </svg>
+                     </button>
+                     <div>
+                         <h2 class="text-3xl font-extrabold text-gray-900 dark:text-white tracking-tight">Analytics Overview</h2>
+                         <p class="text-gray-500 dark:text-gray-400 mt-1 font-medium">Monitoring platform activity and growth.</p>
+                     </div>
+                 </div>
+
+                 <div>
+                     <a href="{{ route('admin.dashboard') }}" onclick="alert('Export feature coming soon!'); return false;" class="inline-flex items-center px-4 py-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-indigo-600 hover:bg-gray-50 dark:hover:bg-gray-700 text-sm font-semibold rounded-xl shadow-sm transition text-gray-700 dark:text-indigo-400">
+                         <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2 2 2 0 012 2v14a2 2 0 01-2 2z"></path></svg>
+                         Export to Excel
+                     </a>
+                 </div>
                 {{-- <div class="flex items-center gap-3">
                     <button class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-sm font-semibold shadow-md transition">+ New Service</button>
                 </div> --}}
@@ -298,9 +305,9 @@
                                              </div>
                                          @endif
                                      </td>
-                                    <td class="px-8 py-5 text-sm font-bold text-gray-900 dark:text-white">
-                                        ${{ $item instanceof \App\Models\Service ? number_format($item->price, 2) : number_format($item->amount, 2) }}
-                                    </td>
+                                     <td class="px-8 py-5 text-sm font-bold text-emerald-600 dark:text-emerald-400">
+                                         ${{ $item instanceof \App\Models\Service ? number_format($item->price, 2) : number_format($item->amount, 2) }}
+                                     </td>
                                     <td class="px-8 py-5">
                                         @php
                                             $status = $item->status;

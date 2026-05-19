@@ -69,15 +69,19 @@ class ChatController extends Controller
 
             if ($targetUser && $targetUser->id != Auth::id()) {
                 // Find or create order between current user and specified user
+                $supportService = \App\Models\Service::where('freelancer_id', $targetUser->id)->where('title', 'Customer Support')->first();
+                $supportServiceId = $supportService?->id ?? 1;
+                $amount = $supportService ? ($supportService->price * 1.15) : 0.00;
+
                 $selectedOrder = Order::firstOrCreate(
                     [
                         'client_id' => min(Auth::id(), $targetUser->id),
                         'freelancer_id' => max(Auth::id(), $targetUser->id),
-                        'service_id' => \App\Models\Service::where('freelancer_id', $targetUser->id)->where('title', 'Customer Support')->first()->id ?? 1,
+                        'service_id' => $supportServiceId,
                     ],
                     [
                         'requirements' => 'Direct chat with ' . $targetUser->name,
-                        'amount' => 0.00,
+                        'amount' => $amount,
                         'status' => 'completed',
                     ]
                 );

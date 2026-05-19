@@ -51,6 +51,7 @@ Route::middleware(['auth', 'verified'])->prefix('admin')->name('admin.')->group(
     Route::get('/services/create', [AdminController::class, 'createService'])->name('services.create');
     Route::post('/services', [AdminController::class, 'storeService'])->name('services.store');
     Route::get('/orders', [AdminController::class, 'orders'])->name('orders.index');
+    Route::get('/orders/{order}', [AdminController::class, 'showOrder'])->name('orders.show');
     Route::get('/users', [AdminController::class, 'users'])->name('users.index');
     Route::get('/users/create', [AdminController::class, 'createUser'])->name('users.create');
     Route::post('/users', [AdminController::class, 'storeUser'])->name('users.store');

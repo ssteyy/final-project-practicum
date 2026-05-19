@@ -96,6 +96,16 @@ class AdminController extends Controller
         return view('admin.orders.index', compact('orders', 'totalOrders', 'totalRevenue', 'pendingOrders', 'completedOrders'))->with('highlightId', $request->highlight);
     }
 
+    public function showOrder(Order $order)
+    {
+        if (auth()->user()->role !== User::ROLE_ADMIN) {
+            abort(403);
+        }
+
+        $order->load('service', 'client', 'freelancer', 'review');
+        return view('admin.orders.show', compact('order'));
+    }
+
     public function users(Request $request)
     {
         if (auth()->user()->role !== User::ROLE_ADMIN) {
