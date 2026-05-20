@@ -216,7 +216,6 @@ The following features are planned for future improvement of the system:
 - Escrow payment system
 - Email notifications
 - File sharing in chat
-- Video call integration
 
 ---
 
