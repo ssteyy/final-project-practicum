@@ -28,6 +28,7 @@ class OrderReportExport implements FromQuery, WithHeadings, WithMapping
             'Platform Fee',
             'Amount',
             'Status',
+            'Payment Status',
             'Date',
         ];
     }
@@ -42,6 +43,7 @@ class OrderReportExport implements FromQuery, WithHeadings, WithMapping
             $order->platform_fee ?? 0,
             $order->amount,
             ucfirst($order->status),
+            $order->payment_status === 'paid' ? 'Paid' : 'Unpaid',
             $order->created_at->format('Y-m-d H:i'),
         ];
     }

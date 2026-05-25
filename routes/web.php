@@ -91,6 +91,14 @@ Route::middleware(['auth', 'verified'])->group(function () {
     })->name('chat.show');
     Route::post('/chat/{order}', [App\Http\Controllers\ChatController::class, 'store'])->name('chat.store');
     Route::get('/chat/{order}/messages', [App\Http\Controllers\ChatController::class, 'getMessages'])->name('chat.messages');
+
+    // KHQR Bakong Payment Routes (works without token for QR generation)
+    Route::get('/orders/{order}/pay', [App\Http\Controllers\PaymentController::class, 'generateQR'])->name('orders.pay');
+    Route::get('/orders/{order}/payment-status', [App\Http\Controllers\PaymentController::class, 'checkStatus'])->name('orders.payment.status');
+
+    // TEST ONLY route - marks order as paid without real payment
+    Route::post('/orders/{order}/mark-paid-test', [App\Http\Controllers\PaymentController::class, 'markAsPaidTest'])
+        ->name('orders.mark-paid-test');
 });
 
 // Review Routes

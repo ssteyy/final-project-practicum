@@ -42,6 +42,8 @@
 
     </div>
 
+    @stack('scripts')
+
     <!-- Floating Chat Button -->
     @auth
         <div class="fixed bottom-6 right-6 z-50">

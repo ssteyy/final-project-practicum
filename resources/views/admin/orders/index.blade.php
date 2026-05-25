@@ -241,8 +241,9 @@
                                 <th class="px-8 py-4 text-xs font-semibold uppercase tracking-wider text-gray-500">Stakeholders</th>
                                 <th class="px-8 py-4 text-xs font-semibold uppercase tracking-wider text-gray-500">Service Title</th>
                                 <th class="px-8 py-4 text-xs font-semibold uppercase tracking-wider text-gray-500">Amount</th>
-                                <th class="px-8 py-4 text-xs font-semibold uppercase tracking-wider text-gray-500">Status</th>
-                                <th class="px-8 py-4 text-xs font-semibold uppercase tracking-wider text-gray-500 text-right">Actions</th>
+                                 <th class="px-8 py-4 text-xs font-semibold uppercase tracking-wider text-gray-500">Status</th>
+                                 <th class="px-8 py-4 text-xs font-semibold uppercase tracking-wider text-gray-500">Payment Status</th>
+                                 <th class="px-8 py-4 text-xs font-semibold uppercase tracking-wider text-gray-500 text-right">Actions</th>
                             </tr>
                         </thead>
 
@@ -311,10 +312,25 @@
                                         <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold border {{ $statusClass }}">
                                             <span class="w-1.5 h-1.5 rounded-full bg-current mr-2"></span>
                                             {{ ucfirst($order->status) }}
-                                        </span>
-                                    </td>
-
-                                    <td class="px-8 py-5 text-right">
+                                         </span>
+                                     </td>
+ 
+                                     <!-- Payment Status -->
+                                     <td class="px-8 py-5">
+                                         @if($order->payment_status === 'paid')
+                                             <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800/50">
+                                                 <span class="w-1.5 h-1.5 rounded-full bg-current mr-2"></span>
+                                                 Paid
+                                             </span>
+                                         @else
+                                             <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300 border border-amber-200 dark:border-amber-800/50">
+                                                 <span class="w-1.5 h-1.5 rounded-full bg-current mr-2"></span>
+                                                 Unpaid
+                                             </span>
+                                         @endif
+                                     </td>
+ 
+                                     <td class="px-8 py-5 text-right">
                                         <div class="flex items-center justify-end gap-3">
                                              <a href="{{ route('admin.orders.show', $order) }}" class="p-2 bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 rounded-xl hover:bg-gray-200 transition">
                                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>

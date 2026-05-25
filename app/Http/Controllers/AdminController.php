@@ -127,12 +127,12 @@ class AdminController extends Controller
 
         // Title
         $sheet->setCellValue('A1', 'Order Report - ' . now()->format('F Y'));
-        $sheet->mergeCells('A1:H1');
+        $sheet->mergeCells('A1:I1');
         $sheet->getStyle('A1')->getFont()->setBold(true)->setSize(16);
 
         // Headers (row 3)
-        $headers = ['Order ID', 'Client Name', 'Freelancer Name', 'Original Price', 'Platform Fee', 'Amount', 'Status', 'Date'];
-        $columns = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'];
+        $headers = ['Order ID', 'Client Name', 'Freelancer Name', 'Original Price', 'Platform Fee', 'Amount', 'Status', 'Payment Status', 'Date'];
+        $columns = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I'];
         foreach ($headers as $index => $header) {
             $cell = $sheet->getCell($columns[$index] . '3');
             $cell->setValue($header);
@@ -155,7 +155,8 @@ class AdminController extends Controller
             $sheet->setCellValue('E' . $row, $order->platform_fee ?? 0);
             $sheet->setCellValue('F' . $row, $order->amount);
             $sheet->setCellValue('G' . $row, ucfirst($order->status));
-            $sheet->setCellValue('H' . $row, $order->created_at->setTimezone('Asia/Bangkok')->format('Y-m-d H:i'));
+            $sheet->setCellValue('H' . $row, $order->payment_status === 'paid' ? 'Paid' : 'Unpaid');
+            $sheet->setCellValue('I' . $row, $order->created_at->setTimezone('Asia/Bangkok')->format('Y-m-d H:i'));
 
             // Center align all data cells
             foreach ($columns as $col) {
@@ -165,7 +166,7 @@ class AdminController extends Controller
         }
 
         // Set minimum column width + auto size
-        $minWidths = ['A' => 12, 'B' => 20, 'C' => 20, 'D' => 15, 'E' => 15, 'F' => 15, 'G' => 15, 'H' => 18];
+        $minWidths = ['A' => 12, 'B' => 20, 'C' => 20, 'D' => 15, 'E' => 15, 'F' => 15, 'G' => 15, 'H' => 15, 'I' => 18];
         foreach ($minWidths as $col => $width) {
             $sheet->getColumnDimension($col)->setWidth($width);
         }
@@ -178,12 +179,17 @@ class AdminController extends Controller
                 ],
             ],
         ];
-        $sheet->getStyle('A3:H' . ($row - 1))->applyFromArray($styleArray);
+        $sheet->getStyle('A3:I' . ($row - 1))->applyFromArray($styleArray);
 
         $writer = new \PhpOffice\PhpSpreadsheet\Writer\Xlsx($spreadsheet);
-        return response()->streamDownload(function () use ($writer) {
+
+        return response()->stream(function () use ($writer) {
             $writer->save('php://output');
-        }, $filename);
+        }, 200, [
+            'Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+            'Content-Disposition' => 'inline; filename="' . $filename . '"',
+            'Cache-Control' => 'max-age=0',
+        ]);
     }
 
     public function users(Request $request)

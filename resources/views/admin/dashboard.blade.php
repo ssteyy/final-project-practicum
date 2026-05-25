@@ -146,7 +146,10 @@
                  </div>
 
                  <div>
-                     <a href="{{ route('admin.export.orders') }}" class="inline-flex items-center px-4 py-2 bg-white dark:bg-gray-800 border border-indigo-600 dark:border-indigo-600 hover:bg-gray-50 dark:hover:bg-gray-700 text-sm font-semibold rounded-xl shadow-sm transition text-indigo-600 dark:text-indigo-400">
+                      <a href="{{ route('admin.export.orders') }}" 
+                         target="_blank" 
+                         rel="noopener noreferrer"
+                         class="inline-flex items-center px-4 py-2 bg-white dark:bg-gray-800 border border-indigo-600 dark:border-indigo-600 hover:bg-gray-50 dark:hover:bg-gray-700 text-sm font-semibold rounded-xl shadow-sm transition text-indigo-600 dark:text-indigo-400">
                          <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2 2 2 0 012 2v14a2 2 0 01-2 2z"></path></svg>
                          Export to Excel
                      </a>
@@ -227,8 +230,9 @@
                                 <th class="px-8 py-4 text-xs font-semibold uppercase text-gray-500">Service</th>
                                 <th class="px-8 py-4 text-xs font-semibold uppercase text-gray-500">Stakeholders</th>
                                 <th class="px-8 py-4 text-xs font-semibold uppercase text-gray-500">Amount</th>
-                                <th class="px-8 py-4 text-xs font-semibold uppercase text-gray-500">Status</th>
-                            </tr>
+                                 <th class="px-8 py-4 text-xs font-semibold uppercase text-gray-500">Status</th>
+                                 <th class="px-8 py-4 text-xs font-semibold uppercase text-gray-500">Payment Status</th>
+                             </tr>
                         </thead>
                         <tbody class="divide-y divide-gray-50 dark:divide-gray-700">
                              @forelse($recentOrders as $item)
@@ -318,11 +322,30 @@
                                         <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold border {{ $statusClass }}">
                                             <span class="w-1.5 h-1.5 rounded-full bg-current mr-2"></span>
                                             {{ ucfirst($status) }}
-                                        </span>
-                                    </td>
-                                </tr>
+                                         </span>
+                                     </td>
+
+                                     <!-- Payment Status -->
+                                     <td class="px-8 py-5">
+                                         @if($item instanceof \App\Models\Service)
+                                             <span class="text-gray-400 dark:text-gray-500 text-xs">—</span>
+                                         @else
+                                             @if($item->payment_status === 'paid')
+                                                 <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800/50">
+                                                     <span class="w-1.5 h-1.5 rounded-full bg-current mr-2"></span>
+                                                     Paid
+                                                 </span>
+                                             @else
+                                                 <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300 border border-amber-200 dark:border-amber-800/50">
+                                                     <span class="w-1.5 h-1.5 rounded-full bg-current mr-2"></span>
+                                                     Unpaid
+                                                 </span>
+                                             @endif
+                                         @endif
+                                     </td>
+                                 </tr>
                             @empty
-                                <tr><td colspan="5" class="px-8 py-10 text-center text-gray-500">No recent activity found.</td></tr>
+                                 <tr><td colspan="6" class="px-8 py-10 text-center text-gray-500">No recent activity found.</td></tr>
                             @endforelse
                         </tbody>
                     </table>

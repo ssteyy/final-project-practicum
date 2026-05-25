@@ -37,4 +37,13 @@ return [
         'redirect' => env('GOOGLE_REDIRECT_URI'),
     ],
 
+    'bakong' => [
+        'token'          => env('BAKONG_TOKEN'),
+        'account_id'     => env('BAKONG_ACCOUNT_ID', 'demo@devb'),
+        'merchant_name'  => env('BAKONG_MERCHANT_NAME', 'FreelanceHub'),
+        'merchant_city'  => env('BAKONG_MERCHANT_CITY', 'Phnom Penh'),
+        'env'            => env('BAKONG_ENV', 'sit'),
+        'api_url'        => env('BAKONG_API_URL'),
+    ],
+
 ];

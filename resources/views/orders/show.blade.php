@@ -67,6 +67,87 @@
                         </div>
                     </div>
 
+                    <!-- URGENT: Payment Required after Freelancer Confirmation (Client only) -->
+                    @if(Auth::id() === $order->client_id && $order->payment_status !== 'paid' && $order->status !== 'pending')
+                        <div class="mt-6 p-6 bg-gradient-to-r from-amber-500 to-orange-600 rounded-3xl shadow-2xl text-white">
+                            <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                                <div class="flex-1">
+                                    <div class="flex items-center gap-3 mb-2">
+                                        <div class="p-3 bg-white/20 rounded-2xl">
+                                            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 01-9 9 9 9 0 01-9-9 9 9 0 019-9 9 9 0 019 9z"></path>
+                                            </svg>
+                                        </div>
+                                        <div>
+                                            <h3 class="text-2xl font-black tracking-tight">Freelancer Confirmed Your Order!</h3>
+                                            <p class="text-amber-100 text-sm mt-0.5">Scan the KHQR code to pay and activate the service.</p>
+                                        </div>
+                                    </div>
+                                    <p class="text-sm text-amber-100 max-w-md">
+                                        Payment must be completed before work begins. Total due: <span class="font-bold text-white">${{ number_format($order->amount, 2) }}</span>
+                                    </p>
+                                </div>
+                                <div>
+                                    <a href="{{ route('orders.pay', $order) }}"
+                                       class="inline-flex items-center justify-center px-8 py-4 bg-white text-amber-700 hover:bg-amber-50 font-black text-lg rounded-2xl shadow-xl transition-all hover:scale-[1.02] active:scale-[0.98]">
+                                        <svg class="w-6 h-6 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"></path>
+                                        </svg>
+                                        Confirm Order
+                                    </a>
+                                    <p class="text-center text-[10px] text-amber-200 mt-2 font-medium tracking-widest">ABA • ACLEDA • WING • KB • BAKONG</p>
+                                </div>
+                            </div>
+                        </div>
+                    @endif
+
+                    <!-- KHQR Bakong Payment Section (Client only) -->
+                    @if(Auth::id() === $order->client_id)
+                        <div class="mt-6 p-6 bg-white dark:bg-gray-800 rounded-2xl border-2 {{ $order->payment_status === 'paid' ? 'border-green-300 dark:border-green-700' : 'border-emerald-200 dark:border-emerald-800' }}">
+                            <div class="flex items-center justify-between mb-4">
+                                <div>
+                                    <h3 class="text-xl font-bold text-gray-900 dark:text-white flex items-center">
+                                        <svg class="w-6 h-6 mr-2 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2"></path>
+                                        </svg>
+                                        Payment
+                                    </h3>
+                                    <p class="text-sm text-gray-600 dark:text-gray-400 mt-1">
+                                        @if($order->payment_status === 'paid')
+                                            Paid on {{ $order->paid_at?->format('M d, Y H:i') ?? 'N/A' }}
+                                         @else
+                                             @if($order->status !== 'pending')
+                                                 Freelancer confirmed — scan QR now to pay and start the service.
+                                             @else
+                                                 Pay securely using any Bakong-supported app (ABA, Acleda, Wing, etc.)
+                                             @endif
+                                         @endif
+                                    </p>
+                                </div>
+
+                                @if($order->payment_status !== 'paid')
+                                    <a href="{{ route('orders.pay', $order) }}"
+                                       class="inline-flex items-center px-6 py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl shadow transition">
+                                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                                        </svg>
+                                         Confirm Order
+                                    </a>
+                                @else
+                                    <span class="px-4 py-2 bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200 rounded-full text-sm font-semibold">
+                                        ✓ Paid
+                                    </span>
+                                @endif
+                            </div>
+
+                            @if($order->payment_status !== 'paid' && $order->khqr_string)
+                                <p class="text-xs text-gray-500 dark:text-gray-400">
+                                    You already generated a QR for this order. Click above to view it again.
+                                </p>
+                            @endif
+                        </div>
+                    @endif
+
                     <!-- Chat Button Section -->
                     <div class="mt-6 p-6 bg-gradient-to-r from-indigo-50 to-purple-50 dark:from-gray-700 dark:to-gray-800 rounded-2xl border-2 border-indigo-200 dark:border-indigo-800">
                         <div class="flex items-center justify-between">
@@ -182,11 +263,12 @@
                                             <option value="completed" {{ $order->status == 'completed' ? 'selected' : '' }} {{ $order->status == 'in progress' ? '' : 'disabled' }}>Completed</option>
                                             <option value="cancelled" {{ $order->status == 'cancelled' ? 'selected' : '' }} disabled>Cancelled (Client Only)</option>
                                         </select>
-                                        <x-input-error :messages="$errors->get('status')" class="mt-2" />
-                                    </div>
-                                    <x-primary-button>
-                                        {{ __('Update Status') }}
-                                    </x-primary-button>
+                                         <x-input-error :messages="$errors->get('status')" class="mt-2" />
+                                         <p class="mt-2 text-xs text-emerald-600 dark:text-emerald-400">Accepting notifies the client to scan KHQR and pay before you begin work.</p>
+                                     </div>
+                                     <x-primary-button>
+                                         {{ __('Update Status') }}
+                                     </x-primary-button>
                                 </div>
                             </form>
                         </div>

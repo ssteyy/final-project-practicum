@@ -26,6 +26,16 @@
                 </div>
             @endif
 
+            @if(request('paid') === 'success')
+                <div x-data="{ show: true }" x-show="show" x-transition.opacity class="flex items-center p-4 mb-6 text-emerald-800 border-l-4 border-emerald-500 bg-emerald-50 dark:bg-emerald-900/20 dark:text-emerald-400 rounded-r-xl shadow-sm">
+                    <svg class="w-5 h-5 mr-3" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>
+                    <span class="text-sm font-medium">Payment received! The order has been marked as paid.</span>
+                    <button @click="show = false" class="ml-auto text-emerald-500 hover:text-emerald-700">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                    </button>
+                </div>
+            @endif
+
             <div class="bg-white dark:bg-gray-800 shadow-xl rounded-2xl border border-gray-200 dark:border-gray-700 overflow-hidden">
                 <!-- Table Header -->
                 <div class="bg-gradient-to-r from-emerald-500 to-teal-600 px-6 py-4">
@@ -55,12 +65,15 @@
                                     <th class="px-6 py-4 text-left text-xs font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wider">
                                         Amount
                                     </th>
-                                    <th class="px-6 py-4 text-left text-xs font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wider">
-                                        Status
-                                    </th>
-                                    <th class="px-6 py-4 text-left text-xs font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wider">
-                                        Order Date
-                                    </th>
+                                     <th class="px-6 py-4 text-left text-xs font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wider">
+                                         Status
+                                     </th>
+                                     <th class="px-6 py-4 text-left text-xs font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wider">
+                                         Payment Status
+                                     </th>
+                                     <th class="px-6 py-4 text-left text-xs font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wider">
+                                         Order Date
+                                     </th>
                                     <th class="px-6 py-4 text-center text-xs font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wider">
                                         Actions
                                     </th>
@@ -139,10 +152,25 @@
                                                 <span class="w-2 h-2 rounded-full mr-2 {{ $order->status === 'completed' ? 'bg-emerald-500' : ($order->status === 'pending' ? 'bg-amber-500' : ($order->status === 'in progress' ? 'bg-blue-500' : 'bg-gray-500')) }}"></span>
                                                 {{ $order->status }}
                                             </span>
-                                        </td>
-
-                                        <!-- Order Date -->
-                                        <td class="px-6 py-4 whitespace-nowrap">
+                                         </td>
+ 
+                                         <!-- Payment Status -->
+                                         <td class="px-6 py-4 whitespace-nowrap">
+                                             @if($order->payment_status === 'paid')
+                                                 <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300">
+                                                     <span class="w-2 h-2 rounded-full mr-2 bg-emerald-500"></span>
+                                                     Paid
+                                                 </span>
+                                             @else
+                                                 <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300">
+                                                     <span class="w-2 h-2 rounded-full mr-2 bg-amber-500"></span>
+                                                     Unpaid
+                                                 </span>
+                                             @endif
+                                         </td>
+ 
+                                         <!-- Order Date -->
+                                         <td class="px-6 py-4 whitespace-nowrap">
                                             <div class="text-sm text-gray-900 dark:text-white font-medium">
                                                 {{ $order->created_at->format('M d, Y') }}
                                             </div>
@@ -171,11 +199,11 @@
                                                         @csrf
                                                         @method('PATCH')
                                                         <input type="hidden" name="status" value="in progress">
-                                                        <button type="submit"
-                                                            class="inline-flex items-center px-3 py-2 text-xs font-semibold text-white bg-emerald-600 rounded-lg hover:bg-emerald-700 transition shadow-sm hover:shadow-md"
-                                                            title="Accept Order">
-                                                            Accept
-                                                        </button>
+                                                         <button type="submit"
+                                                             class="inline-flex items-center px-3 py-2 text-xs font-semibold text-white bg-emerald-600 rounded-lg hover:bg-emerald-700 transition shadow-sm hover:shadow-md"
+                                                             title="Accept order — client will be asked to pay via KHQR">
+                                                             Accept &amp; Request Payment
+                                                         </button>
                                                     </form>
                                                 @endif
                                             </div>
@@ -204,13 +232,18 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-bold
-                                        {{ $order->status === 'completed' ? 'bg-emerald-100 text-emerald-700' :
-                                           ($order->status === 'pending' ? 'bg-amber-100 text-amber-700' :
-                                           'bg-blue-100 text-blue-700') }}">
-                                        {{ $order->status }}
-                                    </span>
-                                </div>
+                                     <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-bold
+                                         {{ $order->status === 'completed' ? 'bg-emerald-100 text-emerald-700' :
+                                            ($order->status === 'pending' ? 'bg-amber-100 text-amber-700' :
+                                            'bg-blue-100 text-blue-700') }}">
+                                         {{ $order->status }}
+                                     </span>
+                                     @if($order->payment_status === 'paid')
+                                         <span class="ml-1 inline-flex items-center px-2 py-1 rounded-full text-xs font-bold bg-emerald-100 text-emerald-700">Paid</span>
+                                     @else
+                                         <span class="ml-1 inline-flex items-center px-2 py-1 rounded-full text-xs font-bold bg-amber-100 text-amber-700">Unpaid</span>
+                                     @endif
+                                 </div>
                                 <div class="mb-3">
                                     <a href="{{ route('services.show', $order->service) }}" class="text-sm font-semibold text-gray-900 dark:text-white hover:text-emerald-600">
                                         {{ $order->service->title }}
@@ -231,9 +264,9 @@
                                             @csrf
                                             @method('PATCH')
                                             <input type="hidden" name="status" value="in progress">
-                                            <button type="submit" class="w-full text-center px-3 py-2 text-xs font-semibold text-white bg-emerald-600 rounded-lg hover:bg-emerald-700">
-                                                Accept
-                                            </button>
+                                             <button type="submit" class="w-full text-center px-3 py-2 text-xs font-semibold text-white bg-emerald-600 rounded-lg hover:bg-emerald-700">
+                                                 Accept &amp; Request Pay
+                                             </button>
                                         </form>
                                     @endif
                                 </div>

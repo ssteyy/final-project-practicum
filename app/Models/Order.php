@@ -20,12 +20,18 @@ class Order extends Model
         'original_price',
         'platform_fee',
         'status',
+        'payment_status',
+        'khqr_md5',
+        'khqr_string',
+        'paid_at',
+        'transaction_reference',
     ];
 
     protected $casts = [
         'amount' => 'float',
         'original_price' => 'float',
         'platform_fee' => 'float',
+        'paid_at' => 'datetime',
     ];
 
     public function service()

@@ -87,7 +87,7 @@ class OrderController extends Controller
         $platformFee = $service->platform_fee ?? ($serviceFee * 0.15);
         $totalAmount = $serviceFee + $platformFee;
 
-        Order::create([
+        $order = Order::create([
             'service_id' => $service->id,
             'client_id' => Auth::id(),
             'freelancer_id' => $service->freelancer_id,
@@ -98,7 +98,8 @@ class OrderController extends Controller
             'status' => 'pending',
         ]);
 
-        return redirect()->route('orders.index')->with('status', 'Order placed successfully. Waiting for freelancer to accept.');
+        return redirect()->route('orders.pay', $order)
+            ->with('status', 'Order placed successfully. Please scan the QR code and complete payment to proceed.');
     }
 
     /**
@@ -150,7 +151,9 @@ class OrderController extends Controller
 
         $message = Auth::user()->role === User::ROLE_ADMIN
             ? "Order status updated successfully. Both client and freelancer will be notified."
-            : "Order status updated successfully.";
+            : (in_array($newStatus, ['accepted', 'in progress'])
+                ? "Order accepted. The client has been notified to scan the KHQR code and complete payment to proceed."
+                : "Order status updated successfully.");
 
         // Redirect admins back to admin orders page
         if (Auth::user()->role === User::ROLE_ADMIN) {

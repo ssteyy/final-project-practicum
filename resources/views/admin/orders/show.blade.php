@@ -157,9 +157,23 @@
                             </div>
                             <div class="text-right">
                                 <p class="text-xs text-gray-500 dark:text-gray-400">TOTAL AMOUNT</p>
-                                <p class="text-4xl font-black text-emerald-600 dark:text-emerald-400">${{ number_format($order->amount, 2) }}</p>
-                            </div>
-                        </div>
+                                 <p class="text-4xl font-black text-emerald-600 dark:text-emerald-400">${{ number_format($order->amount, 2) }}</p>
+                             </div>
+                         </div>
+
+                         <!-- Payment Status -->
+                         <div class="mt-4">
+                             <p class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-1">PAYMENT STATUS</p>
+                             @if($order->payment_status === 'paid')
+                                 <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-bold bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300">
+                                     ✓ Paid
+                                 </span>
+                             @else
+                                 <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-bold bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300">
+                                     Unpaid
+                                 </span>
+                             @endif
+                         </div>
 
                         <div class="grid grid-cols-1 lg:grid-cols-2 gap-x-10 gap-y-10">
                             <!-- Service -->
