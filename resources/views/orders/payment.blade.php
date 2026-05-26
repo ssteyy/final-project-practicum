@@ -1,159 +1,232 @@
 <x-app-layout>
-    <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
-            Pay for Order #{{ $order->id }}
-        </h2>
-    </x-slot>
 
-    <div class="py-12">
-        <div class="max-w-md mx-auto sm:px-6 lg:px-8">
-            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-xl sm:rounded-3xl border border-gray-200 dark:border-gray-700">
+<div class="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100 dark:from-slate-950 dark:via-slate-900 py-10 px-4">
 
-                <!-- Header -->
-                <div class="px-6 py-5 border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900">
-                    <div class="flex items-center justify-between">
-                        <div>
-                            <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Pay for Order #{{ $order->id }}</h1>
-                            <p class="text-sm text-gray-600 dark:text-gray-400">{{ $order->service->title }}</p>
-                        </div>
-                        <a href="{{ route('orders.index') }}" class="text-sm text-indigo-600 hover:underline">← Back to My Orders</a>
+    <div class="max-w-6xl mx-auto">
+
+        <!-- ================= PROGRESS ================= -->
+        <div class="mb-10">
+            <div class="flex items-center justify-between">
+
+                <!-- STEP 1 -->
+                <div class="flex flex-col items-center">
+                    <div id="step1"
+                         class="w-10 h-10 rounded-full bg-green-500 text-white flex items-center justify-center">
+                        ✓
                     </div>
+                    <span class="text-xs mt-2">Order</span>
                 </div>
 
-                <div class="p-8 text-center">
+                <div class="flex-1 h-1 bg-emerald-500 mx-2"></div>
 
-                    <!-- Amount -->
-                    <div class="mb-8">
-                        <p class="text-sm uppercase tracking-widest text-gray-500 dark:text-gray-400">Amount to Pay</p>
-                        <div class="mt-2">
-                            <span class="text-6xl font-black text-emerald-600 dark:text-emerald-400">${{ number_format($order->amount, 2) }}</span>
-                        </div>
-                        <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">USD • via KHQR (Bakong)</p>
+                <!-- STEP 2 -->
+                <div class="flex flex-col items-center">
+                    <div id="step2"
+                         class="w-10 h-10 rounded-full bg-blue-500 text-white flex items-center justify-center animate-pulse">
+                        2
                     </div>
+                    <span class="text-xs mt-2">Payment</span>
+                </div>
 
-                    <!-- QR Code -->
-                    @if($order->khqr_string)
-                        <div class="mb-6">
-                            <div class="inline-block p-4 bg-white border-2 border-gray-200 rounded-2xl shadow-inner">
-                                <img src="https://api.qrserver.com/v1/create-qr-code/?size=260x260&data={{ urlencode($order->khqr_string) }}"
-                                     alt="KHQR Payment Code"
-                                     class="mx-auto"
-                                     width="260" height="260">
-                            </div>
-                            <p class="mt-4 text-sm text-gray-600 dark:text-gray-400 max-w-xs mx-auto">
-                                Open any Bakong-supported banking app (ABA, Acleda, Wing, KB, etc.) and scan this QR code.
-                            </p>
-                        </div>
-                    @else
-                        <div class="text-red-500">Failed to generate QR code.</div>
-                    @endif
+                <div class="flex-1 h-1 bg-gray-300 mx-2"></div>
 
-                    <!-- Payment Status -->
-                    <div id="payment-status"
-                         class="mt-8 p-4 rounded-2xl text-lg font-semibold bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200">
-                        Waiting for payment...
+                <!-- STEP 3 -->
+                <div class="flex flex-col items-center">
+                    <div id="step3"
+                         class="w-10 h-10 rounded-full bg-gray-300 text-white flex items-center justify-center">
+                        3
                     </div>
-
-                    <div id="last-check-info" class="mt-2 text-xs text-gray-400 dark:text-gray-500 text-center">
-                        Checking with Bakong Open API...
-                    </div>
-
-                    <button onclick="checkPaymentStatus()" 
-                            class="mt-4 inline-flex items-center px-4 py-2 text-sm font-semibold text-emerald-700 dark:text-emerald-300 bg-emerald-100 dark:bg-emerald-900/40 hover:bg-emerald-200 dark:hover:bg-emerald-900/60 rounded-xl transition">
-                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.058 11H1M12 3v2m0 16v2m9-9H15m-6 0a8 8 0 01-.938-1.5M12 3a8 8 0 00-8 8"></path>
-                        </svg>
-                        Force Check with Bakong Now
-                    </button>
-
-
-
-                    <!-- TEST BUTTON -->
-                    @if(config('app.env') === 'local' || config('app.debug'))
-                        <div class="mt-8 p-4 border border-red-300 bg-red-50 dark:bg-red-900/20 rounded-2xl">
-                            <p class="text-red-700 dark:text-red-400 text-sm font-semibold mb-3">
-                                ⚠️ DEVELOPMENT ONLY — Do not use in production
-                            </p>
-                            <form action="{{ route('orders.mark-paid-test', $order) }}" method="POST">
-                                @csrf
-                                <button type="submit"
-                                        class="w-full px-6 py-3 bg-red-600 hover:bg-red-700 text-white font-bold rounded-xl transition"
-                                        onclick="return confirm('Mark this order as PAID for testing?')">
-                                    Mark as Paid (Test Mode)
-                                </button>
-                            </form>
-                            <p class="text-xs text-red-600 dark:text-red-400 mt-2">
-                                This will instantly mark the order as paid without real payment.
-                            </p>
-                        </div>
-                    @endif
-
-                    <div class="mt-6">
-                        <a href="{{ route('orders.index') }}"
-                           class="inline-block px-6 py-2.5 text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white">
-                            Done? Go to My Orders →
-                        </a>
-                    </div>
-
+                    <span class="text-xs mt-2">Done</span>
                 </div>
 
             </div>
         </div>
+
+        <!-- ================= CONTENT ================= -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-9">
+
+            <!-- LEFT QR -->
+            <div class="relative lg:col-span-1">
+
+                <div class="absolute -inset-4 bg-gradient-to-r from-red-400 to-pink-500 blur-2xl opacity-20 rounded-3xl"></div>
+
+                <div class="relative bg-white rounded-3xl shadow-2xl overflow-hidden border">
+
+                    <div class="bg-red-600 p-4 text-center relative">
+                        <h2 class="text-white font-bold text-lg tracking-widest">
+                            KHQR
+                        </h2>
+                        <div class="absolute bottom-0 right-0 w-16 h-16 bg-red-600 rotate-45 translate-x-6 translate-y-6"></div>
+                    </div>
+
+                    <div class="p-6">
+
+                        <p class="text-sm text-gray-600">FreelanceHub</p>
+
+                        <h1 class="text-3xl font-extrabold text-black mt-1">
+                            {{ number_format($order->amount ?? 0, 2) }}
+                            <span class="text-sm font-medium text-gray-500">USD</span>
+                        </h1>
+
+                        <div class="border-t border-dashed my-5"></div>
+
+                        <div class="flex justify-center">
+                            <div class="p-[20px] bg-white rounded-2xl shadow-inner">
+                                @if($order->khqr_string)
+                                    <img src="https://api.qrserver.com/v1/create-qr-code/?size=260x260&data={{ urlencode($order->khqr_string) }}"
+                                         class="w-64 h-64">
+                                @endif
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+            <!-- RIGHT -->
+            <div class="lg:col-span-2">
+
+                <div class="bg-white dark:bg-slate-800 p-8 rounded-3xl shadow-2xl border">
+
+                    <h1 class="text-4xl font-black text-center text-emerald-500">
+                        ${{ number_format($order->amount ?? 0, 2) }}
+                    </h1>
+
+                    <p class="text-center text-gray-500 mb-6">
+                        {{ $order->service->title }}
+                    </p>
+
+                    <div class="p-5 rounded-2xl bg-yellow-50 border border-yellow-200 mb-6">
+                        <div class="flex items-center gap-3">
+
+                            <div class="relative">
+                                <div class="w-3 h-3 bg-yellow-500 rounded-full"></div>
+                                <div class="absolute inset-0 bg-yellow-500 rounded-full animate-ping"></div>
+                            </div>
+
+                            <div>
+                                <p class="font-bold">Waiting for Payment</p>
+                                <p class="text-xs text-gray-500">Auto checking every 3 seconds</p>
+                            </div>
+
+                        </div>
+                    </div>
+
+                    <a href="{{ route('orders.index') }}"
+                       class="block text-center text-gray-500 mt-4 hover:text-black">
+                        Back →
+                    </a>
+
+                </div>
+
+                <!-- BUTTON -->
+                <div class="mt-6 px-2 flex justify-center">
+
+                    <form id="markPaidForm"
+                          action="{{ route('orders.mark-paid-test', $order) }}"
+                          method="POST">
+                        @csrf
+
+                        <button type="submit"
+                                class="bg-red-500 hover:bg-red-600 text-white text-sm px-5 py-2 rounded-lg font-semibold shadow-md">
+                            ⚠️ Mark as Paid
+                        </button>
+
+                    </form>
+
+                </div>
+
+            </div>
+
+        </div>
     </div>
+</div>
 
-    @push('scripts')
-    <script>
-                async function checkPaymentStatus() {
-                    try {
-                        const response = await fetch('{{ route('orders.payment.status', $order) }}');
-                        const data = await response.json();
+<!-- ================= SUCCESS MODAL ================= -->
+<div id="successModal"
+     class="fixed inset-0 bg-black/60 hidden items-center justify-center z-50">
 
-                        const statusEl = document.getElementById('payment-status');
-                        const lastCheckEl = document.getElementById('last-check-info');
+    <div class="bg-white dark:bg-slate-800 rounded-3xl p-10 w-[90%] max-w-md text-center shadow-2xl">
 
-                        const now = new Date().toLocaleTimeString();
+        <div class="mx-auto w-20 h-20 rounded-full bg-green-100 flex items-center justify-center mb-4">
+            <svg class="w-10 h-10 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3"
+                      d="M5 13l4 4L19 7" />
+            </svg>
+        </div>
 
-                        if (data.status === 'paid') {
-                            statusEl.className = 'mt-8 p-4 rounded-2xl text-lg font-semibold bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200';
-                            statusEl.innerHTML = '✅ Payment received! Redirecting to your orders...';
-                            setTimeout(() => {
-                                window.location.href = '{{ route('orders.index') }}?paid=success';
-                            }, 1500);
-                        } else if (data.status === 'no_qr') {
-                            statusEl.innerHTML = 'No QR generated yet.';
-                        } else if (data.status === 'not_found') {
-                            statusEl.innerHTML = '❌ MD5 not recognized by Bakong (Unhash Failed). See debug below.';
-                            statusEl.className = 'mt-8 p-4 rounded-2xl text-lg font-semibold bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200';
-                        } else {
-                            statusEl.innerHTML = 'Waiting for payment... (Checking Bakong Open API)';
-                        }
+        <h2 class="text-2xl font-bold text-green-600">
+            Payment Successful
+        </h2>
 
-                        if (lastCheckEl) {
-                            let extra = '';
-                            if (data.bakong_response) {
-                                const resp = typeof data.bakong_response === 'object'
-                                    ? JSON.stringify(data.bakong_response)
-                                    : data.bakong_response;
-                                extra = ` | Bakong: ${resp.substring(0, 200)}`;
-                            } else if (data.message) {
-                                extra = ` | ${data.message}`;
-                            } else if (data.error) {
-                                extra = ` | Error: ${data.error}`;
-                            }
-                            lastCheckEl.textContent = `Last checked with Bakong at ${now}${extra}`;
-                        }
-                    } catch (e) {
-                        console.error('Status check failed', e);
-                    }
-                }
-            } catch (e) {
-                console.error('Status check failed', e);
+        <p class="text-gray-500 mt-2">
+            Order marked as paid successfully.
+        </p>
+
+        <button onclick="goToOrders()"
+                class="mt-6 bg-green-500 hover:bg-green-600 text-white px-6 py-2 rounded-xl font-semibold">
+            OK
+        </button>
+
+    </div>
+</div>
+
+<!-- ================= SCRIPT ================= -->
+@push('scripts')
+<script>
+
+document.getElementById('markPaidForm')?.addEventListener('submit', async function (e) {
+    e.preventDefault();
+
+    try {
+        const res = await fetch(this.action, {
+            method: "POST",
+            headers: {
+                "X-CSRF-TOKEN": "{{ csrf_token() }}",
+                "Accept": "application/json"
             }
+        });
+
+        if (res.ok) {
+            showModal();
+            updateProgress(); // ✅ UPDATE STEP
+        } else {
+            alert("Failed to mark as paid");
         }
 
-        // Real-time detection via Bakong Open API - check every 3 seconds
-        checkPaymentStatus();
-        setInterval(checkPaymentStatus, 3000);
-    </script>
-    @endpush
+    } catch (err) {
+        console.error(err);
+        alert("Something went wrong");
+    }
+});
+
+// ================= PROGRESS UPDATE =================
+function updateProgress() {
+
+    // STEP 2 → DONE
+    const step2 = document.getElementById('step2');
+    step2.classList.remove('bg-blue-500', 'animate-pulse');
+    step2.classList.add('bg-green-500');
+    step2.innerHTML = '✓';
+
+    // STEP 3 → ACTIVE
+    const step3 = document.getElementById('step3');
+    step3.classList.remove('bg-gray-300');
+    step3.classList.add('bg-blue-500', 'animate-pulse');
+
+}
+
+function showModal() {
+    const modal = document.getElementById('successModal');
+    modal.classList.remove('hidden');
+    modal.classList.add('flex');
+}
+
+function goToOrders() {
+    window.location.href = "{{ route('orders.index') }}";
+}
+
+</script>
+@endpush
+
 </x-app-layout>

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Order;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use KHQR\BakongKHQR;
 use KHQR\Helpers\KHQRData;
 use KHQR\Models\IndividualInfo;
@@ -12,7 +13,6 @@ class PaymentController extends Controller
 {
     /**
      * Generate and show KHQR payment page for an order.
-     * This method works WITHOUT any Bakong token (pure client-side QR generation).
      */
     public function generateQR(Order $order)
     {
@@ -24,12 +24,18 @@ class PaymentController extends Controller
             return redirect()->route('orders.index');
         }
 
-        // Always generate a fresh QR with new expiration timestamp (recommended for testing)
-        // This prevents "QR code is Expired" errors
-        $expirationTimestamp = strval(floor(microtime(true) * 1000) + (30 * 60 * 1000)); // 30 minutes validity
+        $token = config('services.bakong.token');
+
+        if (empty($token)) {
+            abort(500, 'BAKONG_TOKEN is missing');
+        }
+
+        $expirationTimestamp = strval(
+            floor(microtime(true) * 1000) + (30 * 60 * 1000)
+        );
 
         $info = new IndividualInfo(
-            bakongAccountID: config('services.bakong.account_id', 'demo@devb'),
+            bakongAccountID: config('services.bakong.account_id'),
             merchantName: config('services.bakong.merchant_name', 'FreelanceHub'),
             merchantCity: config('services.bakong.merchant_city', 'Phnom Penh'),
             currency: KHQRData::CURRENCY_USD,
@@ -39,22 +45,22 @@ class PaymentController extends Controller
             expirationTimestamp: $expirationTimestamp,
         );
 
-        $response = BakongKHQR::generateIndividual($info);
+        $bakong = new BakongKHQR($token);
 
-        // The QR data is inside $response->data
-        $qrData = $response->data;
+        $response = $bakong->generateIndividual($info);
+
+        $qrData = is_array($response) ? ($response['data'] ?? []) : ($response->data ?? []);
 
         $order->update([
-            'khqr_string' => $qrData['qr'],
-            'khqr_md5' => $qrData['md5'],
+            'khqr_string' => $qrData['qr'] ?? null,
+            'khqr_md5' => $qrData['md5'] ?? null,
         ]);
 
         return view('orders.payment', compact('order'));
     }
 
     /**
-     * Dedicated function: take khqr_md5 (from generated khqr_string) and verify paid/unpaid
-     * via Bakong Open API check_transaction_by_md5 endpoint.
+     * Verify payment by khqr_md5 using Bakong Open API.
      */
     public function verifyPaymentByMD5(string $md5): array
     {
@@ -63,50 +69,59 @@ class PaymentController extends Controller
         }
 
         $token = config('services.bakong.token');
+
         if (empty($token)) {
-            return ['status' => 'pending', 'message' => 'No BAKONG_TOKEN configured'];
+            return [
+                'status' => 'error',
+                'message' => 'BAKONG_TOKEN not configured'
+            ];
         }
 
-        $isTest = config('services.bakong.env', 'sit') === 'sit';
-
         try {
+            $isTest = config('services.bakong.env') === 'sit';
             $bakong = new BakongKHQR($token);
             $response = $bakong->checkTransactionByMD5($md5, $isTest);
 
-            \Log::info('KHQR verify by md5', ['md5' => $md5, 'response' => $response]);
+            $verifyArray = is_array($response) ? $response : (array) $response;
 
-            $data = $response['data'] ?? null;
-            $code = $response['responseCode'] ?? null;
-            $message = $response['responseMessage'] ?? null;
+            Log::info('Bakong Verify', [
+                'md5' => $md5,
+                'is_test' => $isTest,
+                'response' => $verifyArray
+            ]);
 
-            // Exact "Unhash Failed" case from Bakong (MD5 not known to the system)
-            if (isset($response['unhashed']) || str_contains(strtolower($message ?? ''), 'unhash') || str_contains(strtolower($message ?? ''), 'not found')) {
+            // Handle API errors (non-200 responses)
+            if (isset($verifyArray['responseCode']) && $verifyArray['responseCode'] !== 0) {
+                $errorCode = $verifyArray['errorCode'] ?? 'unknown';
+                $errorMessage = $verifyArray['responseMessage'] ?? 'Unknown API error';
                 return [
-                    'status' => 'not_found',
-                    'message' => 'Unhash Failed. String not found. (This MD5 was never seen by Bakong for your account/token)',
-                    'raw' => $response,
+                    'status' => 'error',
+                    'message' => $errorMessage,
+                    'code' => $errorCode,
+                    'raw' => $verifyArray,
                 ];
             }
 
-            if ($code === 0 && $data && ($data['status'] ?? null) === 'SUCCESS') {
+            $data = $verifyArray['data'] ?? [];
+
+            if ((($verifyArray['responseCode'] ?? 1) === 0) && !empty($data['acknowledgedDateMs'])) {
                 return ['status' => 'paid', 'data' => $data];
             }
 
             return [
                 'status' => 'pending',
                 'data' => $data,
-                'message' => $message,
-                'raw' => $response,
+                'message' => $verifyArray['responseMessage'] ?? null,
+                'raw' => $verifyArray,
             ];
         } catch (\Exception $e) {
-            \Log::error('KHQR verify md5 failed: '.$e->getMessage());
-
+            Log::error('Bakong Verify Error', ['md5' => $md5, 'error' => $e->getMessage()]);
             return ['status' => 'error', 'message' => $e->getMessage()];
         }
     }
 
     /**
-     * Check payment status (AJAX). Now uses verifyPaymentByMD5(khqr_md5).
+     * Check payment status (AJAX).
      */
     public function checkStatus(Order $order)
     {
@@ -121,11 +136,12 @@ class PaymentController extends Controller
         $result = $this->verifyPaymentByMD5($order->khqr_md5);
 
         if ($result['status'] === 'paid' && ! empty($result['data'])) {
-            $d = $result['data'];
+            $data = $result['data'];
+
             $order->update([
                 'payment_status' => 'paid',
                 'paid_at' => now(),
-                'transaction_reference' => $d['transactionId'] ?? $d['md5'] ?? $d['hash'] ?? null,
+                'transaction_reference' => $data['externalRef'] ?? $data['transactionId'] ?? $order->khqr_md5,
             ]);
 
             return response()->json(['status' => 'paid']);
@@ -133,14 +149,13 @@ class PaymentController extends Controller
 
         return response()->json([
             'status' => $result['status'],
-            'bakong_response' => $result['data'] ?? $result['raw'] ?? null,
             'message' => $result['message'] ?? null,
+            'bakong_response' => $result['data'] ?? $result['raw'] ?? null,
         ]);
     }
 
     /**
      * TEST ONLY: Manually mark order as paid.
-     * This is for development/testing when you don't have a real Bakong token yet.
      */
     public function markAsPaidTest(Order $order)
     {
@@ -156,24 +171,18 @@ class PaymentController extends Controller
             'payment_status' => 'paid',
             'paid_at' => now(),
             'transaction_reference' => 'TEST-PAYMENT-'.time(),
-            // Note: We do NOT change the main 'status' column here.
-            // 'status' can stay as 'pending', 'accepted', 'in progress', or 'completed' depending on your workflow.
         ]);
 
-        return redirect()->route('orders.index')
-            ->with('status', '✅ Payment completed successfully! Your order is now awaiting freelancer confirmation.');
+        return redirect()->route('orders.index')->with('status', '✅ Payment completed successfully!');
     }
 
     /**
-     * Decode a KHQR string to see embedded details (very useful for debugging).
-     * Shows which Bakong account the QR was actually generated for.
+     * Decode a KHQR string to see embedded details.
      */
     public function decodeKHQR(string $khqrString): array
     {
         try {
             $decoded = BakongKHQR::decode($khqrString);
-
-            // The decoded data structure from the library
             $data = $decoded->data ?? [];
 
             return [
@@ -186,16 +195,12 @@ class PaymentController extends Controller
                 'raw' => $data,
             ];
         } catch (\Exception $e) {
-            return [
-                'success' => false,
-                'error' => $e->getMessage(),
-            ];
+            return ['success' => false, 'error' => $e->getMessage()];
         }
     }
 
     /**
-     * Debug endpoint: decode the KHQR of the current order.
-     * Visit: /orders/{order}/debug-khqr
+     * Debug: decode the KHQR of the current order.
      */
     public function debugDecodeKHQR(Order $order)
     {

@@ -102,6 +102,41 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     // Temporary debug route - remove after testing
     Route::get('/orders/{order}/debug-khqr', [App\Http\Controllers\PaymentController::class, 'debugDecodeKHQR']);
+
+    // Simple debug endpoint to check payment status from Bakong directly
+    Route::get('/orders/{order}/debug-payment', function (App\Models\Order $order) {
+        $token = config('services.bakong.token');
+
+        if (empty($token)) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'BAKONG_TOKEN not configured'
+            ], 500);
+        }
+
+        try {
+            $isTest = config('services.bakong.env') === 'sit';
+            $bakong = new KHQR\BakongKHQR($token);
+            $response = $bakong->checkTransactionByMD5($order->khqr_md5, $isTest);
+
+            return response()->json([
+                'status' => 'ok',
+                'data' => $response,
+            ]);
+
+        } catch (\Exception $e) {
+            \Log::error('Debug payment error', [
+                'order_id' => $order->id,
+                'error' => $e->getMessage(),
+            ]);
+
+            return response()->json([
+                'status' => 'error',
+                'message' => $e->getMessage(),
+                'hint' => 'Check BAKONG_TOKEN, BAKONG_ACCOUNT_ID, and BAKONG_ENV',
+            ], 502);
+        }
+    });
 });
 
 // Review Routes
