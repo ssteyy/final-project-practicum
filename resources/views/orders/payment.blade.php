@@ -121,6 +121,9 @@
                             }, 1500);
                         } else if (data.status === 'no_qr') {
                             statusEl.innerHTML = 'No QR generated yet.';
+                        } else if (data.status === 'not_found') {
+                            statusEl.innerHTML = '❌ MD5 not recognized by Bakong (Unhash Failed). See debug below.';
+                            statusEl.className = 'mt-8 p-4 rounded-2xl text-lg font-semibold bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200';
                         } else {
                             statusEl.innerHTML = 'Waiting for payment... (Checking Bakong Open API)';
                         }
@@ -128,7 +131,12 @@
                         if (lastCheckEl) {
                             let extra = '';
                             if (data.bakong_response) {
-                                extra = ` | Bakong: ${JSON.stringify(data.bakong_response).substring(0, 80)}...`;
+                                const resp = typeof data.bakong_response === 'object'
+                                    ? JSON.stringify(data.bakong_response)
+                                    : data.bakong_response;
+                                extra = ` | Bakong: ${resp.substring(0, 200)}`;
+                            } else if (data.message) {
+                                extra = ` | ${data.message}`;
                             } else if (data.error) {
                                 extra = ` | Error: ${data.error}`;
                             }

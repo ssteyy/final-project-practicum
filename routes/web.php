@@ -99,6 +99,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // TEST ONLY route - marks order as paid without real payment
     Route::post('/orders/{order}/mark-paid-test', [App\Http\Controllers\PaymentController::class, 'markAsPaidTest'])
         ->name('orders.mark-paid-test');
+
+    // Temporary debug route - remove after testing
+    Route::get('/orders/{order}/debug-khqr', [App\Http\Controllers\PaymentController::class, 'debugDecodeKHQR']);
 });
 
 // Review Routes
