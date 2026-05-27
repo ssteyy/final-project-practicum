@@ -83,7 +83,7 @@
                                 </span>
                                 <div class="flex flex-col items-end gap-2">
                                     <span class="text-2xl font-black text-gray-900 dark:text-white">
-                                        ${{ number_format($service->price, 0) }}
+                                        ${{ number_format($service->price, 2) }}
                                     </span>
                                     <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold
                                         {{ $service->pricing_type === 'hourly' ? 'bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300' :
