@@ -135,37 +135,66 @@
                 <div class="bg-white dark:bg-slate-800 p-8 rounded-3xl shadow-2xl border">
 
                     <h1 class="text-4xl font-black text-center text-emerald-500">
-                        {{ number_format($order->amount ?? 0, 2) }}
+                        ${{ number_format($order->amount ?? 0, 2) }}
                     </h1>
 
                     <p class="text-center text-gray-500 mb-6">
                         {{ $order->service->title }}
                     </p>
 
-                    <!-- SERVICE DETAILS -->
-                    <div class="mb-6">
+                     <!-- SERVICE DETAILS -->
+                     <div class="mb-6">
 
-                        <h3 class="text-lg font-medium text-gray-900 mb-2">
-                            Service Details
-                        </h3>
+                         <h3 class="text-lg font-medium text-gray-900 mb-2">
+                             Service Details
+                         </h3>
 
-                        <div class="space-y-2">
+                         @php
+                             $serviceFee = $order->service->price;
+                             $platformFee = $serviceFee * 0.15;
+                             $totalAmount = $serviceFee + $platformFee;
+                         @endphp
+                         <div class="space-y-3">
+                             <div class="flex justify-between items-center py-2">
+                                 <span class="text-gray-700 dark:text-gray-300 font-medium">Service</span>
+                                 <span class="text-gray-900 dark:text-white font-bold">{{ $order->service->title }}</span>
+                             </div>
+                             <div class="flex justify-between items-center py-2">
+                                 <span class="text-gray-700 dark:text-gray-300 font-medium">Freelancer</span>
+                                 <span class="text-gray-900 dark:text-white font-bold">{{ $order->service->freelancer->name }}</span>
+                             </div>
+                             <div class="flex justify-between items-center py-2">
+                                 <span class="text-gray-700 dark:text-gray-300 font-medium">Category</span>
+                                 <span class="px-3 py-1 text-xs font-bold uppercase tracking-wider rounded-lg bg-indigo-100 text-indigo-700 dark:bg-indigo-900/40 dark:text-indigo-300">{{ $order->service->category }}</span>
+                             </div>
+                             <div class="flex justify-between items-center py-2">
+                                 <span class="text-gray-700 dark:text-gray-300 font-medium">Pricing Type</span>
+                                 <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold uppercase
+                                         {{ $order->service->pricing_type === 'hourly' ? 'bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300' :
+                                            ($order->service->pricing_type === 'project' ? 'bg-purple-100 text-purple-700 dark:bg-purple-900/40 dark:text-purple-300' :
+                                            'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300') }}">
+                                     {{ $order->service->pricing_type === 'hourly' ? 'Hourly' : ($order->service->pricing_type === 'project' ? 'Project' : 'Fixed') }}
+                                 </span>
+                             </div>
 
-                            <p class="text-gray-600">
-                                <strong>Description:</strong>
-                                {{ $order->service->description }}
-                            </p>
+                             <div class="border-t-2 border-indigo-200 dark:border-indigo-800 pt-3 mt-3 space-y-2">
+                                 <div class="flex justify-between items-center">
+                                     <span class="text-gray-700 dark:text-gray-300 font-medium">Service Fee</span>
+                                     <span class="text-lg font-bold text-gray-900 dark:text-white">${{ number_format($serviceFee, 2) }}</span>
+                                 </div>
+                                 <div class="flex justify-between items-center">
+                                     <span class="text-gray-700 dark:text-gray-300 font-medium">Platform Fee (15%)</span>
+                                     <span class="text-lg font-bold text-indigo-600 dark:text-indigo-400">${{ number_format($platformFee, 2) }}</span>
+                                 </div>
+                             </div>
 
-                            @if ($order->service->freelancer)
-                                <p class="text-gray-600">
-                                    <strong>Freelancer:</strong>
-                                    {{ $order->service->freelancer->name }}
-                                </p>
-                            @endif
+                             <div class="pt-3 border-t-2 border-indigo-300 dark:border-indigo-700 flex justify-between items-center bg-white/50 dark:bg-gray-900/30 rounded-xl p-3">
+                                 <span class="text-lg font-bold text-gray-900 dark:text-white">Total Amount</span>
+                                 <span class="text-3xl font-black text-emerald-600 dark:text-emerald-400">${{ number_format($totalAmount, 2) }}</span>
+                             </div>
+                         </div>
 
-                        </div>
-
-                    </div>
+                     </div>
 
                     <!-- WAITING -->
                     <div id="waitingBox"
@@ -213,31 +242,30 @@
 
                         </div>
                     </div>
+                    
 
-                    <a href="{{ route('orders.index') }}"
-                       class="block text-center text-gray-500 mt-4 hover:text-black">
-                        Back →
-                    </a>
+                     <div class="flex justify-between items-center mt-4">
+                         <form id="markPaidForm"
+                             action="{{ route('orders.mark-paid-test', $order) }}"
+                             method="POST">
 
-                </div>
+                             @csrf
 
-                <!-- BUTTON -->
-                <div class="mt-12 px-2 flex justify-center">
+                             <button type="submit"
+                                     class="bg-white text-white text-sm px-5 py-2 rounded-lg font-semibold flex items-center gap-2 border border-white hover:bg-white-100">
+                                 <span>Mark as Paid</span>
+                             </button>
 
-                    <form id="markPaidForm"
-                        action="{{ route('orders.mark-paid-test', $order) }}"
-                        method="POST">
-
-                        @csrf
-
-                        <button type="submit"
-                                class="bg-white text-white text-sm px-5 py-2 rounded-lg font-semibold flex items-center gap-2 border border-white hover:bg-white-100">
-                            <span>Mark as Paid</span>
-                        </button>
-
-                    </form>
+                         </form>
+                         <a href="{{ route('orders.index') }}"
+                            class="text-right text-gray-500 hover:text-black">
+                             Back →
+                         </a>
+                     </div>
 
                 </div>
+
+
 
             </div>
 

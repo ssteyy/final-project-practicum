@@ -49,7 +49,7 @@
 
                 @if($orders->count() > 0)
                     <!-- Desktop Table View -->
-                    <div class="hidden md:block overflow-x-auto">
+                    <div class="hidden md:block overflow-x-auto min-w-full">
                         <table class="w-full">
                             <thead class="bg-gray-50 dark:bg-gray-900/50 border-b border-gray-200 dark:border-gray-700">
                                 <tr>
@@ -153,7 +153,7 @@
                                                 {{ $order->status }}
                                             </span>
                                          </td>
- 
+
                                          <!-- Payment Status -->
                                          <td class="px-6 py-4 whitespace-nowrap">
                                              @if($order->payment_status === 'paid')
@@ -168,14 +168,15 @@
                                                  </span>
                                              @endif
                                          </td>
- 
+
                                          <!-- Order Date -->
-                                         <td class="px-6 py-4 whitespace-nowrap">
+                                        <td class="px-6 py-4 whitespace-nowrap">
                                             <div class="text-sm text-gray-900 dark:text-white font-medium">
-                                                {{ $order->created_at->format('M d, Y') }}
+                                                {{ $order->created_at->timezone('Asia/Phnom_Penh')->format('M d, Y') }}
                                             </div>
+
                                             <div class="text-xs text-gray-500 dark:text-gray-400">
-                                                {{ $order->created_at->format('h:i A') }}
+                                                {{ $order->created_at->timezone('Asia/Phnom_Penh')->format('h:i A') }}
                                             </div>
                                         </td>
 
@@ -289,7 +290,7 @@
                                      </a>
 
                                      @if($order->payment_status !== 'paid' && !in_array($order->status, ['pending', 'completed', 'cancelled']))
-                                         <a href="{{ route('orders.pay', $order) }}" 
+                                         <a href="{{ route('orders.pay', $order) }}"
                                             class="flex-1 text-center px-3 py-2 text-xs font-black text-white bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 rounded-lg">
                                              Confirm Order
                                          </a>

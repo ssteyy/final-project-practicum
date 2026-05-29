@@ -61,7 +61,7 @@
                                 <div class="inline-flex items-center px-4 py-2 bg-white/30 backdrop-blur-sm rounded-xl border border-white/40">
                                     <span class="text-sm font-semibold text-white/80 mr-2">Pricing Type:</span>
                                     <span class="text-base font-bold text-white">
-                                        {{ $service->pricing_type === 'hourly' ? '🕐 Hourly' : ($service->pricing_type === 'project' ? '📋 Project' : '💰 Fixed') }}
+                                        {{ $service->pricing_type === 'hourly' ? 'Hourly' : ($service->pricing_type === 'project' ? 'Project' : 'Fixed') }}
                                     </span>
                                 </div>
                             </div>
